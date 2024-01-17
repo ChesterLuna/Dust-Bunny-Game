@@ -39,3 +39,9 @@ sysinfo.txt
 Icon?
 ehthumbs.db
 Thumbs.db
+
+# Logs folder
+[Ll]ogs/
+
+# User settings
+[Uu]serSettings/
