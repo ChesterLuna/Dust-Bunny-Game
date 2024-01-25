@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -13,14 +14,22 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float jumpForce = 10f;
     [SerializeField] float dashForce = 10f;
     [SerializeField] float dashTime = 1f;
+    [SerializeField] int bunnySize = 1;
+    [SerializeField] float bunnySizeScalar = 2f;
+    [SerializeField] float scaleSpeed = 0.5f;
+    float epsilon = 0.01f;
+    Vector3 originalSize = new Vector3(1f,1f,1f);
+
 
     Vector2 zeroVelocity = Vector3.zero;
+    Vector3 zeroVector3 = Vector3.zero;
 
-    bool canJump=true;
+    bool canJump =true;
     bool canDash=true;
     bool doDash = false;
     bool isDashing = false;
     bool doJump = false;
+    bool growing = false;
 
     Rigidbody2D thisRigidbody;
 
@@ -28,12 +37,14 @@ public class PlayerController : MonoBehaviour
     {
         thisRigidbody = GetComponent<Rigidbody2D>();
         mainCamera = FindObjectOfType<Camera>();
+        originalSize = transform.localScale;
     }
 
     float horizontalMovement = 0;
     //Vector2 targetVelocity = Vector2.zero;
     Vector2 dashDirection = Vector2.zero;
     Vector2 jumpForceVector = Vector2.zero;
+
     void Update()
     {
 
@@ -51,6 +62,10 @@ public class PlayerController : MonoBehaviour
             doDash = true;
 
         }
+
+        
+
+
         //thisRigidbody.velocity = targetVelocity;
 
     }
@@ -116,4 +131,33 @@ public class PlayerController : MonoBehaviour
         
         isDashing = false;
     }
+
+    public void ChangeSize(int newSize)
+    {
+        if (growing == true)
+            return;
+        Vector3 targetScale = originalSize * Mathf.Pow(bunnySizeScalar, newSize - 1);
+        bunnySize = newSize;
+
+        StartCoroutine(GrowDamp(targetScale));
+
+    }
+
+    IEnumerator GrowDamp(Vector3 targetScale)
+    {
+        growing = true;
+        while(Vector3.Distance(transform.localScale, targetScale) > epsilon)
+        {
+            Vector3 interValue = Vector3.Lerp(transform.localScale, targetScale, scaleSpeed * Time.deltaTime);
+            transform.localScale = interValue;
+            yield return null;
+
+        }
+        growing = false;
+
+    }
+
+
+
+
 }
