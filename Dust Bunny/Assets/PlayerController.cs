@@ -1,45 +1,119 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
 
+    [SerializeField] Camera mainCamera;
     [SerializeField] float moveSpeed = 10f;
+    [SerializeField] float moveSmoothing = 0.01f;
     [SerializeField] float jumpForce = 10f;
+    [SerializeField] float dashForce = 10f;
+    [SerializeField] float dashTime = 1f;
 
-    bool canJump;
-    bool canDash;
+    Vector2 zeroVelocity = Vector3.zero;
+
+    bool canJump=true;
+    bool canDash=true;
+    bool doDash = false;
+    bool isDashing = false;
+    bool doJump = false;
+
     Rigidbody2D thisRigidbody;
 
     void Start()
     {
         thisRigidbody = GetComponent<Rigidbody2D>();
+        mainCamera = FindObjectOfType<Camera>();
     }
 
-
-
+    float horizontalMovement = 0;
+    //Vector2 targetVelocity = Vector2.zero;
+    Vector2 dashDirection = Vector2.zero;
+    Vector2 jumpForceVector = Vector2.zero;
     void Update()
     {
 
-        float horizontalMovement = Input.GetAxisRaw("Horizontal") * moveSpeed; // time delta time? not sure
+        horizontalMovement = Input.GetAxisRaw("Horizontal") * moveSpeed;
 
-        thisRigidbody.velocity = new Vector2(horizontalMovement, thisRigidbody.velocity.y);
-
-        // damp movement, smooth damp
-
-
-
+        // Jump
         if (Input.GetButtonDown("Jump"))
         {
-            // Jump
-            Vector2 jumpForceVector = new Vector2(0, jumpForce);
-            thisRigidbody.AddForce(jumpForceVector, ForceMode2D.Impulse);
+            doJump = true;
+        }
+
+        // Dash
+        if (Input.GetButtonDown("Fire1"))
+        {
+            doDash = true;
+
+        }
+        //thisRigidbody.velocity = targetVelocity;
+
+    }
+
+    void FixedUpdate()
+    {
+        Move(horizontalMovement);
+
+        //     thisRigidbody.velocity = Vector2.SmoothDamp(thisRigidbody.velocity, targetVelocity, ref zeroVelocity, moveSmoothing);
+        if (doJump && canJump)
+        {
+            doJump = false;
+            Jump();
+        }
+        if (doDash && canDash)
+        {
+            doDash = false;
+            StartCoroutine(Dash());
+        }
+
+    }
+
+    void Move(float horizontalMovement)
+    {
+        Vector2 targetVelocity = new Vector2(horizontalMovement * Time.fixedDeltaTime, thisRigidbody.velocity.y);
+        // damp movement, smooth damp
+        if (isDashing)
+        {
+            //thisRigidbody.velocity = Vector2.SmoothDamp(thisRigidbody.velocity, new Vector2(thisRigidbody.velocity.x + horizontalMovement, thisRigidbody.velocity.y), ref zeroVelocity, moveSmoothing);
+            Vector2 newTargetVelocity = new Vector2(thisRigidbody.velocity.x + horizontalMovement * Time.fixedDeltaTime, thisRigidbody.velocity.y);
+            thisRigidbody.velocity = Vector2.SmoothDamp(thisRigidbody.velocity, newTargetVelocity, ref zeroVelocity, moveSmoothing);
+        }
+        else
+        {
+            thisRigidbody.velocity = Vector2.SmoothDamp(thisRigidbody.velocity, targetVelocity, ref zeroVelocity, moveSmoothing);
+            //thisRigidbody.velocity = targetVelocity;
         }
     }
-    
+
+    void Jump()
+    {
+        jumpForceVector = new Vector2(0f, jumpForce);
+        thisRigidbody.AddForce(jumpForceVector, ForceMode2D.Impulse);
+    }
 
 
 
+    // Dashes for "dashTime" seconds constantly. Uses AddForce.
+    IEnumerator Dash()
+    {
+        isDashing = true;
 
+        Vector2 mousePos = Input.mousePosition;//mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 playerPos = Camera.main.WorldToScreenPoint(transform.position);
+        dashDirection = (mousePos - playerPos).normalized;
+
+        float gravity = thisRigidbody.gravityScale;
+        thisRigidbody.gravityScale = 0f;
+
+        thisRigidbody.AddForce(new Vector2(dashDirection.x * dashForce, dashDirection.y * dashForce), ForceMode2D.Impulse);
+        yield return new WaitForSeconds(dashTime);
+        thisRigidbody.gravityScale = gravity;
+        
+        isDashing = false;
+    }
 }
