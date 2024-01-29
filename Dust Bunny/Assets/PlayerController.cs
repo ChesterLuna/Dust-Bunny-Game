@@ -11,10 +11,12 @@ public class PlayerController : MonoBehaviour
     bool canJump;
     bool canDash;
     Rigidbody2D thisRigidbody;
+    PlayerSFXController sfx;
 
     void Start()
     {
         thisRigidbody = GetComponent<Rigidbody2D>();
+        sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
     }
 
 
@@ -35,6 +37,7 @@ public class PlayerController : MonoBehaviour
             // Jump
             Vector2 jumpForceVector = new Vector2(0, jumpForce);
             thisRigidbody.AddForce(jumpForceVector, ForceMode2D.Impulse);
+            sfx.PlaySFX(PlayerSFXController.SFX.Jump);
         }
     }
     
