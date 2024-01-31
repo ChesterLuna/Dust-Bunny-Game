@@ -38,12 +38,14 @@ public class PlayerController : MonoBehaviour
     bool growing = false;
 
     Rigidbody2D thisRigidbody;
+    PlayerSFXController sfx;
 
     void Start()
     {
         thisRigidbody = GetComponent<Rigidbody2D>();
         mainCamera = FindObjectOfType<Camera>();
         originalSize = transform.localScale;
+        sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
     }
 
     float horizontalMovement = 0;
@@ -112,6 +114,9 @@ public class PlayerController : MonoBehaviour
     {
         jumpForceVector = new Vector2(0f, jumpForce);
         thisRigidbody.AddForce(jumpForceVector, ForceMode2D.Impulse);
+        sfx.PlaySFX(PlayerSFXController.SFX.Jump);
+
+        
     }
 
 
@@ -155,6 +160,9 @@ public class PlayerController : MonoBehaviour
             transform.localScale = interValue;
             yield return null;
 
+            // Jump
+            Vector2 jumpForceVector = new Vector2(0, jumpForce);
+            thisRigidbody.AddForce(jumpForceVector, ForceMode2D.Impulse);
         }
         growing = false;
 
