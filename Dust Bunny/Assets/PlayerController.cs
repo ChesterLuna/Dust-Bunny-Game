@@ -159,10 +159,6 @@ public class PlayerController : MonoBehaviour
             Vector3 interValue = Vector3.Lerp(transform.localScale, targetScale, scaleSpeed * Time.deltaTime);
             transform.localScale = interValue;
             yield return null;
-
-            // Jump
-            Vector2 jumpForceVector = new Vector2(0, jumpForce);
-            thisRigidbody.AddForce(jumpForceVector, ForceMode2D.Impulse);
         }
         growing = false;
 
