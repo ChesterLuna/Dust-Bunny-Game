@@ -9,11 +9,17 @@ public class PlayerController : MonoBehaviour
 {
 
     [SerializeField] Camera mainCamera;
+
+    // Movement variables
     [SerializeField] float moveSpeed = 10f;
     [SerializeField] float moveSmoothing = 0.01f;
+
+    // Abilities variables
     [SerializeField] float jumpForce = 10f;
     [SerializeField] float dashForce = 10f;
     [SerializeField] float dashTime = 1f;
+
+    // Size Changing variables
     [SerializeField] int bunnySize = 1;
     [SerializeField] float bunnySizeScalar = 2f;
     [SerializeField] float scaleSpeed = 0.5f;
@@ -50,6 +56,7 @@ public class PlayerController : MonoBehaviour
 
         horizontalMovement = Input.GetAxisRaw("Horizontal") * moveSpeed;
 
+        // To do physics update on fixedUpdate I set bools
         // Jump
         if (Input.GetButtonDown("Jump"))
         {
@@ -63,10 +70,6 @@ public class PlayerController : MonoBehaviour
 
         }
 
-        
-
-
-        //thisRigidbody.velocity = targetVelocity;
 
     }
 
