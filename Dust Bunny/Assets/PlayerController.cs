@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -38,11 +39,14 @@ public class PlayerController : MonoBehaviour
     bool growing = false;
 
     Rigidbody2D thisRigidbody;
+    Collider2D thisCollider;
+
     PlayerSFXController sfx;
 
     void Start()
     {
         thisRigidbody = GetComponent<Rigidbody2D>();
+        thisCollider = GetComponent<Collider2D>();
         mainCamera = FindObjectOfType<Camera>();
         originalSize = transform.localScale;
         sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
@@ -72,7 +76,10 @@ public class PlayerController : MonoBehaviour
 
         }
 
-
+        if (Input.GetButtonDown("Interact"))
+        {
+            SendInteract();
+        }
     }
 
     void FixedUpdate()
@@ -164,7 +171,43 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    void SendInteract()
+    {
+        ContactFilter2D cf = new ContactFilter2D().NoFilter();
+        List<Collider2D> results = new List<Collider2D>();
+        
+        thisCollider.OverlapCollider(cf, results);
+        foreach (Collider2D collider in results)
+        {
+            IInteractable interactScript = collider.gameObject.GetComponent<IInteractable>();
+            if (interactScript != null)
+            {
+                interactScript.Interact();
+            }
+        }
+    }
 
 
+    public Rigidbody2D GetRigidbody2D()
+    {
+        return thisRigidbody;
+    }
+
+    public int GetSize()
+    {
+        return bunnySize;
+    }
+
+    public void SetCanJump(bool value)
+    {
+        canJump = value;
+    }
+
+    public void SetCanDash(bool value)
+    {
+        canDash = value;
+    }
+
+    
 
 }
