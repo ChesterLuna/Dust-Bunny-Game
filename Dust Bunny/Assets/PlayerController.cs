@@ -9,150 +9,184 @@ using UnityEngine.UIElements;
 public class PlayerController : MonoBehaviour
 {
 
-    [SerializeField] Camera mainCamera;
+    [SerializeField] Camera _mainCamera;
 
     // Movement variables
-    [SerializeField] float moveSpeed = 10f;
-    [SerializeField] float moveSmoothing = 0.01f;
+    [SerializeField] float _moveSpeed = 500f;
+    [SerializeField] float _moveSmoothing = 0.05f;
 
     // Abilities variables
-    [SerializeField] float jumpForce = 10f;
-    [SerializeField] float dashForce = 10f;
-    [SerializeField] float dashTime = 1f;
+    [SerializeField] float _jumpForce = 22f;
+    [SerializeField] float _dashForce = 22f;
+    [SerializeField] float _dashTime = 1f;
 
     // Size Changing variables
-    [SerializeField] int bunnySize = 1;
-    [SerializeField] float bunnySizeScalar = 2f;
-    [SerializeField] float scaleSpeed = 0.5f;
-    float epsilon = 0.01f;
-    Vector3 originalSize = new Vector3(1f,1f,1f);
+    [SerializeField] int _bunnySize = 1;
+    [SerializeField] float _bunnySizeScalar = 1.5f;
+    [SerializeField] float _scaleSpeed = 1.6f;
+    float _epsilon = 0.01f;
+    Vector3 _originalSize = new Vector3(1f,1f,1f);
 
 
-    Vector2 zeroVelocity = Vector3.zero;
-    Vector3 zeroVector3 = Vector3.zero;
+    Vector2 _zeroVelocity = Vector3.zero;
+    Vector3 _zeroVector3 = Vector3.zero;
 
-    bool canJump =true;
-    bool canDash=true;
-    bool doDash = false;
-    bool isDashing = false;
-    bool doJump = false;
-    bool growing = false;
+    bool _canJump =true;
+    bool _canDash=true;
+    bool _doDash = false;
+    bool _isDashing = false;
+    bool _doJump = false;
+    bool _growing = false;
+    bool _grounded = false;
+    Collider2D _currentDropDownPlatform = null;
 
-    Rigidbody2D thisRigidbody;
-    Collider2D thisCollider;
+    Rigidbody2D _thisRigidbody;
+    Collider2D _thisCollider;
 
-    PlayerSFXController sfx;
+    [SerializeField] LayerMask _environmentLayer;
 
-    void Start()
-    {
-        thisRigidbody = GetComponent<Rigidbody2D>();
-        thisCollider = GetComponent<Collider2D>();
-        mainCamera = FindObjectOfType<Camera>();
-        originalSize = transform.localScale;
-        sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
-    }
+    PlayerSFXController _sfx;
 
-    float horizontalMovement = 0;
+
+    float _horizontalInput = 0;
+    float _verticalInput = 0;
     //Vector2 targetVelocity = Vector2.zero;
-    Vector2 dashDirection = Vector2.zero;
-    Vector2 jumpForceVector = Vector2.zero;
+    Vector2 _dashDirection = Vector2.zero;
+    Vector2 _jumpForceVector = Vector2.zero;
+
+    private void Awake()
+    {
+        _thisRigidbody = GetComponent<Rigidbody2D>();
+        _thisCollider = GetComponent<Collider2D>();
+        _mainCamera = FindObjectOfType<Camera>();
+        _originalSize = transform.localScale;
+        _sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
+    }
 
     void Update()
     {
-
-        horizontalMovement = Input.GetAxisRaw("Horizontal") * moveSpeed;
-
-        // To do physics update on fixedUpdate I set bools
-        // Jump
-        if (Input.GetButtonDown("Jump"))
-        {
-            doJump = true;
-        }
-
-        // Dash
-        if (Input.GetButtonDown("Fire1"))
-        {
-            doDash = true;
-
-        }
-
-        if (Input.GetButtonDown("Interact"))
-        {
-            SendInteract();
-        }
+        gatherInput();
     }
 
     void FixedUpdate()
     {
-        Move(horizontalMovement);
-
-        //     thisRigidbody.velocity = Vector2.SmoothDamp(thisRigidbody.velocity, targetVelocity, ref zeroVelocity, moveSmoothing);
-        if (doJump && canJump)
+        checkGrounded();
+        Move();
+        //     _thisRigidbody.velocity = Vector2.SmoothDamp(_thisRigidbody.velocity, targetVelocity, ref _zeroVelocity, _moveSmoothing);
+        if (_doJump && _canJump)
         {
-            doJump = false;
+            _doJump = false;
             Jump();
         }
-        if (doDash && canDash)
+        if (_doDash && _canDash)
         {
-            doDash = false;
+            _doDash = false;
             StartCoroutine(Dash());
         }
 
     }
 
-    void Move(float horizontalMovement)
+    private void gatherInput()
     {
-        Vector2 targetVelocity = new Vector2(horizontalMovement * Time.fixedDeltaTime, thisRigidbody.velocity.y);
-        // damp movement, smooth damp
-        if (isDashing)
+        _horizontalInput = Input.GetAxis("Horizontal");
+        _verticalInput = Input.GetAxis("Vertical");
+        if (Input.GetButtonDown("Jump"))
         {
-            //thisRigidbody.velocity = Vector2.SmoothDamp(thisRigidbody.velocity, new Vector2(thisRigidbody.velocity.x + horizontalMovement, thisRigidbody.velocity.y), ref zeroVelocity, moveSmoothing);
-            Vector2 newTargetVelocity = new Vector2(thisRigidbody.velocity.x + horizontalMovement * Time.fixedDeltaTime, thisRigidbody.velocity.y);
-            thisRigidbody.velocity = Vector2.SmoothDamp(thisRigidbody.velocity, newTargetVelocity, ref zeroVelocity, moveSmoothing);
+            _doJump = true;
+        }
+        if (Input.GetButtonDown("Dash"))
+        {
+            _doDash = true;
+        }
+        if (Input.GetButtonDown("Interact"))
+        {
+            sendInteract();
+        }
+    }
+
+    private void checkGrounded()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1f, _environmentLayer);
+        Debug.DrawRay(transform.position, Vector2.down, Color.red); // Draw the raycast
+
+        if (hit.collider != null)
+        {
+           _grounded = true;
+           if (hit.collider.gameObject.CompareTag("DropDownPlatform"))
+           {
+               _currentDropDownPlatform = hit.collider;
+           }
+           else
+           {
+               _currentDropDownPlatform = null;
+           }
         }
         else
         {
-            thisRigidbody.velocity = Vector2.SmoothDamp(thisRigidbody.velocity, targetVelocity, ref zeroVelocity, moveSmoothing);
-            //thisRigidbody.velocity = targetVelocity;
+           _grounded = false;
+        }
+    }
+
+    void Move()
+    {
+        float horizontalMovement = _horizontalInput * _moveSpeed;
+        Vector2 targetVelocity = new Vector2(horizontalMovement * Time.fixedDeltaTime, _thisRigidbody.velocity.y);
+        // damp movement, smooth damp
+        if (_isDashing)
+        {
+            //_thisRigidbody.velocity = Vector2.SmoothDamp(_thisRigidbody.velocity, new Vector2(_thisRigidbody.velocity.x + horizontalMovement, _thisRigidbody.velocity.y), ref _zeroVelocity, _moveSmoothing);
+            Vector2 newTargetVelocity = new Vector2(_thisRigidbody.velocity.x + horizontalMovement * Time.fixedDeltaTime, _thisRigidbody.velocity.y);
+            _thisRigidbody.velocity = Vector2.SmoothDamp(_thisRigidbody.velocity, newTargetVelocity, ref _zeroVelocity, _moveSmoothing);
+        }
+        else
+        {
+            _thisRigidbody.velocity = Vector2.SmoothDamp(_thisRigidbody.velocity, targetVelocity, ref _zeroVelocity, _moveSmoothing);
+            //_thisRigidbody.velocity = targetVelocity;
         }
     }
 
     void Jump()
     {
-        jumpForceVector = new Vector2(0f, jumpForce);
-        thisRigidbody.AddForce(jumpForceVector, ForceMode2D.Impulse);
-        sfx.PlaySFX(PlayerSFXController.SFX.Jump);
+        if (_currentDropDownPlatform != null && _verticalInput < 0f)
+        {
+            _currentDropDownPlatform.GetComponent<DropDownPlatform>().DropDown(_thisCollider);
+        } else {
+            _thisRigidbody.velocity = new Vector2(_thisRigidbody.velocity.x, 0f);
+            _jumpForceVector = new Vector2(0f, _jumpForce);
+            _thisRigidbody.AddForce(_jumpForceVector, ForceMode2D.Impulse);
+        }
+        _sfx.PlaySFX(PlayerSFXController.SFX.Jump);
 
         
     }
 
 
 
-    // Dashes for "dashTime" seconds constantly. Uses AddForce.
+    // Dashes for "_dashTime" seconds constantly. Uses AddForce.
     IEnumerator Dash()
     {
-        isDashing = true;
+        _isDashing = true;
 
-        Vector2 mousePos = Input.mousePosition;//mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 mousePos = Input.mousePosition;//_mainCamera.ScreenToWorldPoint(Input.mousePosition);
         Vector2 playerPos = Camera.main.WorldToScreenPoint(transform.position);
-        dashDirection = (mousePos - playerPos).normalized;
+        _dashDirection = (mousePos - playerPos).normalized;
 
-        float gravity = thisRigidbody.gravityScale;
-        thisRigidbody.gravityScale = 0f;
+        float gravity = _thisRigidbody.gravityScale;
+        _thisRigidbody.gravityScale = 0f;
 
-        thisRigidbody.AddForce(new Vector2(dashDirection.x * dashForce, dashDirection.y * dashForce), ForceMode2D.Impulse);
-        yield return new WaitForSeconds(dashTime);
-        thisRigidbody.gravityScale = gravity;
+        _thisRigidbody.AddForce(new Vector2(_dashDirection.x * _dashForce, _dashDirection.y * _dashForce), ForceMode2D.Impulse);
+        yield return new WaitForSeconds(_dashTime);
+        _thisRigidbody.gravityScale = gravity;
         
-        isDashing = false;
+        _isDashing = false;
     }
 
     public void ChangeSize(int newSize)
     {
-        if (growing == true)
+        if (_growing == true)
             return;
-        Vector3 targetScale = originalSize * Mathf.Pow(bunnySizeScalar, newSize - 1);
-        bunnySize = newSize;
+        Vector3 targetScale = _originalSize * Mathf.Pow(_bunnySizeScalar, newSize - 1);
+        _bunnySize = newSize;
 
         StartCoroutine(GrowDamp(targetScale));
 
@@ -160,23 +194,23 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator GrowDamp(Vector3 targetScale)
     {
-        growing = true;
-        while(Vector3.Distance(transform.localScale, targetScale) > epsilon)
+        _growing = true;
+        while(Vector3.Distance(transform.localScale, targetScale) > _epsilon)
         {
-            Vector3 interValue = Vector3.Lerp(transform.localScale, targetScale, scaleSpeed * Time.deltaTime);
+            Vector3 interValue = Vector3.Lerp(transform.localScale, targetScale, _scaleSpeed * Time.deltaTime);
             transform.localScale = interValue;
             yield return null;
         }
-        growing = false;
+        _growing = false;
 
     }
 
-    void SendInteract()
+    private void sendInteract()
     {
         ContactFilter2D cf = new ContactFilter2D().NoFilter();
         List<Collider2D> results = new List<Collider2D>();
         
-        thisCollider.OverlapCollider(cf, results);
+        _thisCollider.OverlapCollider(cf, results);
         foreach (Collider2D collider in results)
         {
             IInteractable interactScript = collider.gameObject.GetComponent<IInteractable>();
@@ -190,22 +224,22 @@ public class PlayerController : MonoBehaviour
 
     public Rigidbody2D GetRigidbody2D()
     {
-        return thisRigidbody;
+        return _thisRigidbody;
     }
 
     public int GetSize()
     {
-        return bunnySize;
+        return _bunnySize;
     }
 
     public void SetCanJump(bool value)
     {
-        canJump = value;
+        _canJump = value;
     }
 
     public void SetCanDash(bool value)
     {
-        canDash = value;
+        _canDash = value;
     }
 
     

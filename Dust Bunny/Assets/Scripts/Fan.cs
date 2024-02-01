@@ -5,27 +5,27 @@ using UnityEngine;
 
 public class Fan : Switchable
 {
-    [SerializeField] float force = 75;
-    [SerializeField] SpriteRenderer baseSprite;
-    SpriteRenderer fanSprite;
-    Collider2D fanCollider;
+    [SerializeField] float _force = 75;
+    [SerializeField] SpriteRenderer _baseSprite;
+    SpriteRenderer _fanSprite;
+    Collider2D _fanCollider;
 
     void Awake()
     {
-        fanCollider = GetComponent<Collider2D>();
-        fanSprite = GetComponent<SpriteRenderer>();
+        _fanCollider = GetComponent<Collider2D>();
+        _fanSprite = GetComponent<SpriteRenderer>();
     }
 
     public override void disable()
     {
-        fanCollider.enabled = false;
-        fanSprite.enabled = false;
+        _fanCollider.enabled = false;
+        _fanSprite.enabled = false;
     }
 
     public override void enable()
     {
-        fanCollider.enabled = true;
-        fanSprite.enabled = true;
+        _fanCollider.enabled = true;
+        _fanSprite.enabled = true;
     }
 
 
@@ -34,7 +34,7 @@ public class Fan : Switchable
         if (collider.gameObject.CompareTag("Player"))
         {
             Rigidbody2D player = collider.gameObject.GetComponent<PlayerController>().GetRigidbody2D();
-            player.AddForce(transform.up * force);
+            player.AddForce(transform.up * _force);
         }
     }
 }
