@@ -25,20 +25,21 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _bunnySizeScalar = 1.5f;
     [SerializeField] float _scaleSpeed = 1.6f;
     float _epsilon = 0.01f;
-    Vector3 _originalSize = new Vector3(1f,1f,1f);
+    Vector3 _originalSize = new Vector3(1f, 1f, 1f);
 
 
     Vector2 _zeroVelocity = Vector3.zero;
     Vector3 _zeroVector3 = Vector3.zero;
 
-    bool _canJump =true;
-    bool _canDash=true;
+    bool _canJump = true;
+    bool _canDash = true;
     bool _doDash = false;
     bool _isDashing = false;
     bool _doJump = false;
     bool _growing = false;
     bool _grounded = false;
-    Collider2D _currentDropDownPlatform = null;
+    DropDownPlatform _currentDropDownPlatform = null;
+    Transform _oldMovingPlatform = null;
 
     Rigidbody2D _thisRigidbody;
     Collider2D _thisCollider;
@@ -46,7 +47,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] LayerMask _environmentLayer;
 
     PlayerSFXController _sfx;
-
+    private Transform _originalParent;
 
     float _horizontalInput = 0;
     float _verticalInput = 0;
@@ -111,19 +112,35 @@ public class PlayerController : MonoBehaviour
 
         if (hit.collider != null)
         {
-           _grounded = true;
-           if (hit.collider.gameObject.CompareTag("DropDownPlatform"))
-           {
-               _currentDropDownPlatform = hit.collider;
-           }
-           else
-           {
-               _currentDropDownPlatform = null;
-           }
+            _grounded = true;
+            _currentDropDownPlatform = hit.collider.GetComponentInParent<DropDownPlatform>();
+            Transform currentMovingPlatform = hit.collider.GetComponentInParent<MovingPlatform>()?.transform;
+            if (currentMovingPlatform != null)
+            {
+                if (currentMovingPlatform != _oldMovingPlatform)
+                {
+                    if (_oldMovingPlatform != null)
+                    {
+                        resetParent();
+                    }
+                    setParent(currentMovingPlatform);
+                }
+            }
+            else
+            {
+                resetParent();
+            }
+            _oldMovingPlatform = currentMovingPlatform;
         }
         else
         {
-           _grounded = false;
+            _grounded = false;
+            _currentDropDownPlatform = null;
+            if (_oldMovingPlatform != null)
+            {
+                resetParent();
+                _oldMovingPlatform = null;
+            }
         }
     }
 
@@ -149,15 +166,17 @@ public class PlayerController : MonoBehaviour
     {
         if (_currentDropDownPlatform != null && _verticalInput < 0f)
         {
-            _currentDropDownPlatform.GetComponent<DropDownPlatform>().DropDown(_thisCollider);
-        } else {
+            _currentDropDownPlatform.DropDown(_thisCollider);
+        }
+        else
+        {
             _thisRigidbody.velocity = new Vector2(_thisRigidbody.velocity.x, 0f);
             _jumpForceVector = new Vector2(0f, _jumpForce);
             _thisRigidbody.AddForce(_jumpForceVector, ForceMode2D.Impulse);
         }
         _sfx.PlaySFX(PlayerSFXController.SFX.Jump);
 
-        
+
     }
 
 
@@ -177,7 +196,7 @@ public class PlayerController : MonoBehaviour
         _thisRigidbody.AddForce(new Vector2(_dashDirection.x * _dashForce, _dashDirection.y * _dashForce), ForceMode2D.Impulse);
         yield return new WaitForSeconds(_dashTime);
         _thisRigidbody.gravityScale = gravity;
-        
+
         _isDashing = false;
     }
 
@@ -195,7 +214,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator GrowDamp(Vector3 targetScale)
     {
         _growing = true;
-        while(Vector3.Distance(transform.localScale, targetScale) > _epsilon)
+        while (Vector3.Distance(transform.localScale, targetScale) > _epsilon)
         {
             Vector3 interValue = Vector3.Lerp(transform.localScale, targetScale, _scaleSpeed * Time.deltaTime);
             transform.localScale = interValue;
@@ -209,7 +228,7 @@ public class PlayerController : MonoBehaviour
     {
         ContactFilter2D cf = new ContactFilter2D().NoFilter();
         List<Collider2D> results = new List<Collider2D>();
-        
+
         _thisCollider.OverlapCollider(cf, results);
         foreach (Collider2D collider in results)
         {
@@ -242,6 +261,16 @@ public class PlayerController : MonoBehaviour
         _canDash = value;
     }
 
-    
+
+    void setParent(Transform newParent)
+    {
+        _originalParent = transform.parent;
+        transform.parent = newParent;
+    }
+
+    void resetParent()
+    {
+        transform.parent = _originalParent;
+    }
 
 }
