@@ -27,6 +27,9 @@ public class PlayerController : MonoBehaviour
     float _epsilon = 0.01f;
     Vector3 _originalSize = new Vector3(1f, 1f, 1f);
 
+    // Dust Changing variables
+    [SerializeField] float _dust = 100f;
+    [SerializeField] float _maxDust = 100f;
 
     Vector2 _zeroVelocity = Vector3.zero;
     Vector3 _zeroVector3 = Vector3.zero;
@@ -276,6 +279,43 @@ public class PlayerController : MonoBehaviour
     void resetParent()
     {
         transform.parent = _originalParent;
+    }
+
+    public void SetDust(float dust)
+    {
+        _dust = dust;
+    }
+
+    public float GetDust()
+    {
+        return _dust;
+    }
+
+    public bool MaxedOutDust()
+    {
+        return _dust >= _maxDust;
+    }
+
+    public void AddDust(float scalar)
+    {
+        _dust += scalar;
+        if (_dust > _maxDust)
+        {
+            _dust = _maxDust;
+        }
+    }
+    public void RemoveDust(float scalar)
+    {
+        _dust -= scalar;
+        if (_dust < 0)
+        {
+            Die();
+        }
+    }
+
+    public void Die()
+    {
+        Debug.Log("You died");
     }
 
 }
