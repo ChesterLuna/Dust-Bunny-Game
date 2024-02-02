@@ -113,7 +113,7 @@ public class PlayerController : MonoBehaviour
         if (hit.collider != null)
         {
             _grounded = true;
-            _currentDropDownPlatform = hit.collider.GetComponentInParent<DropDownPlatform>();
+            _currentDropDownPlatform = hit.collider.GetComponentInChildren<DropDownPlatform>();
             Transform currentMovingPlatform = hit.collider.GetComponentInParent<MovingPlatform>()?.transform;
             if (currentMovingPlatform != null)
             {
