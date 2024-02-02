@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
-
+    // Camera
     [SerializeField] Camera _mainCamera;
 
     // Movement variables
@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
     Vector2 _zeroVelocity = Vector3.zero;
     Vector3 _zeroVector3 = Vector3.zero;
 
+    // Abilities booleans
     bool _canJump = true;
     bool _canDash = true;
     bool _doDash = false;
@@ -38,22 +39,29 @@ public class PlayerController : MonoBehaviour
     bool _doJump = false;
     bool _growing = false;
     bool _grounded = false;
-    DropDownPlatform _currentDropDownPlatform = null;
-    Transform _oldMovingPlatform = null;
 
-    Rigidbody2D _thisRigidbody;
-    Collider2D _thisCollider;
-
-    [SerializeField] LayerMask _environmentLayer;
-
-    PlayerSFXController _sfx;
+    // Platform variables
     private Transform _originalParent;
 
+    private DropDownPlatform _currentDropDownPlatform = null;
+    private Transform _oldMovingPlatform = null;
+
+    // Physics
+    Rigidbody2D _thisRigidbody;
+    Collider2D _thisCollider;
+    [SerializeField] LayerMask _environmentLayer;
+
+    // Input
     float _horizontalInput = 0;
     float _verticalInput = 0;
     //Vector2 targetVelocity = Vector2.zero;
     Vector2 _dashDirection = Vector2.zero;
     Vector2 _jumpForceVector = Vector2.zero;
+
+
+    // SFX
+    PlayerSFXController _sfx;
+
 
     private void Awake()
     {
@@ -113,7 +121,9 @@ public class PlayerController : MonoBehaviour
         if (hit.collider != null)
         {
             _grounded = true;
+
             _currentDropDownPlatform = hit.collider.GetComponentInChildren<DropDownPlatform>();
+
             Transform currentMovingPlatform = hit.collider.GetComponentInParent<MovingPlatform>()?.transform;
             if (currentMovingPlatform != null)
             {
@@ -175,8 +185,6 @@ public class PlayerController : MonoBehaviour
             _thisRigidbody.AddForce(_jumpForceVector, ForceMode2D.Impulse);
         }
         _sfx.PlaySFX(PlayerSFXController.SFX.Jump);
-
-
     }
 
 
@@ -208,7 +216,6 @@ public class PlayerController : MonoBehaviour
         _bunnySize = newSize;
 
         StartCoroutine(GrowDamp(targetScale));
-
     }
 
     IEnumerator GrowDamp(Vector3 targetScale)
@@ -221,7 +228,6 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
         _growing = false;
-
     }
 
     private void sendInteract()
@@ -260,7 +266,6 @@ public class PlayerController : MonoBehaviour
     {
         _canDash = value;
     }
-
 
     void setParent(Transform newParent)
     {
