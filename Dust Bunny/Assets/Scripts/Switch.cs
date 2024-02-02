@@ -34,7 +34,7 @@ public class Switch : MonoBehaviour, IInteractable
         _isOn = true;
         foreach (Switchable target in _targets)
         {
-            target.enable();
+            target.Enable();
         }
         _spriteRenderer.sprite = _onSprite;
     }
@@ -44,7 +44,7 @@ public class Switch : MonoBehaviour, IInteractable
         _isOn = false;
         foreach (Switchable target in _targets)
         {
-            target.disable();
+            target.Disable();
         }
         _spriteRenderer.sprite = _offSprite;
     }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MovingPlatform : MonoBehaviour
+public class MovingPlatform : Switchable
 {
     [Header("Waypoints")]
     [SerializeField] private Transform[] _waypoints;
@@ -10,6 +10,7 @@ public class MovingPlatform : MonoBehaviour
     [SerializeField] private bool _looped = false;
     [SerializeField] private bool _teleportStartOfLoop = false;
     [SerializeField] private bool _ascending = true;
+    [SerializeField] private bool _moving = true;
 
     private Rigidbody2D _rb;
 
@@ -21,6 +22,8 @@ public class MovingPlatform : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!_moving) return;
+
         var target = _waypoints[_index].position;
         Vector3 direction = (target - transform.position).normalized;
         _rb.MovePosition(transform.position + direction * _speed * Time.deltaTime);
@@ -52,13 +55,20 @@ public class MovingPlatform : MonoBehaviour
         }
     } // end FixedUpdate
 
+    public override void Disable()
+    {
+        _moving = false;
+    }
+
+    public override void Enable()
+    {
+        _moving = true;
+    }
+
 
     private void OnDrawGizmosSelected()
     {
         if (Application.isPlaying) return;
-        // var zeroTarget = _waypoints[0].position;
-
-        // var curPos = (Vector2)transform.position;
         var previous = (Vector2)transform.position;
         for (var i = 0; i < _waypoints.Length; i++)
         {

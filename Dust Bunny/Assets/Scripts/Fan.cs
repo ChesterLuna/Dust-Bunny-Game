@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Fan : Switchable
 {
+    [SerializeField] bool _isTimed = false;
+    [SerializeField] float _timedToggleLength = 1f;
     [SerializeField] float _force = 75;
     [SerializeField] SpriteRenderer _baseSprite;
     SpriteRenderer _fanSprite;
@@ -16,18 +18,36 @@ public class Fan : Switchable
         _fanSprite = GetComponent<SpriteRenderer>();
     }
 
-    public override void disable()
+    void Start()
+    {
+        if (_isTimed)
+        {
+            InvokeRepeating("Toggle", 0f, _timedToggleLength);
+        }
+    }
+    public override void Disable()
     {
         _fanCollider.enabled = false;
         _fanSprite.enabled = false;
     }
 
-    public override void enable()
+    public override void Enable()
     {
         _fanCollider.enabled = true;
         _fanSprite.enabled = true;
     }
 
+    public void Toggle()
+    {
+        if (_fanCollider.enabled && _fanSprite.enabled)
+        {
+            Disable();
+        }
+        else
+        {
+            Enable();
+        }
+    }
 
     void OnTriggerStay2D(Collider2D collider)
     {

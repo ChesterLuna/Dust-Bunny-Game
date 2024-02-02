@@ -34,7 +34,7 @@ public class Timer : MonoBehaviour
     /// Starts the timer with the specified time.
     /// </summary>
     /// <param name="time">The time in seconds.</param>
-    public void StartTime(float time = 10)
+    public void StartTimer(float time = 10)
     {
         _pasued = false;
         _expired = false;
