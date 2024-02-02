@@ -15,7 +15,6 @@ public class Swiffer : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log(other.gameObject.name);
         _player = other.gameObject.GetComponent<PlayerController>();
         if (_player)
         {
