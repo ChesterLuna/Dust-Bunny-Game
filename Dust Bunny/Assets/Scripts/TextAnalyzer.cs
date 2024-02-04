@@ -32,10 +32,6 @@ public class TextAnalyzer : MonoBehaviour
 
         string txt = AssetText.text;
         string[] lines = txt.Split(System.Environment.NewLine.ToCharArray());
-        foreach( string line in lines)
-        {
-            print(line);
-        }
         Queue<Dialogue> Dialogues = new Queue<Dialogue>();
         string _Name = null;
         string _Text = null;
