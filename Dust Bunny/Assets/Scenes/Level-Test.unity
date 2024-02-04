@@ -2488,8 +2488,6 @@ MonoBehaviour:
   charNameText: {fileID: 0}
   dialogueText: {fileID: 0}
   IsBubble: 1
-  IsStartedDialogue: 0
-  IsFinishedDialogue: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -4,25 +4,29 @@ using System.Collections.Generic;
 using System.Linq;
 using Bunny.Dialogues;
 
-
-//using Microsoft.Unity.VisualStudio.Editor;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-//using static TextAnalyzer;
 
 public class DialogueManager : MonoBehaviour, IInteractable
 {
+/*
+    How to use:
+    Make a .txt file and fill it up in this format
+    #<This is the name of the character>
+    :<This is the dialogue you want on the character>
+
+    If you dont write # or : the text wont be recognized, 
+    so try to always write them even if you dont want the
+    character to have name or text for that dialogue.
+
+*/
     [SerializeField] TextAsset AssetText;
     [SerializeField] GameObject textBubble;
     GameObject _textBubble;
 
     [SerializeField] TextMeshPro charNameText;
     [SerializeField] TextMeshPro dialogueText;
-    //[SerializeField] Canvas choiceCanvas;
-    //int _choicesDone = 0;
-    //int _animationsDone = 0;
-    //[SerializeField] GameObject fader;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
 
@@ -38,7 +42,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
             Debug.LogError("No dialogue given. Try adding a .txt to the GameObject.");
             return;
         }
-        Dialogues = FindObjectOfType<TextAnalyzer>().AnalyzeText(AssetText);
+        Dialogues = GetComponent<TextAnalyzer>().AnalyzeText(AssetText);
     }
 
     public void Interact()
@@ -73,10 +77,6 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void DisplayNextSentence()
     {
-        // if(IsFinishedDialogue == true)
-        // {
-        //     return;
-        // }
         if (Dialogues.Count == 0 || _isFinishedDialogue)
         {
             EndDialogue();
