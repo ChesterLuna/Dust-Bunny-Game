@@ -65,7 +65,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
         if(IsBubble)
         {
-            _textBubble = Instantiate(textBubble);
+            _textBubble = Instantiate(textBubble, this.transform);
 
             charNameText = _textBubble.transform.Find("Character Name").GetComponent<TextMeshPro>();
             dialogueText = _textBubble.transform.Find("Bubble Text").GetComponent<TextMeshPro>();
