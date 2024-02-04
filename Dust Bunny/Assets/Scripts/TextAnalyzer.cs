@@ -1,10 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Bunny.Dialogues;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TextAnalyzer : MonoBehaviour
 {
@@ -54,80 +54,19 @@ public class TextAnalyzer : MonoBehaviour
                 {
                     _Text = lines[i].Remove(0, 1);
                 }
-                //print(lines[i]);
                 
+                // A dialogue should at least have text body. You can still have empty dialogues by only writing :
                 if(_Text != null)
                 {
                     Dialogues.Enqueue(new Dialogue(_Name, _Text));
                     _Name = null;
                     _Text = null;
-
                 }
             }
             i++;
         }
         return Dialogues;
     }
-
-
-    /*
-    //If we had choices we could use this code
-    public void AnalyzeChoice(char choice)
-    {
-
-        while (i < lines.Length)
-        {
-            if (!string.IsNullOrEmpty(lines[i]))
-            {
-                if (lines[i][0] == ']')
-                {
-                    // Debug.Log("Reconoce la ]");
-                    i++;
-                    AnalyzeText();
-                    manager.DisplayNextSentence();
-                    break;
-                }
-                if(lines[i][0] == choice)
-                {
-                    if (lines[i][1] == '@')
-                    {
-                        manager.names.Enqueue(lines[i].Remove(0, 1));
-                    }
-                    if (lines[i][1] == '#')
-                    {
-                        if (lines[i].Remove(0, 2) == "")
-                            manager.names.Enqueue(" ");
-                        else
-                            manager.names.Enqueue(lines[i].Remove(0, 2));
-
-                        //manager.names.Enqueue(lines[i].Remove(0, 2));
-                    }
-                    if (lines[i][1] == ':')
-                    {
-                        manager.dialogues.Enqueue(lines[i].Remove(0, 2));
-                    }
-                    // if (lines[i][1] == '$')
-                    // { ANIMATION
-                    //     manager.dialogues.Enqueue(lines[i].Remove(0, 2));
-                    // }
-
-                }
-            }
-            i++;
-        }
-
-        //for(ind=1; ind < nOfChoices; nOfChoices;)
-
-    }
-    */
-
-    // public void StopChoice()
-    // {
-    // }
-
-
-
-
 
 
 

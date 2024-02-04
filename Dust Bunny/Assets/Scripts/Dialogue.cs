@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,8 +11,9 @@ namespace Bunny.Dialogues
         string _name;
         string _text;
         bool _bubble;
+        bool _lastDialogue;
 
-        public Dialogue(string theName, string theText, bool isBubble = false)
+        public Dialogue(string theName, string theText, bool isBubble = false, bool isLastDialogue = false)
         {
             // Leave it empty if there is no given name
             if (theName != "")
@@ -24,6 +26,7 @@ namespace Bunny.Dialogues
             }
             _text = theText;
             _bubble = isBubble;
+            _lastDialogue = isLastDialogue;
         }
         public string getName()
         {
@@ -37,6 +40,11 @@ namespace Bunny.Dialogues
         public bool isBubble()
         {
             return _bubble;
+        }
+
+        internal bool IsLastDialogue()
+        {
+            return _lastDialogue;
         }
     }
 }
