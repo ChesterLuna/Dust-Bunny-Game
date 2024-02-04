@@ -74,7 +74,7 @@ Transform:
   m_GameObject: {fileID: 2705880581571827293}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.5, y: -3.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -207,15 +207,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc288ac93f8d39c48b60fd37bd1acd18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCamera: {fileID: 0}
-  moveSpeed: 500
-  moveSmoothing: 0.05
-  jumpForce: 22
-  dashForce: 22
-  dashTime: 0.1
-  bunnySize: 1
-  bunnySizeScalar: 1.5
-  scaleSpeed: 1.6
+  _mainCamera: {fileID: 0}
+  _moveSpeed: 500
+  _moveSmoothing: 0.05
+  _jumpForce: 22
+  _dashForce: 22
+  _dashTime: 0.1
+  _bunnySize: 1
+  _bunnySizeScalar: 1.5
+  _scaleSpeed: 1.6
+  _environmentLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &8748479208949567853
 GameObject:
   m_ObjectHideFlags: 0

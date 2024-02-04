@@ -6,17 +6,20 @@ using UnityEngine;
 
 public class Switch : MonoBehaviour, IInteractable
 {
-    [SerializeField] Switchable[] targets;
-    [SerializeField] bool isOn = false;
-    [SerializeField] Sprite onSprite;
-    [SerializeField] Sprite offSprite;
-    SpriteRenderer spriteRenderer;
+    [SerializeField] Switchable[] _targets;
+    [SerializeField] bool _isOn = false;
+    [SerializeField] Sprite _onSprite;
+    [SerializeField] Sprite _offSprite;
+    SpriteRenderer _spriteRenderer;
 
     // Start is called before the first frame update
+    void Awake()
+    {
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+    }
     void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        if (isOn)
+        if (_isOn)
         {
             turnOn();
         }
@@ -28,28 +31,28 @@ public class Switch : MonoBehaviour, IInteractable
 
     void turnOn()
     {
-        isOn = true;
-        foreach (Switchable target in targets)
+        _isOn = true;
+        foreach (Switchable target in _targets)
         {
-            target.enable();
+            target.Enable();
         }
-        spriteRenderer.sprite = onSprite;
+        _spriteRenderer.sprite = _onSprite;
     }
 
     void turnOff()
     {
-        isOn = false;
-        foreach (Switchable target in targets)
+        _isOn = false;
+        foreach (Switchable target in _targets)
         {
-            target.disable();
+            target.Disable();
         }
-        spriteRenderer.sprite = offSprite;
+        _spriteRenderer.sprite = _offSprite;
     }
 
     public void Interact()
     {
-        isOn = !isOn;
-        if (isOn)
+        _isOn = !_isOn;
+        if (_isOn)
         {
             turnOn();
         }
