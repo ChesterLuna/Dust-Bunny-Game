@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
 
     // Abilities variables
     [SerializeField] float _jumpForce = 22f;
+    [SerializeField] float _coyoteTime = 0.1f;
     [SerializeField] float _dashForce = 22f;
     [SerializeField] float _dashTime = 1f;
 
@@ -42,6 +43,7 @@ public class PlayerController : MonoBehaviour
     bool _doJump = false;
     bool _growing = false;
     bool _grounded = false;
+    bool _isCoyoteTime = false;
 
     // Platform variables
     private Transform _originalParent;
@@ -85,17 +87,18 @@ public class PlayerController : MonoBehaviour
         checkGrounded();
         Move();
         //     _thisRigidbody.velocity = Vector2.SmoothDamp(_thisRigidbody.velocity, targetVelocity, ref _zeroVelocity, _moveSmoothing);
-        if (_doJump && _canJump)
+        if (_doJump && _canJump && _grounded)
         {
-            _doJump = false;
+            //_doJump = false;
             Jump();
         }
         if (_doDash && _canDash)
         {
-            _doDash = false;
+            //_doDash = false;
             StartCoroutine(Dash());
         }
-
+        _doJump = false;
+        _doDash = false;
     }
 
     private void gatherInput()
@@ -118,12 +121,14 @@ public class PlayerController : MonoBehaviour
 
     private void checkGrounded()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1f, _environmentLayer);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f, _environmentLayer);
         Debug.DrawRay(transform.position, Vector2.down, Color.red); // Draw the raycast
 
         if (hit.collider != null)
         {
             _grounded = true;
+            SetCanJump(true);
+            SetCanDash(true);
 
             _currentDropDownPlatform = hit.collider.GetComponentInChildren<DropDownPlatform>();
 
@@ -147,7 +152,11 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            _grounded = false;
+            //Starts a timer for Coyote time, and the sets grounded to false once finished
+            if(!_isCoyoteTime && _grounded)
+            {
+                StartCoroutine(startCoyoteTime());
+            }
             _currentDropDownPlatform = null;
             if (_oldMovingPlatform != null)
             {
@@ -187,9 +196,19 @@ public class PlayerController : MonoBehaviour
             _jumpForceVector = new Vector2(0f, _jumpForce);
             _thisRigidbody.AddForce(_jumpForceVector, ForceMode2D.Impulse);
         }
+        SetCanJump(false);
         _sfx.PlaySFX(PlayerSFXController.SFX.Jump);
     }
 
+    // Starts a timer for _coyoteTime seconds, once finished it will set grounded to false
+    IEnumerator startCoyoteTime()
+    {
+        _isCoyoteTime = true;
+        _grounded = true;
+        yield return new WaitForSeconds(_coyoteTime);
+        _isCoyoteTime = false;
+        _grounded =false;
+    }
 
 
     // Dashes for "_dashTime" seconds constantly. Uses AddForce.
@@ -207,6 +226,7 @@ public class PlayerController : MonoBehaviour
         _thisRigidbody.AddForce(new Vector2(_dashDirection.x * _dashForce, _dashDirection.y * _dashForce), ForceMode2D.Impulse);
         yield return new WaitForSeconds(_dashTime);
         _thisRigidbody.gravityScale = gravity;
+        SetCanDash(false);
 
         _isDashing = false;
     }
