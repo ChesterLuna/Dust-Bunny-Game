@@ -9,19 +9,28 @@ using UnityEngine.UIElements;
 public class PlayerController : MonoBehaviour
 {
     // Camera
+    [Header("Camera")]
     [SerializeField] Camera _mainCamera;
 
     // Movement variables
+    [Header("Movement")]
     [SerializeField] float _moveSpeed = 500f;
     [SerializeField] float _moveSmoothing = 0.05f;
+    [SerializeField] float _accelerationForce = 1f;
+    [SerializeField] float _deaccelerationForce = 1f;
+    [SerializeField] float _groundFriction = 10f;
+    [SerializeField] float _airFriction = 1f;
+
 
     // Abilities variables
+    [Header("Abilities")]
     [SerializeField] float _jumpForce = 22f;
     [SerializeField] float _coyoteTime = 0.1f;
     [SerializeField] float _dashForce = 22f;
     [SerializeField] float _dashTime = 1f;
 
     // Size Changing variables
+    [Header("Size Changing")]
     [SerializeField] int _bunnySize = 1;
     [SerializeField] float _bunnySizeScalar = 1.5f;
     [SerializeField] float _scaleSpeed = 1.6f;
@@ -29,6 +38,7 @@ public class PlayerController : MonoBehaviour
     Vector3 _originalSize = new Vector3(1f, 1f, 1f);
 
     // Dust Changing variables
+    [Header("Dust Values")]
     [SerializeField] float _dust = 100f;
     [SerializeField] float _maxDust = 100f;
 
@@ -52,6 +62,7 @@ public class PlayerController : MonoBehaviour
     private Transform _oldMovingPlatform = null;
 
     // Physics
+    [Header("Physics")]
     Rigidbody2D _thisRigidbody;
     Collider2D _thisCollider;
     [SerializeField] LayerMask _environmentLayer;
@@ -80,6 +91,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         gatherInput();
+        updateFriction();
+
     }
 
     void FixedUpdate()
@@ -100,6 +113,7 @@ public class PlayerController : MonoBehaviour
         _doJump = false;
         _doDash = false;
     }
+
 
     private void gatherInput()
     {
@@ -168,21 +182,49 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        float horizontalMovement = _horizontalInput * _moveSpeed;
-        Vector2 targetVelocity = new Vector2(horizontalMovement * Time.fixedDeltaTime, _thisRigidbody.velocity.y);
-        // damp movement, smooth damp
-        if (_isDashing)
+        float _targetSpeed = _horizontalInput * _moveSpeed;
+        float _speedToTargetSpeed = _targetSpeed - _thisRigidbody.velocity.x;
+        float _accelerationRate;
+        
+        if(MathF.Abs(_targetSpeed) > 0.01f)
         {
-            //_thisRigidbody.velocity = Vector2.SmoothDamp(_thisRigidbody.velocity, new Vector2(_thisRigidbody.velocity.x + horizontalMovement, _thisRigidbody.velocity.y), ref _zeroVelocity, _moveSmoothing);
-            Vector2 newTargetVelocity = new Vector2(_thisRigidbody.velocity.x + horizontalMovement * Time.fixedDeltaTime, _thisRigidbody.velocity.y);
-            _thisRigidbody.velocity = Vector2.SmoothDamp(_thisRigidbody.velocity, newTargetVelocity, ref _zeroVelocity, _moveSmoothing);
+            _accelerationRate = _accelerationForce;
         }
         else
         {
-            _thisRigidbody.velocity = Vector2.SmoothDamp(_thisRigidbody.velocity, targetVelocity, ref _zeroVelocity, _moveSmoothing);
-            //_thisRigidbody.velocity = targetVelocity;
+            _accelerationRate = _deaccelerationForce ;
+        }
+
+        float _horizontalMovement = Mathf.Abs(_speedToTargetSpeed) * _accelerationRate;
+
+        Vector2 _newMovement = new Vector2(MathF.Sign(_speedToTargetSpeed) * Mathf.Pow(_horizontalMovement, 0.9f), 0);// * Time.fixedDeltaTime, 0);
+        _thisRigidbody.AddForce(_newMovement, ForceMode2D.Force);
+
+    }
+
+
+    void updateFriction()
+    {
+        float _friction;
+
+        if (_grounded)
+        {
+            _friction = _groundFriction;
+        }
+        else
+        {
+            _friction = _airFriction;
+        }
+
+        if (Mathf.Abs(_horizontalInput) == 0f)
+        {
+            Vector2 _addFrictionVector = Mathf.Sign(_thisRigidbody.velocity.x) * new Vector2(_friction * Time.deltaTime, 0);
+
+            _thisRigidbody.AddForce(_addFrictionVector, ForceMode2D.Impulse);
+
         }
     }
+
 
     void Jump()
     {
@@ -192,7 +234,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            _thisRigidbody.velocity = new Vector2(_thisRigidbody.velocity.x, 0f);
+            //_thisRigidbody.velocity = new Vector2(_thisRigidbody.velocity.x, 0f);
             _jumpForceVector = new Vector2(0f, _jumpForce);
             _thisRigidbody.AddForce(_jumpForceVector, ForceMode2D.Impulse);
         }
