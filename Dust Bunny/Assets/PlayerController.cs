@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
 
     // Size Changing variables
     [Header("Size Changing")]
-    [SerializeField] int _bunnySize = 1;
+    [Range(0, 5)] [SerializeField] int _bunnySize = 1;
     [SerializeField] float _bunnySizeScalar = 1.5f;
     [SerializeField] float _scaleSpeed = 1.6f;
     float _epsilon = 0.01f;
@@ -44,6 +44,7 @@ public class PlayerController : MonoBehaviour
     [Header("Dust Values")]
     [SerializeField] float _dust = 100f;
     [SerializeField] float _maxDust = 100f;
+    [SerializeField] float[] _dustLevels;
 
     Vector2 _zeroVelocity = Vector3.zero;
     Vector3 _zeroVector3 = Vector3.zero;
@@ -82,7 +83,6 @@ public class PlayerController : MonoBehaviour
     // SFX
     PlayerSFXController _sfx;
 
-
     private void Awake()
     {
         _thisRigidbody = GetComponent<Rigidbody2D>();
@@ -97,6 +97,7 @@ public class PlayerController : MonoBehaviour
     {
         gatherInput();
         //updateFriction(); //TODO: Ensure it doesnt flipflop
+        updateDustSize();
         updateTimers();
     }
 
@@ -152,7 +153,7 @@ public class PlayerController : MonoBehaviour
 
     private void checkGrounded()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f, _environmentLayer);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f * transform.localScale.y, _environmentLayer);
         Debug.DrawRay(transform.position, Vector2.down, Color.red); // Draw the raycast
 
         if (hit.collider != null)
@@ -296,6 +297,21 @@ public class PlayerController : MonoBehaviour
         SetCanDash(false);
         _isDashing = false;
 
+    }
+
+    //// DUST FUNCTIONS
+
+    void updateDustSize()
+    {
+        int _newDustSize = _bunnySize;
+        for (int i = 0; i < _dustLevels.Length; i++)
+        {
+            if (_dust >= _dustLevels[i])
+            {
+                _newDustSize = i + 1;
+            }
+        }
+        ChangeSize(_newDustSize - 1);
     }
 
     public void ChangeSize(int newSize)
