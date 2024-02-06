@@ -27,7 +27,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _jumpForce = 22f;
     [SerializeField] float _coyoteTime = 0.1f;
     [SerializeField] float _dashForce = 22f;
-    [SerializeField] float _dashTime = 1f;
+    [SerializeField] float _dashTime = 0.2f;
+    [SerializeField] float _dashCooldown = 0.1f;
+    float _lastTimeGrounded = 0f;
+    float _lastTimeDashed = 0f;
 
     // Size Changing variables
     [Header("Size Changing")]
@@ -64,6 +67,7 @@ public class PlayerController : MonoBehaviour
     // Physics
     [Header("Physics")]
     Rigidbody2D _thisRigidbody;
+    float _standardGravity;
     Collider2D _thisCollider;
     [SerializeField] LayerMask _environmentLayer;
 
@@ -82,6 +86,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         _thisRigidbody = GetComponent<Rigidbody2D>();
+        _standardGravity = _thisRigidbody.gravityScale;
         _thisCollider = GetComponent<Collider2D>();
         _mainCamera = FindObjectOfType<Camera>();
         _originalSize = transform.localScale;
@@ -91,21 +96,33 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         gatherInput();
-        updateFriction();
+        //updateFriction(); //TODO: Ensure it doesnt flipflop
+        updateTimers();
+    }
 
+    void updateTimers()
+    {
+        _lastTimeGrounded += Time.deltaTime;
+
+        if(!_isDashing)
+            _lastTimeDashed += Time.deltaTime;
     }
 
     void FixedUpdate()
     {
         checkGrounded();
-        Move();
+        if(!_isDashing)
+        {
+            Move();
+        }
+
         //     _thisRigidbody.velocity = Vector2.SmoothDamp(_thisRigidbody.velocity, targetVelocity, ref _zeroVelocity, _moveSmoothing);
         if (_doJump && _canJump && _grounded)
         {
             //_doJump = false;
             Jump();
         }
-        if (_doDash && _canDash)
+        if (_doDash && _canDash && _lastTimeDashed > _dashCooldown)
         {
             //_doDash = false;
             StartCoroutine(Dash());
@@ -141,6 +158,7 @@ public class PlayerController : MonoBehaviour
         if (hit.collider != null)
         {
             _grounded = true;
+            _lastTimeGrounded = 0f;
             SetCanJump(true);
             SetCanDash(true);
 
@@ -166,11 +184,12 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            //Starts a timer for Coyote time, and the sets grounded to false once finished
-            if(!_isCoyoteTime && _grounded)
+            //Only is not grounded if coyote time has passed
+            if (_lastTimeGrounded > _coyoteTime)
             {
-                StartCoroutine(startCoyoteTime());
+                _grounded = false;
             }
+
             _currentDropDownPlatform = null;
             if (_oldMovingPlatform != null)
             {
@@ -235,6 +254,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             //_thisRigidbody.velocity = new Vector2(_thisRigidbody.velocity.x, 0f);
+            _thisRigidbody.velocity = Vector2.right * _thisRigidbody.velocity;
             _jumpForceVector = new Vector2(0f, _jumpForce);
             _thisRigidbody.AddForce(_jumpForceVector, ForceMode2D.Impulse);
         }
@@ -257,20 +277,25 @@ public class PlayerController : MonoBehaviour
     IEnumerator Dash()
     {
         _isDashing = true;
+        _lastTimeDashed = 0f;
 
-        Vector2 mousePos = Input.mousePosition;//_mainCamera.ScreenToWorldPoint(Input.mousePosition);
+
+        Vector2 mousePos = Input.mousePosition;
         Vector2 playerPos = Camera.main.WorldToScreenPoint(transform.position);
         _dashDirection = (mousePos - playerPos).normalized;
 
-        float gravity = _thisRigidbody.gravityScale;
         _thisRigidbody.gravityScale = 0f;
+        _thisRigidbody.velocity = Vector2.zero;
 
-        _thisRigidbody.AddForce(new Vector2(_dashDirection.x * _dashForce, _dashDirection.y * _dashForce), ForceMode2D.Impulse);
+        _thisRigidbody.velocity = new Vector2(_dashDirection.x * _dashForce, _dashDirection.y * _dashForce);
         yield return new WaitForSeconds(_dashTime);
-        _thisRigidbody.gravityScale = gravity;
+        _thisRigidbody.gravityScale = _standardGravity;
+        _thisRigidbody.velocity = Vector2.zero;
+        
+        _lastTimeDashed = 0f;
         SetCanDash(false);
-
         _isDashing = false;
+
     }
 
     public void ChangeSize(int newSize)
