@@ -224,6 +224,12 @@ MonoBehaviour:
   _scaleSpeed: 1.6
   _dust: 100
   _maxDust: 100
+  _dustLevels:
+  - 0
+  - 20
+  - 40
+  - 60
+  - 80
   _environmentLayer:
     serializedVersion: 2
     m_Bits: 64
