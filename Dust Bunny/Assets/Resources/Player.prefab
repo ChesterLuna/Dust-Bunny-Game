@@ -208,17 +208,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mainCamera: {fileID: 0}
-  _moveSpeed: 500
+  _moveSpeed: 10
   _moveSmoothing: 0.05
-  _jumpForce: 22
+  _accelerationForce: 15
+  _deaccelerationForce: 15
+  _groundFriction: 10
+  _airFriction: 1
+  _jumpForce: 15
+  _coyoteTime: 0.2
   _dashForce: 22
-  _dashTime: 0.1
+  _dashTime: 0.2
+  _dashCooldown: 0.1
   _bunnySize: 1
   _bunnySizeScalar: 1.5
   _scaleSpeed: 1.6
+  _dust: 100
+  _maxDust: 100
   _environmentLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!1 &8748479208949567853
 GameObject:
   m_ObjectHideFlags: 0
