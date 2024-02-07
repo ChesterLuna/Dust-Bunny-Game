@@ -13,17 +13,21 @@ public class TextCrawler : MonoBehaviour
     public bool autoStart = false; //makes text automatically scroll when box is initalized
 
     public bool paused = false;
+    public TextMeshPro textController;
+
+    public GameObject voicePrefab;
 
     private float elapsedLetters;
     private string currentText;
     private int lineIndex = -1;
-    public TextMeshPro textController;
+    
     private List<float> sizes;
     private int letterIndex;
     private bool started;
-    public string sfx;
     private bool initalized = false;
     private bool enabled = true;
+    private AudioSource[] speechSources;
+    private SpeechVoice voice;
 
     // Start is called before the first frame update
     void Start(){
@@ -41,6 +45,10 @@ public class TextCrawler : MonoBehaviour
             if (textController == null){
                 textController = GetComponentInChildren<TextMeshPro>();
                 Debug.Log("Text mesh was not assigned to a text crawler. Using text mesh from parent.");
+            }
+            speechSources = GetComponents<AudioSource>();
+            if (voicePrefab != null){
+                voice = voicePrefab.GetComponent<SpeechVoice>();
             }
 
             if (text == null) {
@@ -130,10 +138,25 @@ public class TextCrawler : MonoBehaviour
     }
 
     private void AddLetter(){
-        currentText += text[lineIndex][letterIndex];
+        char nextLetter = text[lineIndex][letterIndex];
+        currentText += nextLetter;
         sizes.Add(1.0f);
         letterIndex++;
-        //if (sfx != null) NoiseMachine.Play(sfx, transform.position, 1.0f, sfxSettings);
+        
+        //Find available audio source
+        AudioSource openSource = null;
+        for(int i = 0; i < speechSources.Length; i++){
+            if(!speechSources[i].isPlaying){
+                openSource = speechSources[i];
+                break;
+            }
+        }
+    
+        // Play speech sfx
+        if (openSource != null && voice != null){
+            openSource.clip = voice.GetLetterClip(nextLetter);
+            openSource.Play();
+        }
     }
 
     private string GetFormattedString(){
