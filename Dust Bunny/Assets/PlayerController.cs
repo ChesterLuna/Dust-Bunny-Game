@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _scaleSpeed = 1.6f;
     [SerializeField] float _moveSpeedAddition = 1f;
     [SerializeField] float _jumpForceAddition = 2f;
-    [SerializeField] float _DashForceAddition = 2f;
+    [SerializeField] float _dashForceAddition = 2f;
 
     float _epsilon = 0.01f;
     Vector3 _originalSize = new Vector3(1f, 1f, 1f);
@@ -338,7 +338,7 @@ public class PlayerController : MonoBehaviour
 
         SetMoveSpeed(_originalMoveSpeed - _moveSpeedAddition * (newSize - 1));
         SetJumpForce(_originalJumpForce + _jumpForceAddition * (newSize - 1));
-        SetDashForce(_originalDashForce + _moveSpeedAddition * (newSize - 1));
+        SetDashForce(_originalDashForce + _dashForceAddition * (newSize - 1));
 
         StartCoroutine(GrowDamp(targetScale));
     }
