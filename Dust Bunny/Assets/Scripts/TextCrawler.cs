@@ -81,13 +81,19 @@ public class TextCrawler : MonoBehaviour
                 elapsedLetters -= speed;
             }
             UpdateSizes();
-            if (IsStarted() && !IsFinishedLine()) textController.text = GetFormattedString();
+            if (IsStarted() && !IsFinishedLineAndSizes()){
+                textController.text = GetFormattedString();
+            }
         }
     }
 
     public bool IsFinishedLine(){
         if (lineIndex >= text.Count) return true;
         return lineIndex >= 0 && letterIndex >= text[lineIndex].Length;
+    }
+
+    public bool IsFinishedLineAndSizes(){
+        return IsFinishedLine() && !textController.text.Contains("<size=");
     }
 
     public bool IsFinished(){
