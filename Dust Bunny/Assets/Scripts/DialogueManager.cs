@@ -68,7 +68,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
             _textBubble = Instantiate(textBubble, this.transform);
 
             charNameText = _textBubble.transform.Find("Character Name").GetComponent<TextMeshPro>();
-            dialogueText = _textBubble.GetComponent<TextCrawler>();
+            dialogueText = _textBubble.GetComponent<TextCrawler>().Initalize();
         }
 
         DisplayNextSentence();

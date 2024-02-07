@@ -62,6 +62,7 @@ public class TextCrawler : MonoBehaviour
             started = false;
 
             if (autoStart) Advance();
+            else textController.text = "";
 
             initalized = true;
         }
@@ -80,7 +81,7 @@ public class TextCrawler : MonoBehaviour
                 elapsedLetters -= speed;
             }
             UpdateSizes();
-            if (IsStarted()) textController.text = GetFormattedString();
+            if (IsStarted() && !IsFinishedLine()) textController.text = GetFormattedString();
         }
     }
 
