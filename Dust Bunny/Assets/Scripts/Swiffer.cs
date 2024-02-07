@@ -28,17 +28,22 @@ public class Swiffer : MonoBehaviour
         if (player == _player)
         {
             CancelInvoke("tryRemoveDust");
+            _player = null;
         }
     }
 
     void tryRemoveDust()
     {
+        if (_player == null)
+        {
+            return;
+        }
         _amountOfDust += _dustTickAmount;
         if (_amountOfDust > _maxDustToTake && _maxDustToTake != -1)
         {
             Destroy(gameObject);
         }
-        _player.RemoveDust(_dustTickAmount);
+        _player?.RemoveDust(_dustTickAmount);
 
     }
 
