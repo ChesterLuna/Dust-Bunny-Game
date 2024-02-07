@@ -136,6 +136,7 @@ MonoBehaviour:
   popinSpeed: 800
   autoStart: 0
   paused: 0
+  textController: {fileID: 1430457519447729976}
   sfx: 
 --- !u!1 &8827839926121870624
 GameObject:

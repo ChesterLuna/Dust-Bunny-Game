@@ -17,13 +17,14 @@ public class TextCrawler : MonoBehaviour
     private float elapsedLetters;
     private string currentText;
     private int lineIndex = -1;
-    private TextMeshPro textController;
+    public TextMeshPro textController;
     private List<float> sizes;
     private int letterIndex;
     private bool started;
     public string sfx;
     private bool initalized = false;
     private bool enabled = true;
+
     // Start is called before the first frame update
     void Start(){
         Initalize();
@@ -32,7 +33,16 @@ public class TextCrawler : MonoBehaviour
     public TextCrawler Initalize()
     {
         if (!initalized){
-            textController = GameObject.Find("Bubble Text").GetComponent<TextMeshPro>();
+            //If unassigned, try to find text controller on this object first. If it fails, try to find it on any child.
+            if (textController == null){
+                textController = GetComponent<TextMeshPro>();
+                Debug.Log("Text mesh was not assigned to a text crawler. Using text mesh from parent.");
+            }
+            if (textController == null){
+                textController = GetComponentInChildren<TextMeshPro>();
+                Debug.Log("Text mesh was not assigned to a text crawler. Using text mesh from parent.");
+            }
+
             if (text == null) {
                 text = new List<string>();
                 text.Add(textController.text);
