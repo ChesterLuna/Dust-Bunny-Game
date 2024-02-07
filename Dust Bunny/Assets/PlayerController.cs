@@ -37,8 +37,15 @@ public class PlayerController : MonoBehaviour
     [Range(0, 5)] [SerializeField] int _bunnySize = 1;
     [SerializeField] float _bunnySizeScalar = 1.5f;
     [SerializeField] float _scaleSpeed = 1.6f;
+    [SerializeField] float _moveSpeedAddition = 1f;
+    [SerializeField] float _jumpForceAddition = 2f;
+    [SerializeField] float _DashForceAddition = 2f;
+
     float _epsilon = 0.01f;
     Vector3 _originalSize = new Vector3(1f, 1f, 1f);
+    float _originalMoveSpeed = 10f;
+    float _originalJumpForce = 22f;
+    float _originalDashForce = 12f;
 
     // Dust Changing variables
     [Header("Dust Values")]
@@ -58,6 +65,7 @@ public class PlayerController : MonoBehaviour
     bool _growing = false;
     bool _grounded = false;
     bool _isCoyoteTime = false;
+    bool Dead = false;
 
     // Platform variables
     private Transform _originalParent;
@@ -90,6 +98,10 @@ public class PlayerController : MonoBehaviour
         _thisCollider = GetComponent<Collider2D>();
         _mainCamera = FindObjectOfType<Camera>();
         _originalSize = transform.localScale;
+        _originalMoveSpeed = _moveSpeed;
+        _originalJumpForce = _jumpForce;
+        _originalDashForce = _dashForce;
+
         _sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
     }
 
@@ -308,18 +320,25 @@ public class PlayerController : MonoBehaviour
         {
             if (_dust >= _dustLevels[i])
             {
-                _newDustSize = i + 1;
+                _newDustSize = i;
             }
         }
-        ChangeSize(_newDustSize - 1);
+        if(_newDustSize != _bunnySize)
+        {
+            ChangeSize(_newDustSize);
+        }
     }
 
     public void ChangeSize(int newSize)
     {
-        if (_growing == true)
+        if (_growing == true || Dead)
             return;
         Vector3 targetScale = _originalSize * Mathf.Pow(_bunnySizeScalar, newSize - 1);
         _bunnySize = newSize;
+
+        SetMoveSpeed(_originalMoveSpeed - _moveSpeedAddition * (newSize - 1));
+        SetJumpForce(_originalJumpForce + _jumpForceAddition * (newSize - 1));
+        SetDashForce(_originalDashForce + _moveSpeedAddition * (newSize - 1));
 
         StartCoroutine(GrowDamp(targetScale));
     }
@@ -356,6 +375,19 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D GetRigidbody2D()
     {
         return _thisRigidbody;
+    }
+
+    public void SetMoveSpeed(float _newMoveSpeed)
+    {
+        _moveSpeed = _newMoveSpeed;
+    }
+    public void SetJumpForce(float _newJumpForce)
+    {
+        _jumpForce = _newJumpForce;
+    }
+    public void SetDashForce(float _newDashForce)
+    {
+        _dashForce = _newDashForce;
     }
 
     public int GetSize()
@@ -409,15 +441,18 @@ public class PlayerController : MonoBehaviour
     }
     public void RemoveDust(float scalar)
     {
-        _dust -= scalar;
-        if (_dust < 0)
+        if (_dust - scalar < 0 && !Dead)
         {
             Die();
+            return;
         }
+        _dust -= scalar;
+
     }
 
     public void Die()
     {
+        Dead = true; 
         Debug.Log("You died");
     }
 
