@@ -222,7 +222,10 @@ MonoBehaviour:
   _bunnySize: 1
   _bunnySizeScalar: 1.5
   _scaleSpeed: 1.6
-  _dust: 100
+  _moveSpeedAddition: 1
+  _jumpForceAddition: 2
+  _DashForceAddition: 2
+  _dust: 20
   _maxDust: 100
   _dustLevels:
   - 0
