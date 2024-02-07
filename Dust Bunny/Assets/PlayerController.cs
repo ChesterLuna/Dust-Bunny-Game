@@ -59,10 +59,10 @@ public class PlayerController : MonoBehaviour
     bool _isCoyoteTime = false;
 
     // Platform variables
-    private Transform _originalParent;
+    // private Transform _originalParent;
 
     private DropDownPlatform _currentDropDownPlatform = null;
-    private Transform _oldMovingPlatform = null;
+    private RigidBodyRideable _oldRidable = null;
 
     // Physics
     [Header("Physics")]
@@ -104,14 +104,14 @@ public class PlayerController : MonoBehaviour
     {
         _lastTimeGrounded += Time.deltaTime;
 
-        if(!_isDashing)
+        if (!_isDashing)
             _lastTimeDashed += Time.deltaTime;
     }
 
     void FixedUpdate()
     {
         checkGrounded();
-        if(!_isDashing)
+        if (!_isDashing)
         {
             Move();
         }
@@ -152,51 +152,29 @@ public class PlayerController : MonoBehaviour
 
     private void checkGrounded()
     {
+        // Raycast to check if the player is grounded
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f, _environmentLayer);
         Debug.DrawRay(transform.position, Vector2.down, Color.red); // Draw the raycast
 
-        if (hit.collider != null)
+        // Handle Grounded Calculations
+        _grounded = hit.collider != null || _lastTimeGrounded < _coyoteTime;
+        if (_grounded)
         {
-            _grounded = true;
             _lastTimeGrounded = 0f;
             SetCanJump(true);
             SetCanDash(true);
-
-            _currentDropDownPlatform = hit.collider.GetComponentInChildren<DropDownPlatform>();
-
-            Transform currentMovingPlatform = hit.collider.GetComponentInParent<MovingPlatform>()?.transform;
-            if (currentMovingPlatform != null)
-            {
-                if (currentMovingPlatform != _oldMovingPlatform)
-                {
-                    if (_oldMovingPlatform != null)
-                    {
-                        resetParent();
-                    }
-                    setParent(currentMovingPlatform);
-                }
-            }
-            else
-            {
-                resetParent();
-            }
-            _oldMovingPlatform = currentMovingPlatform;
         }
-        else
+
+        _currentDropDownPlatform = hit.collider?.GetComponentInChildren<DropDownPlatform>();
+
+        // Handle Ridable Calculations
+        RigidBodyRideable currentRidable = hit.collider?.GetComponentInParent<RigidBodyRideable>();
+        if (currentRidable != _oldRidable)
         {
-            //Only is not grounded if coyote time has passed
-            if (_lastTimeGrounded > _coyoteTime)
-            {
-                _grounded = false;
-            }
-
-            _currentDropDownPlatform = null;
-            if (_oldMovingPlatform != null)
-            {
-                resetParent();
-                _oldMovingPlatform = null;
-            }
+            _oldRidable?.RemoveRider(this);
+            currentRidable?.SetRider(this);
         }
+        _oldRidable = currentRidable;
     }
 
     void Move()
@@ -204,21 +182,20 @@ public class PlayerController : MonoBehaviour
         float _targetSpeed = _horizontalInput * _moveSpeed;
         float _speedToTargetSpeed = _targetSpeed - _thisRigidbody.velocity.x;
         float _accelerationRate;
-        
-        if(MathF.Abs(_targetSpeed) > 0.01f)
+
+        if (MathF.Abs(_targetSpeed) > 0.01f)
         {
             _accelerationRate = _accelerationForce;
         }
         else
         {
-            _accelerationRate = _deaccelerationForce ;
+            _accelerationRate = _deaccelerationForce;
         }
 
         float _horizontalMovement = Mathf.Abs(_speedToTargetSpeed) * _accelerationRate;
 
         Vector2 _newMovement = new Vector2(MathF.Sign(_speedToTargetSpeed) * Mathf.Pow(_horizontalMovement, 0.9f), 0);// * Time.fixedDeltaTime, 0);
         _thisRigidbody.AddForce(_newMovement, ForceMode2D.Force);
-
     }
 
 
@@ -269,7 +246,7 @@ public class PlayerController : MonoBehaviour
         _grounded = true;
         yield return new WaitForSeconds(_coyoteTime);
         _isCoyoteTime = false;
-        _grounded =false;
+        _grounded = false;
     }
 
 
@@ -291,7 +268,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(_dashTime);
         _thisRigidbody.gravityScale = _standardGravity;
         _thisRigidbody.velocity = Vector2.zero;
-        
+
         _lastTimeDashed = 0f;
         SetCanDash(false);
         _isDashing = false;
@@ -355,17 +332,6 @@ public class PlayerController : MonoBehaviour
     public void SetCanDash(bool value)
     {
         _canDash = value;
-    }
-
-    void setParent(Transform newParent)
-    {
-        _originalParent = transform.parent;
-        transform.parent = newParent;
-    }
-
-    void resetParent()
-    {
-        transform.parent = _originalParent;
     }
 
     public void SetDust(float dust)

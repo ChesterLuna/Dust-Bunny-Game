@@ -1,6 +1,8 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class MovingPlatform : Switchable
+public class MovingPlatform : RigidBodyRideable, ISwitchable
 {
     [Header("Waypoints")]
     [SerializeField] private Transform[] _waypoints;
@@ -12,21 +14,14 @@ public class MovingPlatform : Switchable
     [SerializeField] private bool _ascending = true;
     [SerializeField] private bool _moving = true;
 
-    private Rigidbody2D _rb;
-
-    void Awake()
-    {
-        _rb = GetComponent<Rigidbody2D>();
-        _rb.isKinematic = true;
-    }
-
     private void FixedUpdate()
     {
         if (!_moving) return;
 
         var target = _waypoints[_index].position;
         Vector3 direction = (target - transform.position).normalized;
-        _rb.MovePosition(transform.position + direction * _speed * Time.deltaTime);
+        move_with_riders(direction * _speed);
+        // _rb.MovePosition(transform.position + direction * _speed * Time.deltaTime);
         if (Vector2.Distance(_rb.position, target) <= _tolerance)
         {
             // /Debug.Log(this.name + ": " + _index);
@@ -55,12 +50,12 @@ public class MovingPlatform : Switchable
         }
     } // end FixedUpdate
 
-    public override void Disable()
+    public void Disable()
     {
         _moving = false;
     }
 
-    public override void Enable()
+    public void Enable()
     {
         _moving = true;
     }

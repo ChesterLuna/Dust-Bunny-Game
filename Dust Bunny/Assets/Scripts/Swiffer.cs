@@ -27,18 +27,20 @@ public class Swiffer : MonoBehaviour
         PlayerController player = other.gameObject.GetComponent<PlayerController>();
         if (player == _player)
         {
+            _player = null;
             CancelInvoke("tryRemoveDust");
         }
     }
 
     void tryRemoveDust()
     {
+        if (_player == null) return; // Safety check
         _amountOfDust += _dustTickAmount;
         if (_amountOfDust > _maxDustToTake && _maxDustToTake != -1)
         {
             Destroy(gameObject);
         }
-        _player.RemoveDust(_dustTickAmount);
+        _player?.RemoveDust(_dustTickAmount);
 
     }
 
