@@ -10,40 +10,40 @@ public class PlayerSFXController : MonoBehaviour
 
     public void PlaySFX(SFX soundEffect)
     {
-        GameObject soundObject = null;
-        float length = 0.0f;
-        float playbackPosition = 0.0f;
+        GameObject _soundObject = null;
+        float _length = 0.0f;
+        float _playbackPosition = 0.0f;
         // Junction for determining which game object this sfx represents
         switch (soundEffect)
         {
             case SFX.Jump:
-                soundObject = getChildSoundEffect("Jump");
-                PlaySoundObject(soundObject);
+                _soundObject = GetChildSoundEffect("Jump");
+                PlaySoundObject(_soundObject);
                 break;
 
             case SFX.Dust_Collect_Start:
                 //Play intro
-                soundObject = getChildSoundEffect("Dust Collect Intro");
-                PlaySoundObject(soundObject);
-                length = GetSourceFromObject(soundObject).clip.length;
+                _soundObject = GetChildSoundEffect("Dust Collect Intro");
+                PlaySoundObject(_soundObject);
+                _length = GetSourceFromObject(_soundObject).clip.length;
 
                 //Queue Loop
-                soundObject = getChildSoundEffect("Dust Collect Loop");
-                GetSourceFromObject(soundObject).loop = true;
-                QueueSoundObject(soundObject, length);
+                _soundObject = GetChildSoundEffect("Dust Collect Loop");
+                GetSourceFromObject(_soundObject).loop = true;
+                QueueSoundObject(_soundObject, _length);
                 break;
 
             case SFX.Dust_Collect_Stop:
                 //Stop Loop
-                soundObject = getChildSoundEffect("Dust Collect Loop");
-                AudioSource source = GetSourceFromObject(soundObject);
+                _soundObject = GetChildSoundEffect("Dust Collect Loop");
+                AudioSource source = GetSourceFromObject(_soundObject);
                 source.loop = false;
-                length = source.clip.length;
-                playbackPosition = source.time;
+                _length = source.clip.length;
+                _playbackPosition = source.time;
 
                 //Queue the stop sfx
-                soundObject = getChildSoundEffect("Dust Collect End");
-                QueueSoundObject(soundObject, length - playbackPosition);
+                _soundObject = GetChildSoundEffect("Dust Collect End");
+                QueueSoundObject(_soundObject, _length - _playbackPosition);
                 break;
 
             default:
@@ -52,46 +52,46 @@ public class PlayerSFXController : MonoBehaviour
         }
     }
 
-    private void PlaySoundObject(GameObject soundObject){
-        AudioSource audio = GetSourceFromObject(soundObject);
+    private void PlaySoundObject(GameObject _soundObject){
+        AudioSource _audio = GetSourceFromObject(_soundObject);
 
         //Play the requested sound effect
-        float randomPitch = Random.Range(randomPitchVariationRange.x, randomPitchVariationRange.y);
-        audio.pitch = randomPitch;
-        audio.Play();
+        float _randomPitch = Random.Range(randomPitchVariationRange.x, randomPitchVariationRange.y);
+        _audio.pitch = _randomPitch;
+        _audio.Play();
     }
 
-    private void QueueSoundObject(GameObject soundObject, float delay){
-        AudioSource audio = GetSourceFromObject(soundObject);
+    private void QueueSoundObject(GameObject _soundObject, float _delay){
+        AudioSource _audio = GetSourceFromObject(_soundObject);
 
         //Queue the requested sound effect
-        float randomPitch = Random.Range(randomPitchVariationRange.x, randomPitchVariationRange.y);
-        audio.pitch = randomPitch;
-        audio.PlayDelayed(delay - 0.1f);
+        float _randomPitch = Random.Range(randomPitchVariationRange.x, randomPitchVariationRange.y);
+        _audio.pitch = _randomPitch;
+        _audio.PlayDelayed(_delay - 0.1f);
     }
 
     //Helper to get an audio source from a game object, with safety checks
-    private AudioSource GetSourceFromObject(GameObject soundObject){
+    private AudioSource GetSourceFromObject(GameObject _soundObject){
         //Check if we were able to find the sound effect
-        if (soundObject == null)
+        if (_soundObject == null)
         {
             Debug.Log("Could not match a sound effect to it's child!");
             return null;
         }
 
         //Check if the found game object has an audio source (this should always pass if the project is set up correctly)
-        AudioSource audio = soundObject.GetComponent<AudioSource>();
-        if (audio == null)
+        AudioSource _audio = _soundObject.GetComponent<AudioSource>();
+        if (_audio == null)
         {
-            Debug.Log("Matched audio source has no audio source! Found: " + soundObject.name);
+            Debug.Log("Matched audio source has no audio source! Found: " + _soundObject.name);
         }
 
-        return audio;
+        return _audio;
     }
 
     //Helper to find a child sound effect based on some key; useful if we want to refactor out of using find all the time
-    private GameObject getChildSoundEffect(string name)
+    private GameObject GetChildSoundEffect(string _name)
     {
-        return GameObject.Find(name);
+        return GameObject.Find(_name);
     }
 }
