@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
 {
     // Camera
     [Header("Camera")]
+    private CameraFollowObject _cameraFollowObject;
+    private float _fallSpeedYDampingChangeThreshold;
     [SerializeField] Camera _mainCamera;
 
     // Movement variables
@@ -34,7 +36,7 @@ public class PlayerController : MonoBehaviour
 
     // Size Changing variables
     [Header("Size Changing")]
-    [Range(0, 5)] [SerializeField] int _bunnySize = 1;
+    [Range(0, 5)][SerializeField] int _bunnySize = 1;
     [SerializeField] float _bunnySizeScalar = 1.5f;
     [SerializeField] float _scaleSpeed = 1.6f;
     [SerializeField] float _moveSpeedAddition = 1f;
@@ -86,7 +88,7 @@ public class PlayerController : MonoBehaviour
     //Vector2 targetVelocity = Vector2.zero;
     Vector2 _dashDirection = Vector2.zero;
     Vector2 _jumpForceVector = Vector2.zero;
-
+    public bool IsFacingRight = true;
 
     // SFX
     PlayerSFXController _sfx;
@@ -97,6 +99,7 @@ public class PlayerController : MonoBehaviour
         _standardGravity = _thisRigidbody.gravityScale;
         _thisCollider = GetComponent<Collider2D>();
         _mainCamera = FindObjectOfType<Camera>();
+        _cameraFollowObject = FindObjectOfType<CameraFollowObject>();
         _originalSize = transform.localScale;
         _originalMoveSpeed = _moveSpeed;
         _originalJumpForce = _jumpForce;
@@ -105,26 +108,47 @@ public class PlayerController : MonoBehaviour
         _sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
     }
 
+    private void Start()
+    {
+        _fallSpeedYDampingChangeThreshold = CameraManager.instance._fallSpeedYDampingChangeThreshold;
+    }
+
     void Update()
     {
         gatherInput();
         //updateFriction(); //TODO: Ensure it doesnt flipflop
         updateDustSize();
         updateTimers();
+        updateCameraYDamping();
+    }
+
+    private void updateCameraYDamping()
+    {
+        // If we are falling past a certain speed threshold
+        if (_thisRigidbody.velocity.y < _fallSpeedYDampingChangeThreshold && !CameraManager.instance.IsLerpingYDamping && !CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpYDamping(true);
+        }
+        if (_thisRigidbody.velocity.y >= 0f && !CameraManager.instance.IsLerpingYDamping && CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpedFromPlayerFalling = false;
+            CameraManager.instance.LerpYDamping(false);
+        }
     }
 
     void updateTimers()
     {
         _lastTimeGrounded += Time.deltaTime;
 
-        if(!_isDashing)
+        if (!_isDashing)
             _lastTimeDashed += Time.deltaTime;
     }
 
     void FixedUpdate()
     {
+        TurnCheck();
         checkGrounded();
-        if(!_isDashing)
+        if (!_isDashing)
         {
             Move();
         }
@@ -162,6 +186,34 @@ public class PlayerController : MonoBehaviour
             sendInteract();
         }
     }
+
+    private void TurnCheck()
+    {
+        if (_horizontalInput > 0 && !IsFacingRight)
+        {
+            Turn();
+        }
+        else if (_horizontalInput < 0 && IsFacingRight)
+        {
+            Turn();
+        }
+    } // end TurnCheck
+
+    private void Turn()
+    {
+        Vector3 rotator;
+        if (IsFacingRight)
+        {
+            rotator = new Vector3(transform.rotation.x, 180f, transform.rotation.z);
+        }
+        else
+        {
+            rotator = new Vector3(transform.rotation.x, 0f, transform.rotation.z);
+        }
+        transform.rotation = Quaternion.Euler(rotator);
+        IsFacingRight = !IsFacingRight;
+        _cameraFollowObject.CallTurn();
+    } // end Turn
 
     private void checkGrounded()
     {
@@ -217,14 +269,14 @@ public class PlayerController : MonoBehaviour
         float _targetSpeed = _horizontalInput * _moveSpeed;
         float _speedToTargetSpeed = _targetSpeed - _thisRigidbody.velocity.x;
         float _accelerationRate;
-        
-        if(MathF.Abs(_targetSpeed) > 0.01f)
+
+        if (MathF.Abs(_targetSpeed) > 0.01f)
         {
             _accelerationRate = _accelerationForce;
         }
         else
         {
-            _accelerationRate = _deaccelerationForce ;
+            _accelerationRate = _deaccelerationForce;
         }
 
         float _horizontalMovement = Mathf.Abs(_speedToTargetSpeed) * _accelerationRate;
@@ -282,7 +334,7 @@ public class PlayerController : MonoBehaviour
         _grounded = true;
         yield return new WaitForSeconds(_coyoteTime);
         _isCoyoteTime = false;
-        _grounded =false;
+        _grounded = false;
     }
 
 
@@ -304,7 +356,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(_dashTime);
         _thisRigidbody.gravityScale = _standardGravity;
         _thisRigidbody.velocity = Vector2.zero;
-        
+
         _lastTimeDashed = 0f;
         SetCanDash(false);
         _isDashing = false;
@@ -323,7 +375,7 @@ public class PlayerController : MonoBehaviour
                 _newDustSize = i;
             }
         }
-        if(_newDustSize != _bunnySize)
+        if (_newDustSize != _bunnySize)
         {
             ChangeSize(_newDustSize);
         }
@@ -452,7 +504,7 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        Dead = true; 
+        Dead = true;
         Debug.Log("You died");
     }
 
