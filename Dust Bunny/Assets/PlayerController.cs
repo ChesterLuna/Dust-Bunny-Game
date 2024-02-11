@@ -5,9 +5,13 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+
+    private GameManager _gameManager;
+
     // Camera
     [Header("Camera")]
     [SerializeField] Camera _mainCamera;
@@ -82,9 +86,15 @@ public class PlayerController : MonoBehaviour
     // SFX
     PlayerSFXController _sfx;
 
+    // Death
+    [Header("Death")]
+    [SerializeField] private Animator _deathTransition;
+    [SerializeField] private float _deathTransitionTime = 1f;
+    private bool _dead = false;
 
     private void Awake()
     {
+        _gameManager = FindObjectOfType<GameManager>();
         _thisRigidbody = GetComponent<Rigidbody2D>();
         _standardGravity = _thisRigidbody.gravityScale;
         _thisCollider = GetComponent<Collider2D>();
@@ -93,8 +103,18 @@ public class PlayerController : MonoBehaviour
         _sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
     }
 
+
+    void Start()
+    {
+        if (_gameManager.CheckpointLocation != Vector3.zero)
+        {
+            transform.position = _gameManager.CheckpointLocation;
+        }
+    }
+
     void Update()
     {
+        if (_dead) return;
         gatherInput();
         //updateFriction(); //TODO: Ensure it doesnt flipflop
         updateTimers();
@@ -104,14 +124,14 @@ public class PlayerController : MonoBehaviour
     {
         _lastTimeGrounded += Time.deltaTime;
 
-        if(!_isDashing)
+        if (!_isDashing)
             _lastTimeDashed += Time.deltaTime;
     }
 
     void FixedUpdate()
     {
         checkGrounded();
-        if(!_isDashing)
+        if (!_isDashing)
         {
             Move();
         }
@@ -204,14 +224,14 @@ public class PlayerController : MonoBehaviour
         float _targetSpeed = _horizontalInput * _moveSpeed;
         float _speedToTargetSpeed = _targetSpeed - _thisRigidbody.velocity.x;
         float _accelerationRate;
-        
-        if(MathF.Abs(_targetSpeed) > 0.01f)
+
+        if (MathF.Abs(_targetSpeed) > 0.01f)
         {
             _accelerationRate = _accelerationForce;
         }
         else
         {
-            _accelerationRate = _deaccelerationForce ;
+            _accelerationRate = _deaccelerationForce;
         }
 
         float _horizontalMovement = Mathf.Abs(_speedToTargetSpeed) * _accelerationRate;
@@ -269,7 +289,7 @@ public class PlayerController : MonoBehaviour
         _grounded = true;
         yield return new WaitForSeconds(_coyoteTime);
         _isCoyoteTime = false;
-        _grounded =false;
+        _grounded = false;
     }
 
 
@@ -291,7 +311,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(_dashTime);
         _thisRigidbody.gravityScale = _standardGravity;
         _thisRigidbody.velocity = Vector2.zero;
-        
+
         _lastTimeDashed = 0f;
         SetCanDash(false);
         _isDashing = false;
@@ -402,7 +422,12 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        Debug.Log("You died");
+        _dead = true;
+        _thisCollider.enabled = false;
+        _thisRigidbody.simulated = false;
+        LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
+        levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
+
     }
 
 }
