@@ -26,7 +26,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     GameObject _textBubble;
 
     [SerializeField] TextMeshPro charNameText;
-    [SerializeField] TextMeshPro dialogueText;
+    [SerializeField] TextCrawler dialogueText;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
 
@@ -68,7 +68,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
             _textBubble = Instantiate(textBubble, this.transform);
 
             charNameText = _textBubble.transform.Find("Character Name").GetComponent<TextMeshPro>();
-            dialogueText = _textBubble.transform.Find("Bubble Text").GetComponent<TextMeshPro>();
+            dialogueText = _textBubble.GetComponent<TextCrawler>().Initalize();
         }
 
         DisplayNextSentence();
@@ -86,7 +86,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
         Dialogue nextDialogue = Dialogues.Dequeue();
 
         charNameText.text = nextDialogue.getName();
-        dialogueText.text = nextDialogue.getText();
+        dialogueText.SetText(nextDialogue.getText());
+        dialogueText.Advance();
     }
 
 
