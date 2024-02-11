@@ -23,6 +23,7 @@ public class DustCloud : MonoBehaviour
         if (_player)
         {
             InvokeRepeating("tryAddDust", 0f, _dustTickRate);
+            _player.GetSFX().PlaySFX(PlayerSFXController.SFX.Dust_Collect_Start);
         }
     }
 
@@ -32,6 +33,7 @@ public class DustCloud : MonoBehaviour
         if (player == _player)
         {
             CancelInvoke("tryAddDust");
+            _player.GetSFX().PlaySFX(PlayerSFXController.SFX.Dust_Collect_Stop);
         }
     }
 
