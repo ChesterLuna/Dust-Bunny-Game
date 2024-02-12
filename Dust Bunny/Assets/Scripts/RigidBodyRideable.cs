@@ -25,12 +25,10 @@ public abstract class RigidBodyRideable : MonoBehaviour
 
     protected void move_with_riders(Vector3 movement)
     {
-        if (movement.y <= 0) _rb.velocity = movement; // if the platform is moving down, move the platform first
 
         foreach (PlayerController rider in _riders)
         {
-            // rider.AddVelocity(movement);
+            rider.SetParent(transform);
         }
-        if (movement.y > 0) _rb.velocity = movement;  // if the platform is moving up, move the riders first
     }
 }
