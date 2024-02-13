@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class PlayerSFXController : MonoBehaviour
 {
-    public enum SFX { Jump, Dust_Collect_Start, Dust_Collect_Stop };
+    public enum SFX { Jump, Dust_Collect_Start, Dust_Collect_Stop_Clean, Dust_Collect_Stop_Abrupt};
 
     public Vector2 randomPitchVariationRange;
 
     public void PlaySFX(SFX soundEffect)
     {
         GameObject _soundObject = null;
+         AudioSource _source = null;
         float _length = 0.0f;
         float _playbackPosition = 0.0f;
         // Junction for determining which game object this sfx represents
@@ -33,17 +34,28 @@ public class PlayerSFXController : MonoBehaviour
                 QueueSoundObject(_soundObject, _length);
                 break;
 
-            case SFX.Dust_Collect_Stop:
+            case SFX.Dust_Collect_Stop_Clean:
                 //Stop Loop
                 _soundObject = GetChildSoundEffect("Dust Collect Loop");
-                AudioSource source = GetSourceFromObject(_soundObject);
-                source.loop = false;
-                _length = source.clip.length;
-                _playbackPosition = source.time;
+                _source = GetSourceFromObject(_soundObject);
+                _source.loop = false;
+                _length = _source.clip.length;
+                _playbackPosition = _source.time;
 
                 //Queue the stop sfx
                 _soundObject = GetChildSoundEffect("Dust Collect End");
                 QueueSoundObject(_soundObject, _length - _playbackPosition);
+                break;
+
+            case SFX.Dust_Collect_Stop_Abrupt:
+                //Stop loop
+                _soundObject = GetChildSoundEffect("Dust Collect Loop");
+                AudioSource source = GetSourceFromObject(_soundObject);
+                source.Stop();
+
+                //Play the stop sfx
+                _soundObject = GetChildSoundEffect("Dust Collect End");
+                PlaySoundObject(_soundObject);
                 break;
 
             default:
