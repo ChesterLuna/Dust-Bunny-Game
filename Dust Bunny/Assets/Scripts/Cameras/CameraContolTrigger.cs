@@ -63,6 +63,7 @@ public enum PanDirection
     Right
 } // end enum PanDirecrtion
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(CameraContolTrigger))]
 public class MyScriptEditor : Editor
 {
@@ -92,4 +93,5 @@ public class MyScriptEditor : Editor
             EditorUtility.SetDirty(CameraContolTrigger);
         }
     } // end OnInspectorGUI
+#endif
 } // end class MyScriptEditor

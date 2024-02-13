@@ -118,15 +118,16 @@ public class CameraManager : MonoBehaviour
         {
             startingPos = _framingTransposer.m_TrackedObjectOffset;
             endPos = _startingTrackedObjectOffset;
-            // Handle the actual panning of the camera
-            float elapsedTime = 0f;
-            while (elapsedTime < panTime)
-            {
-                elapsedTime += Time.deltaTime;
-                Vector3 panLerp = Vector3.Lerp(startingPos, endPos, elapsedTime / panTime);
-                _framingTransposer.m_TrackedObjectOffset = panLerp;
-                yield return null;
-            }
+        }
+        // Handle the actual panning of the camera
+        float elapsedTime = 0f;
+        while (elapsedTime < panTime)
+        {
+            elapsedTime += Time.deltaTime;
+            Vector3 panLerp = Vector3.Lerp(startingPos, endPos, elapsedTime / panTime);
+            _framingTransposer.m_TrackedObjectOffset = panLerp;
+            yield return null;
+
         }
     }
     #endregion
@@ -143,7 +144,7 @@ public class CameraManager : MonoBehaviour
             cameraFromLeft.enabled = false;
             // Set the new camera as the current camera
             _currentCamera = cameraFromRight;
-            //update our composer variable
+            // Update our composer variable
             _framingTransposer = _currentCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
         }
         // If the currnet camera is the camera on theright and our trigger hit direction was on the left
@@ -154,7 +155,7 @@ public class CameraManager : MonoBehaviour
             // Deactivate the old camera
             cameraFromRight.enabled = false;
             // Set the new camera as the current camera
-            _currentCamera = cameraFromRight;
+            _currentCamera = cameraFromLeft;
             // Update our composer variable
             _framingTransposer = _currentCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
         }
