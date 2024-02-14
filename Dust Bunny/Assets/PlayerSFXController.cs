@@ -54,12 +54,13 @@ public class PlayerSFXController : MonoBehaviour
             case SFX.Dust_Collect_Stop_Abrupt:
                 //Stop loop
                 _soundObject = GetChildSoundEffect("Dust Collect Loop");
-                AudioSource source = GetSourceFromObject(_soundObject);
-                source.Stop();
+                _source = GetSourceFromObject(_soundObject);
+                _pitch = _source.pitch;
+                _source.Stop();
 
                 //Play the stop sfx
                 _soundObject = GetChildSoundEffect("Dust Collect End");
-                PlaySoundObject(_soundObject);
+                PlaySoundObject(_soundObject, _pitch);
                 break;
 
             default:
