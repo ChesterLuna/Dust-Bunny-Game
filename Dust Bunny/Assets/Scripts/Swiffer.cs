@@ -29,6 +29,7 @@ public class Swiffer : MonoBehaviour
         {
             _player = null;
             CancelInvoke("tryRemoveDust");
+            _player = null;
         }
     }
 

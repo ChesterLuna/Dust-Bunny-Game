@@ -34,16 +34,24 @@ public class PlayerController : MonoBehaviour
 
     // Size Changing variables
     [Header("Size Changing")]
-    [SerializeField] int _bunnySize = 1;
+    [Range(0, 5)] [SerializeField] int _bunnySize = 1;
     [SerializeField] float _bunnySizeScalar = 1.5f;
     [SerializeField] float _scaleSpeed = 1.6f;
+    [SerializeField] float _moveSpeedAddition = 1f;
+    [SerializeField] float _jumpForceAddition = 2f;
+    [SerializeField] float _dashForceAddition = 2f;
+
     float _epsilon = 0.01f;
     Vector3 _originalSize = new Vector3(1f, 1f, 1f);
+    float _originalMoveSpeed = 10f;
+    float _originalJumpForce = 22f;
+    float _originalDashForce = 12f;
 
     // Dust Changing variables
     [Header("Dust Values")]
     [SerializeField] float _dust = 100f;
     [SerializeField] float _maxDust = 100f;
+    [SerializeField] float[] _dustLevels;
 
     Vector2 _zeroVelocity = Vector3.zero;
     Vector3 _zeroVector3 = Vector3.zero;
@@ -57,6 +65,7 @@ public class PlayerController : MonoBehaviour
     bool _growing = false;
     bool _grounded = false;
     bool _isCoyoteTime = false;
+    bool Dead = false;
 
     // Platform variables
     private Transform _originalParent = null;
@@ -83,7 +92,6 @@ public class PlayerController : MonoBehaviour
     // SFX
     PlayerSFXController _sfx;
 
-
     private void Awake()
     {
         _thisRigidbody = GetComponent<Rigidbody2D>();
@@ -91,6 +99,10 @@ public class PlayerController : MonoBehaviour
         _thisCollider = GetComponent<Collider2D>();
         _mainCamera = FindObjectOfType<Camera>();
         _originalSize = transform.localScale;
+        _originalMoveSpeed = _moveSpeed;
+        _originalJumpForce = _jumpForce;
+        _originalDashForce = _dashForce;
+
         _sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
     }
 
@@ -98,6 +110,7 @@ public class PlayerController : MonoBehaviour
     {
         gatherInput();
         //updateFriction(); //TODO: Ensure it doesnt flipflop
+        updateDustSize();
         updateTimers();
     }
 
@@ -154,7 +167,7 @@ public class PlayerController : MonoBehaviour
     private void checkGrounded()
     {
         // Raycast to check if the player is grounded
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f, _environmentLayer);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f * transform.localScale.y, _environmentLayer);
         Debug.DrawRay(transform.position, Vector2.down, Color.red); // Draw the raycast
 
         _grounded = (hit.collider != null) && !(hit.collider == null && _lastTimeGrounded < _coyoteTime);
@@ -275,12 +288,34 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    //// DUST FUNCTIONS
+
+    void updateDustSize()
+    {
+        int _newDustSize = _bunnySize;
+        for (int i = 0; i < _dustLevels.Length; i++)
+        {
+            if (_dust >= _dustLevels[i])
+            {
+                _newDustSize = i;
+            }
+        }
+        if(_newDustSize != _bunnySize)
+        {
+            ChangeSize(_newDustSize);
+        }
+    }
+
     public void ChangeSize(int newSize)
     {
-        if (_growing == true)
+        if (_growing == true || Dead)
             return;
         Vector3 targetScale = _originalSize * Mathf.Pow(_bunnySizeScalar, newSize - 1);
         _bunnySize = newSize;
+
+        SetMoveSpeed(_originalMoveSpeed - _moveSpeedAddition * (newSize - 1));
+        SetJumpForce(_originalJumpForce + _jumpForceAddition * (newSize - 1));
+        SetDashForce(_originalDashForce + _dashForceAddition * (newSize - 1));
 
         StartCoroutine(GrowDamp(targetScale));
     }
@@ -343,6 +378,19 @@ public class PlayerController : MonoBehaviour
         return _thisRigidbody;
     }
 
+    public void SetMoveSpeed(float _newMoveSpeed)
+    {
+        _moveSpeed = _newMoveSpeed;
+    }
+    public void SetJumpForce(float _newJumpForce)
+    {
+        _jumpForce = _newJumpForce;
+    }
+    public void SetDashForce(float _newDashForce)
+    {
+        _dashForce = _newDashForce;
+    }
+
     public int GetSize()
     {
         return _bunnySize;
@@ -395,16 +443,23 @@ public class PlayerController : MonoBehaviour
     }
     public void RemoveDust(float scalar)
     {
-        _dust -= scalar;
-        if (_dust < 0)
+        if (_dust - scalar < 0 && !Dead)
         {
             Die();
+            return;
         }
+        _dust -= scalar;
+
     }
 
     public void Die()
     {
+        Dead = true; 
         Debug.Log("You died");
+    }
+
+    public PlayerSFXController GetSFX(){
+        return _sfx;
     }
 
 }
