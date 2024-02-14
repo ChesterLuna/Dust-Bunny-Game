@@ -10,9 +10,11 @@ public class PlayerSFXController : MonoBehaviour
 
     public void PlaySFX(SFX soundEffect)
     {
+        //Local variables
         GameObject _soundObject = null;
-         AudioSource _source = null;
+        AudioSource _source = null;
         float _length = 0.0f;
+        float _pitch = 0.0f;
         float _playbackPosition = 0.0f;
         // Junction for determining which game object this sfx represents
         switch (soundEffect)
@@ -24,14 +26,15 @@ public class PlayerSFXController : MonoBehaviour
 
             case SFX.Dust_Collect_Start:
                 //Play intro
+                _pitch = GetRandomPitch();
                 _soundObject = GetChildSoundEffect("Dust Collect Intro");
-                PlaySoundObject(_soundObject);
+                PlaySoundObject(_soundObject, _pitch);
                 _length = GetSourceFromObject(_soundObject).clip.length;
 
                 //Queue Loop
                 _soundObject = GetChildSoundEffect("Dust Collect Loop");
                 GetSourceFromObject(_soundObject).loop = true;
-                QueueSoundObject(_soundObject, _length);
+                QueueSoundObject(_soundObject, _length, _pitch);
                 break;
 
             case SFX.Dust_Collect_Stop_Clean:
@@ -40,11 +43,12 @@ public class PlayerSFXController : MonoBehaviour
                 _source = GetSourceFromObject(_soundObject);
                 _source.loop = false;
                 _length = _source.clip.length;
+                _pitch = _source.pitch;
                 _playbackPosition = _source.time;
 
                 //Queue the stop sfx
                 _soundObject = GetChildSoundEffect("Dust Collect End");
-                QueueSoundObject(_soundObject, _length - _playbackPosition);
+                QueueSoundObject(_soundObject, _length - _playbackPosition, _pitch);
                 break;
 
             case SFX.Dust_Collect_Stop_Abrupt:
@@ -65,21 +69,27 @@ public class PlayerSFXController : MonoBehaviour
     }
 
     private void PlaySoundObject(GameObject _soundObject){
-        AudioSource _audio = GetSourceFromObject(_soundObject);
+        QueueSoundObject(_soundObject, 0);
+    }
 
-        //Play the requested sound effect
-        float _randomPitch = Random.Range(randomPitchVariationRange.x, randomPitchVariationRange.y);
-        _audio.pitch = _randomPitch;
-        _audio.Play();
+    private void PlaySoundObject(GameObject _soundObject, float pitch){
+        QueueSoundObject(_soundObject, 0, pitch);
     }
 
     private void QueueSoundObject(GameObject _soundObject, float _delay){
+        QueueSoundObject(_soundObject, _delay, GetRandomPitch());
+    }
+
+    private void QueueSoundObject(GameObject _soundObject, float _delay, float pitch){
         AudioSource _audio = GetSourceFromObject(_soundObject);
 
         //Queue the requested sound effect
-        float _randomPitch = Random.Range(randomPitchVariationRange.x, randomPitchVariationRange.y);
-        _audio.pitch = _randomPitch;
+        _audio.pitch = pitch;
         _audio.PlayDelayed(_delay - 0.1f);
+    }
+
+    float GetRandomPitch(){
+        return Random.Range(randomPitchVariationRange.x, randomPitchVariationRange.y);
     }
 
     //Helper to get an audio source from a game object, with safety checks
