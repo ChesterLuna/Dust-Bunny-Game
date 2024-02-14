@@ -20,14 +20,20 @@ public abstract class RigidBodyRideable : MonoBehaviour
 
     public void RemoveRider(PlayerController pc)
     {
-        if (_riders.Contains(pc)) _riders.Remove(pc); ;
+        if (_riders.Contains(pc))
+        {
+            _riders.Remove(pc);
+            pc.ResetParent();
+
+        }
     }
 
-    protected void move_with_riders(Vector3 movement)
+    protected void move_with_riders()
     {
 
         foreach (PlayerController rider in _riders)
         {
+            Debug.Log(this.name);
             rider.SetParent(transform);
         }
     }

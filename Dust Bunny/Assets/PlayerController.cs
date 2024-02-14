@@ -157,40 +157,24 @@ public class PlayerController : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f, _environmentLayer);
         Debug.DrawRay(transform.position, Vector2.down, Color.red); // Draw the raycast
 
-        // Grounded logic        
-        if (hit.collider != null)
+        _grounded = (hit.collider != null) && !(hit.collider == null && _lastTimeGrounded < _coyoteTime);
+
+        if (_grounded)
         {
-            _grounded = true;
             _lastTimeGrounded = 0f;
             SetCanJump(true);
             SetCanDash(true);
-
-            // Handle Ridable Calculations
-            // Not used at the moment but might be useful in the future
-            // RigidBodyRideable currentRidable = hit.collider?.GetComponentInParent<RigidBodyRideable>();
-            // if (currentRidable != _oldRidable)
-            // {
-            //     _oldRidable?.RemoveRider(this);
-            //     currentRidable?.SetRider(this);
-            // }
-            // _oldRidable = currentRidable;
-
-            _currentDropDownPlatform = hit.collider.GetComponentInChildren<DropDownPlatform>();
-
-            parentToPlatform(hit);
         }
-        else
+
+        _currentDropDownPlatform = hit.collider?.GetComponentInChildren<DropDownPlatform>();
+        // Handle Ridable Calculations
+        RigidBodyRideable currentRidable = hit.collider?.GetComponentInParent<RigidBodyRideable>();
+        if (currentRidable != _oldRidable)
         {
-            //Only is not grounded if coyote time has passed
-            _grounded = _lastTimeGrounded <= _coyoteTime;
-
-            _currentDropDownPlatform = null;
-            if (_oldMovingPlatform != null)
-            {
-                resetParent();
-                _oldMovingPlatform = null;
-            }
+            _oldRidable?.RemoveRider(this);
+            currentRidable?.SetRider(this);
         }
+        _oldRidable = currentRidable;
     }
 
     void Move()
@@ -329,25 +313,29 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+
+    // Deprecated. To Make player a parent of the platform.
     private void parentToPlatform(RaycastHit2D hit)
     {
         Transform currentMovingPlatform = hit.collider.GetComponentInParent<MovingPlatform>()?.transform;
-        if (currentMovingPlatform != null)
-        {
-            if (currentMovingPlatform != _oldMovingPlatform)
-            {
-                if (_oldMovingPlatform != null)
-                {
-                    resetParent();
-                }
-                SetParent(currentMovingPlatform);
-            }
-        }
-        else
-        {
-            resetParent();
-        }
-        _oldMovingPlatform = currentMovingPlatform;
+        
+        // if (currentMovingPlatform != null)
+        // {
+        //     if (currentMovingPlatform != _oldMovingPlatform)
+        //     {
+        //         if (_oldMovingPlatform != null)
+        //         {
+        //             resetParent();
+        //         }
+        //         SetParent(currentMovingPlatform);
+        //     }
+        // }
+        // else
+        // {
+        //     resetParent();
+        // }
+        // _oldMovingPlatform = currentMovingPlatform;
+
     }
 
     public Rigidbody2D GetRigidbody2D()
@@ -372,11 +360,11 @@ public class PlayerController : MonoBehaviour
 
     public void SetParent(Transform newParent)
     {
-        _originalParent = transform.parent;
+        //_originalParent = transform.parent;
         transform.parent = newParent;
     }
 
-    void resetParent()
+    public void ResetParent()
     {
         transform.parent = _originalParent;
 
