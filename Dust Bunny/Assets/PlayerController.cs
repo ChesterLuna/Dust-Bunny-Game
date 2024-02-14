@@ -456,4 +456,8 @@ public class PlayerController : MonoBehaviour
         Debug.Log("You died");
     }
 
+    public PlayerSFXController GetSFX(){
+        return _sfx;
+    }
+
 }
