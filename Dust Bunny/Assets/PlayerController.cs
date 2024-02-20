@@ -129,13 +129,6 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    void Start()
-    {
-        if (_gameManager.CheckpointLocation != Vector3.zero)
-        {
-            transform.position = _gameManager.CheckpointLocation;
-        }
-    }
 
     void Update()
     {
