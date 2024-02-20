@@ -5,9 +5,13 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+
+    private GameManager _gameManager;
+
     // Camera
     [Header("Camera")]
     private CameraFollowObject _cameraFollowObject;
@@ -67,7 +71,6 @@ public class PlayerController : MonoBehaviour
     bool _growing = false;
     bool _grounded = false;
     bool _isCoyoteTime = false;
-    bool Dead = false;
 
     // Platform variables
     private Transform _originalParent;
@@ -93,8 +96,16 @@ public class PlayerController : MonoBehaviour
     // SFX
     PlayerSFXController _sfx;
 
+    // Death
+    [Header("Death")]
+    [SerializeField] private Animator _deathTransition;
+    [SerializeField] private float _deathTransitionTime = 1f;
+    bool Dead = false;
+
+
     private void Awake()
     {
+        _gameManager = FindObjectOfType<GameManager>();
         _thisRigidbody = GetComponent<Rigidbody2D>();
         _standardGravity = _thisRigidbody.gravityScale;
         _thisCollider = GetComponent<Collider2D>();
@@ -111,10 +122,24 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         _fallSpeedYDampingChangeThreshold = CameraManager.instance._fallSpeedYDampingChangeThreshold;
+        if (_gameManager.CheckpointLocation != Vector3.zero)
+        {
+            transform.position = _gameManager.CheckpointLocation;
+        }
+    }
+
+
+    void Start()
+    {
+        if (_gameManager.CheckpointLocation != Vector3.zero)
+        {
+            transform.position = _gameManager.CheckpointLocation;
+        }
     }
 
     void Update()
     {
+        if (Dead) return;
         gatherInput();
         //updateFriction(); //TODO: Ensure it doesnt flipflop
         updateDustSize();
@@ -505,7 +530,14 @@ public class PlayerController : MonoBehaviour
     public void Die()
     {
         Dead = true;
-        Debug.Log("You died");
+        _thisCollider.enabled = false;
+        _thisRigidbody.simulated = false;
+        LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
+        levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
+    }
+
+    public PlayerSFXController GetSFX(){
+        return _sfx;
     }
 
 }
