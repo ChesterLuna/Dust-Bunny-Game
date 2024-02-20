@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
 
     // Camera
     [Header("Camera")]
+    private CameraFollowObject _cameraFollowObject;
+    private float _fallSpeedYDampingChangeThreshold;
     [SerializeField] Camera _mainCamera;
 
     // Movement variables
@@ -38,7 +40,7 @@ public class PlayerController : MonoBehaviour
 
     // Size Changing variables
     [Header("Size Changing")]
-    [Range(0, 5)] [SerializeField] int _bunnySize = 1;
+    [Range(0, 5)][SerializeField] int _bunnySize = 1;
     [SerializeField] float _bunnySizeScalar = 1.5f;
     [SerializeField] float _scaleSpeed = 1.6f;
     [SerializeField] float _moveSpeedAddition = 1f;
@@ -89,7 +91,7 @@ public class PlayerController : MonoBehaviour
     //Vector2 targetVelocity = Vector2.zero;
     Vector2 _dashDirection = Vector2.zero;
     Vector2 _jumpForceVector = Vector2.zero;
-
+    public bool IsFacingRight = true;
 
     // SFX
     PlayerSFXController _sfx;
@@ -108,6 +110,7 @@ public class PlayerController : MonoBehaviour
         _standardGravity = _thisRigidbody.gravityScale;
         _thisCollider = GetComponent<Collider2D>();
         _mainCamera = FindObjectOfType<Camera>();
+        _cameraFollowObject = FindObjectOfType<CameraFollowObject>();
         _originalSize = transform.localScale;
         _originalMoveSpeed = _moveSpeed;
         _originalJumpForce = _jumpForce;
@@ -116,14 +119,16 @@ public class PlayerController : MonoBehaviour
         _sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
     }
 
-
-    void Start()
+    private void Start()
     {
+        _fallSpeedYDampingChangeThreshold = CameraManager.instance._fallSpeedYDampingChangeThreshold;
         if (_gameManager.CheckpointLocation != Vector3.zero)
         {
             transform.position = _gameManager.CheckpointLocation;
         }
     }
+
+
 
     void Update()
     {
@@ -132,6 +137,21 @@ public class PlayerController : MonoBehaviour
         //updateFriction(); //TODO: Ensure it doesnt flipflop
         updateDustSize();
         updateTimers();
+        updateCameraYDamping();
+    }
+
+    private void updateCameraYDamping()
+    {
+        // If we are falling past a certain speed threshold
+        if (_thisRigidbody.velocity.y < _fallSpeedYDampingChangeThreshold && !CameraManager.instance.IsLerpingYDamping && !CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpYDamping(true);
+        }
+        if (_thisRigidbody.velocity.y >= 0f && !CameraManager.instance.IsLerpingYDamping && CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpedFromPlayerFalling = false;
+            CameraManager.instance.LerpYDamping(false);
+        }
     }
 
     void updateTimers()
@@ -144,6 +164,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        TurnCheck();
         checkGrounded();
         if (!_isDashing)
         {
@@ -183,6 +204,34 @@ public class PlayerController : MonoBehaviour
             sendInteract();
         }
     }
+
+    private void TurnCheck()
+    {
+        if (_horizontalInput > 0 && !IsFacingRight)
+        {
+            Turn();
+        }
+        else if (_horizontalInput < 0 && IsFacingRight)
+        {
+            Turn();
+        }
+    } // end TurnCheck
+
+    private void Turn()
+    {
+        Vector3 rotator;
+        if (IsFacingRight)
+        {
+            rotator = new Vector3(transform.rotation.x, 180f, transform.rotation.z);
+        }
+        else
+        {
+            rotator = new Vector3(transform.rotation.x, 0f, transform.rotation.z);
+        }
+        transform.rotation = Quaternion.Euler(rotator);
+        IsFacingRight = !IsFacingRight;
+        _cameraFollowObject.CallTurn();
+    } // end Turn
 
     private void checkGrounded()
     {
@@ -344,7 +393,7 @@ public class PlayerController : MonoBehaviour
                 _newDustSize = i;
             }
         }
-        if(_newDustSize != _bunnySize)
+        if (_newDustSize != _bunnySize)
         {
             ChangeSize(_newDustSize);
         }
