@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92e50e632ed6f2a9194c37796b8dd6f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  randomPitchVariationRange: {x: 0.9, y: 1.1}
 --- !u!1 &2705880581571827293
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,7 +225,7 @@ MonoBehaviour:
   _scaleSpeed: 1.6
   _moveSpeedAddition: 1
   _jumpForceAddition: 2
-  _DashForceAddition: 2
+  _dashForceAddition: 2
   _dust: 20
   _maxDust: 100
   _dustLevels:
