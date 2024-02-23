@@ -71,6 +71,7 @@ public class PlayerController : MonoBehaviour
     bool _growing = false;
     bool _grounded = false;
     bool _isCoyoteTime = false;
+    float _stickyHeightDivisor = 1f;
 
     // Platform variables
     private Transform _originalParent;
@@ -117,7 +118,7 @@ public class PlayerController : MonoBehaviour
         _originalDashForce = _dashForce;
 
         _sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
-    }
+    } // end Awake
 
     private void Start()
     {
@@ -126,9 +127,7 @@ public class PlayerController : MonoBehaviour
         {
             transform.position = _gameManager.CheckpointLocation;
         }
-    }
-
-
+    } // end Start
 
     void Update()
     {
@@ -138,21 +137,7 @@ public class PlayerController : MonoBehaviour
         updateDustSize();
         updateTimers();
         updateCameraYDamping();
-    }
-
-    private void updateCameraYDamping()
-    {
-        // If we are falling past a certain speed threshold
-        if (_thisRigidbody.velocity.y < _fallSpeedYDampingChangeThreshold && !CameraManager.instance.IsLerpingYDamping && !CameraManager.instance.LerpedFromPlayerFalling)
-        {
-            CameraManager.instance.LerpYDamping(true);
-        }
-        if (_thisRigidbody.velocity.y >= 0f && !CameraManager.instance.IsLerpingYDamping && CameraManager.instance.LerpedFromPlayerFalling)
-        {
-            CameraManager.instance.LerpedFromPlayerFalling = false;
-            CameraManager.instance.LerpYDamping(false);
-        }
-    }
+    } // end Update
 
     void updateTimers()
     {
@@ -160,7 +145,7 @@ public class PlayerController : MonoBehaviour
 
         if (!_isDashing)
             _lastTimeDashed += Time.deltaTime;
-    }
+    } // end updateTimers
 
     void FixedUpdate()
     {
@@ -184,8 +169,7 @@ public class PlayerController : MonoBehaviour
         }
         _doJump = false;
         _doDash = false;
-    }
-
+    } // end FixedUpdate
 
     private void gatherInput()
     {
@@ -203,8 +187,9 @@ public class PlayerController : MonoBehaviour
         {
             sendInteract();
         }
-    }
+    } // end gatherInput
 
+    #region Animations
     private void TurnCheck()
     {
         if (_horizontalInput > 0 && !IsFacingRight)
@@ -232,6 +217,23 @@ public class PlayerController : MonoBehaviour
         IsFacingRight = !IsFacingRight;
         _cameraFollowObject.CallTurn();
     } // end Turn
+    #endregion
+
+    #region Cameras
+    private void updateCameraYDamping()
+    {
+        // If we are falling past a certain speed threshold
+        if (_thisRigidbody.velocity.y < _fallSpeedYDampingChangeThreshold && !CameraManager.instance.IsLerpingYDamping && !CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpYDamping(true);
+        }
+        if (_thisRigidbody.velocity.y >= 0f && !CameraManager.instance.IsLerpingYDamping && CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpedFromPlayerFalling = false;
+            CameraManager.instance.LerpYDamping(false);
+        }
+    } // end updateCameraYDamping
+    #endregion
 
     private void checkGrounded()
     {
@@ -280,7 +282,7 @@ public class PlayerController : MonoBehaviour
                 _oldMovingPlatform = null;
             }
         }
-    }
+    } // end checkGrounded
 
     void Move()
     {
@@ -301,9 +303,7 @@ public class PlayerController : MonoBehaviour
 
         Vector2 _newMovement = new Vector2(MathF.Sign(_speedToTargetSpeed) * Mathf.Pow(_horizontalMovement, 0.9f), 0);// * Time.fixedDeltaTime, 0);
         _thisRigidbody.AddForce(_newMovement, ForceMode2D.Force);
-
-    }
-
+    } // end Move
 
     void updateFriction()
     {
@@ -323,10 +323,8 @@ public class PlayerController : MonoBehaviour
             Vector2 _addFrictionVector = Mathf.Sign(_thisRigidbody.velocity.x) * new Vector2(_friction * Time.deltaTime, 0);
 
             _thisRigidbody.AddForce(_addFrictionVector, ForceMode2D.Impulse);
-
         }
-    }
-
+    } // end updateFriction
 
     void Jump()
     {
@@ -338,12 +336,12 @@ public class PlayerController : MonoBehaviour
         {
             //_thisRigidbody.velocity = new Vector2(_thisRigidbody.velocity.x, 0f);
             _thisRigidbody.velocity = Vector2.right * _thisRigidbody.velocity;
-            _jumpForceVector = new Vector2(0f, _jumpForce);
+            _jumpForceVector = new Vector2(0f, _jumpForce / _stickyHeightDivisor);
             _thisRigidbody.AddForce(_jumpForceVector, ForceMode2D.Impulse);
         }
         SetCanJump(false);
         _sfx.PlaySFX(PlayerSFXController.SFX.Jump);
-    }
+    } // end Jump
 
     // Starts a timer for _coyoteTime seconds, once finished it will set grounded to false
     IEnumerator startCoyoteTime()
@@ -353,7 +351,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(_coyoteTime);
         _isCoyoteTime = false;
         _grounded = false;
-    }
+    } // end startCoyoteTime
 
 
     // Dashes for "_dashTime" seconds constantly. Uses AddForce.
@@ -361,7 +359,6 @@ public class PlayerController : MonoBehaviour
     {
         _isDashing = true;
         _lastTimeDashed = 0f;
-
 
         Vector2 mousePos = Input.mousePosition;
         Vector2 playerPos = Camera.main.WorldToScreenPoint(transform.position);
@@ -378,52 +375,7 @@ public class PlayerController : MonoBehaviour
         _lastTimeDashed = 0f;
         SetCanDash(false);
         _isDashing = false;
-
-    }
-
-    //// DUST FUNCTIONS
-
-    void updateDustSize()
-    {
-        int _newDustSize = _bunnySize;
-        for (int i = 0; i < _dustLevels.Length; i++)
-        {
-            if (_dust >= _dustLevels[i])
-            {
-                _newDustSize = i;
-            }
-        }
-        if (_newDustSize != _bunnySize)
-        {
-            ChangeSize(_newDustSize);
-        }
-    }
-
-    public void ChangeSize(int newSize)
-    {
-        if (_growing == true || Dead)
-            return;
-        Vector3 targetScale = _originalSize * Mathf.Pow(_bunnySizeScalar, newSize - 1);
-        _bunnySize = newSize;
-
-        SetMoveSpeed(_originalMoveSpeed - _moveSpeedAddition * (newSize - 1));
-        SetJumpForce(_originalJumpForce + _jumpForceAddition * (newSize - 1));
-        SetDashForce(_originalDashForce + _dashForceAddition * (newSize - 1));
-
-        StartCoroutine(GrowDamp(targetScale));
-    }
-
-    IEnumerator GrowDamp(Vector3 targetScale)
-    {
-        _growing = true;
-        while (Vector3.Distance(transform.localScale, targetScale) > _epsilon)
-        {
-            Vector3 interValue = Vector3.Lerp(transform.localScale, targetScale, _scaleSpeed * Time.deltaTime);
-            transform.localScale = interValue;
-            yield return null;
-        }
-        _growing = false;
-    }
+    } // end Dash
 
     private void sendInteract()
     {
@@ -439,67 +391,55 @@ public class PlayerController : MonoBehaviour
                 interactScript.Interact();
             }
         }
-    }
+    } // end sendInteract
 
+    #region Dust Functions
+    void updateDustSize()
+    {
+        int _newDustSize = _bunnySize;
+        for (int i = 0; i < _dustLevels.Length; i++)
+        {
+            if (_dust >= _dustLevels[i])
+            {
+                _newDustSize = i;
+            }
+        }
+        if (_newDustSize != _bunnySize)
+        {
+            ChangeSize(_newDustSize);
+        }
+    } // end updateDustSize
 
-    public Rigidbody2D GetRigidbody2D()
+    public void ChangeSize(int newSize)
     {
-        return _thisRigidbody;
-    }
+        if (_growing == true || Dead)
+            return;
+        Vector3 targetScale = _originalSize * Mathf.Pow(_bunnySizeScalar, newSize - 1);
+        _bunnySize = newSize;
 
-    public void SetMoveSpeed(float _newMoveSpeed)
-    {
-        _moveSpeed = _newMoveSpeed;
-    }
-    public void SetJumpForce(float _newJumpForce)
-    {
-        _jumpForce = _newJumpForce;
-    }
-    public void SetDashForce(float _newDashForce)
-    {
-        _dashForce = _newDashForce;
-    }
+        SetMoveSpeed(_originalMoveSpeed - _moveSpeedAddition * (newSize - 1));
+        SetJumpForce(_originalJumpForce + _jumpForceAddition * (newSize - 1));
+        SetDashForce(_originalDashForce + _dashForceAddition * (newSize - 1));
 
-    public int GetSize()
-    {
-        return _bunnySize;
-    }
+        StartCoroutine(GrowDamp(targetScale));
+    } // end ChangeSize
 
-    public void SetCanJump(bool value)
+    IEnumerator GrowDamp(Vector3 targetScale)
     {
-        _canJump = value;
-    }
-
-    public void SetCanDash(bool value)
-    {
-        _canDash = value;
-    }
-
-    void setParent(Transform newParent)
-    {
-        _originalParent = transform.parent;
-        transform.parent = newParent;
-    }
-
-    void resetParent()
-    {
-        transform.parent = _originalParent;
-    }
-
-    public void SetDust(float dust)
-    {
-        _dust = dust;
-    }
-
-    public float GetDust()
-    {
-        return _dust;
-    }
+        _growing = true;
+        while (Vector3.Distance(transform.localScale, targetScale) > _epsilon)
+        {
+            Vector3 interValue = Vector3.Lerp(transform.localScale, targetScale, _scaleSpeed * Time.deltaTime);
+            transform.localScale = interValue;
+            yield return null;
+        }
+        _growing = false;
+    } // end GrowDamp
 
     public bool MaxedOutDust()
     {
         return _dust >= _maxDust;
-    }
+    } // end MaxedOutDust
 
     public void AddDust(float scalar)
     {
@@ -508,7 +448,8 @@ public class PlayerController : MonoBehaviour
         {
             _dust = _maxDust;
         }
-    }
+    } // end AddDust
+
     public void RemoveDust(float scalar)
     {
         if (_dust - scalar < 0 && !Dead)
@@ -517,8 +458,82 @@ public class PlayerController : MonoBehaviour
             return;
         }
         _dust -= scalar;
+    } // end RemoveDust
+    #endregion
 
-    }
+    #region Getters and Setters
+    public Rigidbody2D GetRigidbody2D()
+    {
+        return _thisRigidbody;
+    } // end GetRigidbody2D
+
+    public void SetMoveSpeed(float _newMoveSpeed)
+    {
+        _moveSpeed = _newMoveSpeed;
+    } // end SetMoveSpeed
+
+    public void SetJumpForce(float _newJumpForce)
+    {
+        _jumpForce = _newJumpForce;
+    } // end SetJumpForce
+
+    public float GetJumpForce()
+    {
+        return _jumpForce;
+    } // end GetJumpForce
+
+    public void SetDashForce(float _newDashForce)
+    {
+        _dashForce = _newDashForce;
+    } // end SetDashForce
+
+    public int GetSize()
+    {
+        return _bunnySize;
+    } // end GetSize
+
+    public void SetCanJump(bool value)
+    {
+        _canJump = value;
+    } // end SetCanJump
+
+    public void SetCanDash(bool value)
+    {
+        _canDash = value;
+    } // end SetCanDash
+
+    void setParent(Transform newParent)
+    {
+        _originalParent = transform.parent;
+        transform.parent = newParent;
+    } // end setParent
+
+    void resetParent()
+    {
+        transform.parent = _originalParent;
+    } // end resetParent
+
+    public void SetDust(float dust)
+    {
+        _dust = dust;
+    } // end SetDust
+
+    public float GetDust()
+    {
+        return _dust;
+    } // end GetDust
+
+    public void SetStickyHeightDivisor(float value)
+    {
+        _stickyHeightDivisor = value;
+    } // end SetOnSticky
+
+    public PlayerSFXController GetSFX()
+    {
+        return _sfx;
+    } // end GetSFX
+
+    #endregion
 
     public void Die()
     {
@@ -527,10 +542,5 @@ public class PlayerController : MonoBehaviour
         _thisRigidbody.simulated = false;
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
         levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
-    }
-
-    public PlayerSFXController GetSFX(){
-        return _sfx;
-    }
-
-}
+    } // end Die
+} // end class PlayerController

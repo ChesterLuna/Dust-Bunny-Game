@@ -9,13 +9,12 @@ public class Fan : Switchable
     [SerializeField] float _timedToggleLength = 1f;
     [SerializeField] float _force = 75;
     [SerializeField] SpriteRenderer _baseSprite;
-    SpriteRenderer _fanSprite;
+    [SerializeField] SpriteRenderer _fanSprite;
     Collider2D _fanCollider;
 
     void Awake()
     {
         _fanCollider = GetComponent<Collider2D>();
-        _fanSprite = GetComponent<SpriteRenderer>();
     }
 
     void Start()
