@@ -122,6 +122,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        _gameManager.StartGameTime();
         _fallSpeedYDampingChangeThreshold = CameraManager.instance._fallSpeedYDampingChangeThreshold;
         if (_gameManager.CheckpointLocation != Vector3.zero)
         {
@@ -542,5 +543,6 @@ public class PlayerController : MonoBehaviour
         _thisRigidbody.simulated = false;
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
         levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
+        _gameManager.PauseGameTime();
     } // end Die
 } // end class PlayerController
