@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 
 
 public class Switch : MonoBehaviour, IInteractable
 {
-    [SerializeField] Switchable[] _targets;
+    [SerializeField] GameObject[] _targetGameObjects;
+    [SerializeField] List<ISwitchable> _targets = new();
     [SerializeField] bool _isOn = false;
     [SerializeField] Sprite _onSprite;
     [SerializeField] Sprite _offSprite;
@@ -16,6 +19,11 @@ public class Switch : MonoBehaviour, IInteractable
     void Awake()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        foreach (GameObject target in _targetGameObjects)
+        {
+            _targets.Add(target.GetComponentInChildren<ISwitchable>());
+        }
+
     }
     void Start()
     {
@@ -32,7 +40,7 @@ public class Switch : MonoBehaviour, IInteractable
     void turnOn()
     {
         _isOn = true;
-        foreach (Switchable target in _targets)
+        foreach (ISwitchable target in _targets)
         {
             target.Enable();
         }
@@ -42,7 +50,7 @@ public class Switch : MonoBehaviour, IInteractable
     void turnOff()
     {
         _isOn = false;
-        foreach (Switchable target in _targets)
+        foreach (ISwitchable target in _targets)
         {
             target.Disable();
         }

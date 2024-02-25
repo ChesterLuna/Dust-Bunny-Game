@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Fan : Switchable
+public class Fan : MonoBehaviour, ISwitchable
 {
     [SerializeField] bool _isTimed = false;
     [SerializeField] float _timedToggleLength = 1f;
@@ -25,13 +25,13 @@ public class Fan : Switchable
             InvokeRepeating("Toggle", 0f, _timedToggleLength);
         }
     }
-    public override void Disable()
+    public void Disable()
     {
         _fanCollider.enabled = false;
         _fanSprite.enabled = false;
     }
 
-    public override void Enable()
+    public void Enable()
     {
         _fanCollider.enabled = true;
         _fanSprite.enabled = true;
