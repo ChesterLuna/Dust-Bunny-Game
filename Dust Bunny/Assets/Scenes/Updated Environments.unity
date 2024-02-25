@@ -25993,10 +25993,15 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8581144152350569031, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8581144152350569031, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
       propertyPath: _deathTransition
       value: 
       objectReference: {fileID: 1055752185}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1754437265604579669, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

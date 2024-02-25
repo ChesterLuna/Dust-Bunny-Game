@@ -10,12 +10,16 @@ public class StickyFloor : MonoBehaviour
         PlayerController player = collider.gameObject.GetComponent<PlayerController>();
         if (player != null)
         {
-            player.SetStickyHeightDivisor(player.GetJumpForce() / _stickyHeightDivisor);
+            player.StickyHeightDivisor = player.JumpForce / _stickyHeightDivisor;
         }
     } // end OnTriggerEnter2D
 
     void OnTriggerExit2D(Collider2D collider)
     {
-        collider.gameObject.GetComponent<PlayerController>()?.SetStickyHeightDivisor(1);
+        PlayerController player = collider.gameObject.GetComponent<PlayerController>();
+        if (player != null)
+        {
+            player.StickyHeightDivisor = 1;
+        }
     } // end OnTriggerExit2D
 } // end class StickyFloor

@@ -52,7 +52,7 @@ public class Fan : MonoBehaviour, ISwitchable
     {
         if (collider.gameObject.CompareTag("Player"))
         {
-            Rigidbody2D player = collider.gameObject.GetComponent<PlayerController>().GetRigidbody2D();
+            Rigidbody2D player = collider.gameObject.GetComponent<PlayerController>().RB;
             player.AddForce(transform.up * _force);
         }
     }

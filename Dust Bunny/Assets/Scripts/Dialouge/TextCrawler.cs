@@ -20,38 +20,44 @@ public class TextCrawler : MonoBehaviour
     private float elapsedLetters;
     private string currentText;
     private int lineIndex = -1;
-    
+
     private List<float> sizes;
     private int letterIndex;
     private bool started;
     private bool initalized = false;
-    private bool enabled = true;
+    private bool isEnabled = true;
     private AudioSource[] speechSources;
     private SpeechVoice voice;
 
     // Start is called before the first frame update
-    void Start(){
+    void Start()
+    {
         Initalize();
     }
 
     public TextCrawler Initalize()
     {
-        if (!initalized){
+        if (!initalized)
+        {
             //If unassigned, try to find text controller on this object first. If it fails, try to find it on any child.
-            if (textController == null){
+            if (textController == null)
+            {
                 textController = GetComponent<TextMeshPro>();
                 Debug.Log("Text mesh was not assigned to a text crawler. Using text mesh from parent.");
             }
-            if (textController == null){
+            if (textController == null)
+            {
                 textController = GetComponentInChildren<TextMeshPro>();
                 Debug.Log("Text mesh was not assigned to a text crawler. Using text mesh from parent.");
             }
             speechSources = GetComponents<AudioSource>();
-            if (voicePrefab != null){
+            if (voicePrefab != null)
+            {
                 voice = voicePrefab.GetComponent<SpeechVoice>();
             }
 
-            if (text == null) {
+            if (text == null)
+            {
                 text = new List<string>();
                 text.Add(textController.text);
             }
@@ -73,38 +79,46 @@ public class TextCrawler : MonoBehaviour
     void Update()
     {
         float dt = Time.deltaTime;
-        if (enabled && !paused){
+        if (isEnabled && !paused)
+        {
             float previousLetters = elapsedLetters;
             elapsedLetters += dt * speed;
-            while (IsStarted() && !IsFinished() && !IsFinishedLine() && ((int) elapsedLetters > (int) previousLetters || speed == float.PositiveInfinity)){
+            while (IsStarted() && !IsFinished() && !IsFinishedLine() && ((int)elapsedLetters > (int)previousLetters || speed == float.PositiveInfinity))
+            {
                 AddLetter();
                 elapsedLetters -= speed;
             }
             UpdateSizes();
-            if (IsStarted() && !IsFinishedLineAndSizes()){
+            if (IsStarted() && !IsFinishedLineAndSizes())
+            {
                 textController.text = GetFormattedString();
             }
         }
     }
 
-    public bool IsFinishedLine(){
+    public bool IsFinishedLine()
+    {
         if (lineIndex >= text.Count) return true;
         return lineIndex >= 0 && letterIndex >= text[lineIndex].Length;
     }
 
-    public bool IsFinishedLineAndSizes(){
+    public bool IsFinishedLineAndSizes()
+    {
         return IsFinishedLine() && !textController.text.Contains("<size=");
     }
 
-    public bool IsFinished(){
-        return IsFinishedLine() && lineIndex == text.Count-1; 
+    public bool IsFinished()
+    {
+        return IsFinishedLine() && lineIndex == text.Count - 1;
     }
 
-    public bool IsStarted(){
+    public bool IsStarted()
+    {
         return lineIndex != -1 && started;
     }
 
-    public void SetText(List<string> newText){
+    public void SetText(List<string> newText)
+    {
         text = newText;
         currentText = "";
         lineIndex = -1;
@@ -113,13 +127,15 @@ public class TextCrawler : MonoBehaviour
         started = false;
     }
 
-    public void SetText(string newText){
+    public void SetText(string newText)
+    {
         List<string> l = new List<string>();
         l.Add(newText);
         SetText(l);
     }
 
-    public void Advance(){
+    public void Advance()
+    {
         currentText = "";
         lineIndex++;
         elapsedLetters = 0;
@@ -128,55 +144,67 @@ public class TextCrawler : MonoBehaviour
         sizes = new List<float>();
     }
 
-    public void FinishLine(){
+    public void FinishLine()
+    {
         currentText = text[lineIndex];
         letterIndex = text[lineIndex].Length;
         sizes = new List<float>();
-        for(int i = 0; i < letterIndex; i++){
+        for (int i = 0; i < letterIndex; i++)
+        {
             sizes.Add(textController.fontSize);
         }
     }
 
-    private void UpdateSizes(){
-        for(int i = 0; i < sizes.Count; i++){
+    private void UpdateSizes()
+    {
+        for (int i = 0; i < sizes.Count; i++)
+        {
             sizes[i] += Time.deltaTime * popinSpeed;
             sizes[i] = Mathf.Min(textController.fontSize, sizes[i]);
         }
     }
 
-    private void AddLetter(){
+    private void AddLetter()
+    {
         char nextLetter = text[lineIndex][letterIndex];
         currentText += nextLetter;
         sizes.Add(1.0f);
         letterIndex++;
-        
+
         //Find available audio source
         AudioSource openSource = null;
-        for(int i = 0; i < speechSources.Length; i++){
-            if(!speechSources[i].isPlaying){
+        for (int i = 0; i < speechSources.Length; i++)
+        {
+            if (!speechSources[i].isPlaying)
+            {
                 openSource = speechSources[i];
                 break;
             }
         }
-    
+
         // Play speech sfx
-        if (openSource != null && voice != null){
+        if (openSource != null && voice != null)
+        {
             openSource.clip = voice.GetLetterClip(nextLetter);
             openSource.Play();
         }
     }
 
-    private string GetFormattedString(){
+    private string GetFormattedString()
+    {
         string formattedString = "";
 
         //Size grow in effect
-        for(int i = 0; i < currentText.Length; i++){
+        for (int i = 0; i < currentText.Length; i++)
+        {
             int size = (int)sizes[i];
             string result = "";
-            if (size != textController.fontSize){
+            if (size != textController.fontSize)
+            {
                 result += "<size=" + size.ToString() + ">" + currentText[i] + "</size>";
             }
-            else{
+            else
+            {
                 result = currentText[i].ToString();
             }
             formattedString += result;
@@ -185,15 +213,18 @@ public class TextCrawler : MonoBehaviour
         return formattedString;
     }
 
-    public void Disable(){
-        enabled = false;
+    public void Disable()
+    {
+        isEnabled = false;
     }
 
-    public void Enable(){
-        enabled = true;
+    public void Enable()
+    {
+        isEnabled = true;
     }
 
-    public void SetTextInstant(string newText){
+    public void SetTextInstant(string newText)
+    {
         Disable();
         textController.text = newText;
         currentText = newText;

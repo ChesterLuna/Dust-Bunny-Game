@@ -10,24 +10,28 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
 
+    #region  Variables
     private GameManager _gameManager;
 
+    #region Camera
     // Camera
     [Header("Camera")]
     private CameraFollowObject _cameraFollowObject;
     private float _fallSpeedYDampingChangeThreshold;
-    [SerializeField] Camera _mainCamera;
+    #endregion
 
+    #region Movement
     // Movement variables
     [Header("Movement")]
     [SerializeField] float _moveSpeed = 500f;
-    [SerializeField] float _moveSmoothing = 0.05f;
+    // [SerializeField] float _moveSmoothing = 0.05f;
     [SerializeField] float _accelerationForce = 1f;
     [SerializeField] float _deaccelerationForce = 1f;
     [SerializeField] float _groundFriction = 10f;
     [SerializeField] float _airFriction = 1f;
+    #endregion
 
-
+    #region Abilities
     // Abilities variables
     [Header("Abilities")]
     [SerializeField] float _jumpForce = 22f;
@@ -37,7 +41,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _dashCooldown = 0.1f;
     float _lastTimeGrounded = 0f;
     float _lastTimeDashed = 0f;
+    #endregion
 
+    #region Size Changing
     // Size Changing variables
     [Header("Size Changing")]
     [Range(0, 5)][SerializeField] int _bunnySize = 1;
@@ -52,16 +58,17 @@ public class PlayerController : MonoBehaviour
     float _originalMoveSpeed = 10f;
     float _originalJumpForce = 22f;
     float _originalDashForce = 12f;
+    #endregion
 
+    #region Dust
     // Dust Changing variables
     [Header("Dust Values")]
     [SerializeField] float _dust = 100f;
     [SerializeField] float _maxDust = 100f;
     [SerializeField] float[] _dustLevels;
+    #endregion
 
-    Vector2 _zeroVelocity = Vector3.zero;
-    Vector3 _zeroVector3 = Vector3.zero;
-
+    #region Abilities
     // Abilities booleans
     bool _canJump = true;
     bool _canDash = true;
@@ -72,38 +79,87 @@ public class PlayerController : MonoBehaviour
     bool _grounded = false;
     bool _isCoyoteTime = false;
     float _stickyHeightDivisor = 1f;
+    #endregion
 
+    #region Platforms
     // Platform variables
     private Transform _originalParent = null;
-
     private DropDownPlatform _currentDropDownPlatform = null;
     private RigidBodyRideable _oldRidable = null;
     private Transform _oldMovingPlatform = null;
+    #endregion
 
+    #region Physics
     // Physics
     [Header("Physics")]
     Rigidbody2D _thisRigidbody;
     float _standardGravity;
     Collider2D _thisCollider;
     [SerializeField] LayerMask _environmentLayer;
+    #endregion
 
+    #region Input
     // Input
-    float _horizontalInput = 0;
-    float _verticalInput = 0;
-    //Vector2 targetVelocity = Vector2.zero;
+    Vector2 _input;
     Vector2 _dashDirection = Vector2.zero;
     Vector2 _jumpForceVector = Vector2.zero;
     public bool IsFacingRight = true;
+    #endregion
 
+    #region SFX
     // SFX
     PlayerSFXController _sfx;
-
     // Death
     [Header("Death")]
     [SerializeField] private Animator _deathTransition;
     [SerializeField] private float _deathTransitionTime = 1f;
     bool Dead = false;
+    #endregion
 
+    #region External References
+    public Vector2 PlayerInput => _input;
+    public bool IsDashing => _isDashing;
+    public bool CanJump => _canJump;
+    public bool IsGrounded => _grounded;
+    public bool IsCoyoteTime => _isCoyoteTime;
+    public bool IsGrowing => _growing;
+    public bool IsDead => Dead;
+    public bool IsMaxedOutDust => _dust >= _maxDust;
+    public bool IsOnDropDownPlatform => _currentDropDownPlatform != null;
+    public bool IsOnRideable => _oldRidable != null;
+    public bool IsOnMovingPlatform => _oldMovingPlatform != null;
+    public float Dust
+    {
+        get => _dust;
+        set => _dust = value;
+    }
+    public float MaxDust => _maxDust;
+    public float MoveSpeed
+    {
+        get => _moveSpeed;
+        set => _moveSpeed = value;
+    }
+    public float JumpForce
+    {
+        get => _jumpForce;
+        set => _jumpForce = value;
+    }
+    public float DashForce
+    {
+        get => _dashForce;
+        set => _dashForce = value;
+    }
+    public int BunnySize => _bunnySize;
+    public Rigidbody2D RB => _thisRigidbody;
+    public Collider2D Col => _thisCollider;
+    public PlayerSFXController SFX => _sfx;
+    public float StickyHeightDivisor
+    {
+        get => _stickyHeightDivisor;
+        set => _stickyHeightDivisor = value;
+    }
+    #endregion
+    #endregion
 
     private void Awake()
     {
@@ -111,7 +167,6 @@ public class PlayerController : MonoBehaviour
         _thisRigidbody = GetComponent<Rigidbody2D>();
         _standardGravity = _thisRigidbody.gravityScale;
         _thisCollider = GetComponent<Collider2D>();
-        _mainCamera = FindObjectOfType<Camera>();
         _cameraFollowObject = FindObjectOfType<CameraFollowObject>();
         _originalSize = transform.localScale;
         _originalMoveSpeed = _moveSpeed;
@@ -175,8 +230,7 @@ public class PlayerController : MonoBehaviour
 
     private void gatherInput()
     {
-        _horizontalInput = Input.GetAxis("Horizontal");
-        _verticalInput = Input.GetAxis("Vertical");
+        _input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         if (Input.GetButtonDown("Jump"))
         {
             _doJump = true;
@@ -194,11 +248,11 @@ public class PlayerController : MonoBehaviour
     #region Animations
     private void TurnCheck()
     {
-        if (_horizontalInput > 0 && !IsFacingRight)
+        if (_input.x > 0 && !IsFacingRight)
         {
             Turn();
         }
-        else if (_horizontalInput < 0 && IsFacingRight)
+        else if (_input.x < 0 && IsFacingRight)
         {
             Turn();
         }
@@ -248,8 +302,8 @@ public class PlayerController : MonoBehaviour
         if (_grounded)
         {
             _lastTimeGrounded = 0f;
-            SetCanJump(true);
-            SetCanDash(true);
+            _canJump = true;
+            _canDash = true;
         }
 
         _currentDropDownPlatform = hit.collider?.GetComponentInChildren<DropDownPlatform>();
@@ -265,7 +319,7 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        float _targetSpeed = _horizontalInput * _moveSpeed;
+        float _targetSpeed = _input.x * _moveSpeed;
         float _speedToTargetSpeed = _targetSpeed - _thisRigidbody.velocity.x;
         float _accelerationRate;
 
@@ -298,7 +352,7 @@ public class PlayerController : MonoBehaviour
             _friction = _airFriction;
         }
 
-        if (Mathf.Abs(_horizontalInput) == 0f)
+        if (Mathf.Abs(_input.x) == 0f)
         {
             Vector2 _addFrictionVector = Mathf.Sign(_thisRigidbody.velocity.x) * new Vector2(_friction * Time.deltaTime, 0);
 
@@ -308,7 +362,7 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
-        if (_currentDropDownPlatform != null && _verticalInput < 0f)
+        if (_currentDropDownPlatform != null && PlayerInput.y < 0f)
         {
             _currentDropDownPlatform.DropDown(_thisCollider);
         }
@@ -319,7 +373,7 @@ public class PlayerController : MonoBehaviour
             _jumpForceVector = new Vector2(0f, _jumpForce / _stickyHeightDivisor);
             _thisRigidbody.AddForce(_jumpForceVector, ForceMode2D.Impulse);
         }
-        SetCanJump(false);
+        _canJump = false;
         _sfx.PlaySFX(PlayerSFXController.SFX.Jump);
     } // end Jump
 
@@ -353,7 +407,7 @@ public class PlayerController : MonoBehaviour
         _thisRigidbody.velocity = Vector2.zero;
 
         _lastTimeDashed = 0f;
-        SetCanDash(false);
+        _canDash = false;
         _isDashing = false;
     } // end Dash
 
@@ -397,9 +451,9 @@ public class PlayerController : MonoBehaviour
         Vector3 targetScale = _originalSize * Mathf.Pow(_bunnySizeScalar, newSize - 1);
         _bunnySize = newSize;
 
-        SetMoveSpeed(_originalMoveSpeed - _moveSpeedAddition * (newSize - 1));
-        SetJumpForce(_originalJumpForce + _jumpForceAddition * (newSize - 1));
-        SetDashForce(_originalDashForce + _dashForceAddition * (newSize - 1));
+        _moveSpeed = _originalMoveSpeed - _moveSpeedAddition * (newSize - 1);
+        _jumpForce = _originalJumpForce + _jumpForceAddition * (newSize - 1);
+        _dashForce = _originalDashForce + _dashForceAddition * (newSize - 1);
 
         StartCoroutine(GrowDamp(targetScale));
     }
@@ -440,23 +494,7 @@ public class PlayerController : MonoBehaviour
         // _oldMovingPlatform = currentMovingPlatform;
 
     }
-    #region Getters and Setters
-
-    public Rigidbody2D GetRigidbody2D()
-    {
-        return _thisRigidbody;
-    } // end GetRigidbody2D
-
-    public void SetCanJump(bool value)
-    {
-        _canJump = value;
-    } // end SetCanJump
-
-    public void SetCanDash(bool value)
-    {
-        _canDash = value;
-    } // end SetCanDash
-
+    #region Helper Functions
     public void SetParent(Transform newParent)
     {
         //_originalParent = transform.parent;
@@ -468,20 +506,6 @@ public class PlayerController : MonoBehaviour
         transform.parent = _originalParent;
     } // end ResetParent
 
-    public void SetDust(float dust)
-    {
-        _dust = dust;
-    } // end SetDust
-
-    public float GetDust()
-    {
-        return _dust;
-    } // end GetDust
-
-    public bool MaxedOutDust()
-    {
-        return _dust >= _maxDust;
-    } // end MaxedOutDust
 
     public void AddDust(float scalar)
     {
@@ -501,32 +525,6 @@ public class PlayerController : MonoBehaviour
         }
         _dust -= scalar;
     } // end RemoveDust
-
-    public void SetMoveSpeed(float _newMoveSpeed)
-    {
-        _moveSpeed = _newMoveSpeed;
-    } // end SetMoveSpeed
-
-    public void SetJumpForce(float _newJumpForce)
-    {
-        _jumpForce = _newJumpForce;
-    } // end SetJumpForce
-
-    public float GetJumpForce()
-    {
-        return _jumpForce;
-    } // end GetJumpForce
-
-    public void SetDashForce(float _newDashForce)
-    {
-        _dashForce = _newDashForce;
-    } // end SetDashForce
-
-    public int GetSize()
-    {
-        return _bunnySize;
-    } // end GetSize
-
     void setParent(Transform newParent)
     {
         _originalParent = transform.parent;
@@ -537,17 +535,6 @@ public class PlayerController : MonoBehaviour
     {
         transform.parent = _originalParent;
     } // end resetParent
-
-    public void SetStickyHeightDivisor(float value)
-    {
-        _stickyHeightDivisor = value;
-    } // end SetOnSticky
-
-    public PlayerSFXController GetSFX()
-    {
-        return _sfx;
-    } // end GetSFX
-
     #endregion
 
     public void Die()
