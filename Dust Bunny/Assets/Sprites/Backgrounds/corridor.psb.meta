@@ -102,7 +102,7 @@ ScriptedImporter:
     rect:
       serializedVersion: 2
       x: 4
-      y: 3110
+      y: 3112
       width: 7680
       height: 822
     spriteID: c6519a92bb944da43b8417cb87b23e44
@@ -113,7 +113,7 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 3110}
+    uvTransform: {x: 4, y: 3112}
     spritePosition: {x: 0, y: 68}
   - name: floor
     originalName: 
@@ -197,7 +197,7 @@ ScriptedImporter:
     parentIndex: -1
     spriteID: c6519a92bb944da43b8417cb87b23e44
     layerID: 57
-    mosaicPosition: {x: 4, y: 3110}
+    mosaicPosition: {x: 4, y: 3112}
     flatten: 0
     isImported: 1
     isVisible: 1
