@@ -390,6 +390,33 @@ public class PlayerController : MonoBehaviour
         }
     } // end updateDustSize
 
+    public void ChangeSize(int newSize)
+    {
+        if (_growing == true || Dead)
+            return;
+        Vector3 targetScale = _originalSize * Mathf.Pow(_bunnySizeScalar, newSize - 1);
+        _bunnySize = newSize;
+
+        SetMoveSpeed(_originalMoveSpeed - _moveSpeedAddition * (newSize - 1));
+        SetJumpForce(_originalJumpForce + _jumpForceAddition * (newSize - 1));
+        SetDashForce(_originalDashForce + _dashForceAddition * (newSize - 1));
+
+        StartCoroutine(GrowDamp(targetScale));
+    }
+
+    IEnumerator GrowDamp(Vector3 targetScale)
+    {
+        _growing = true;
+        while (Vector3.Distance(transform.localScale, targetScale) > _epsilon)
+        {
+            Vector3 interValue = Vector3.Lerp(transform.localScale, targetScale, _scaleSpeed * Time.deltaTime);
+            transform.localScale = interValue;
+            yield return null;
+        }
+        _growing = false;
+    }
+    #endregion
+
     // Deprecated. To Make player a parent of the platform.
     private void parentToPlatform(RaycastHit2D hit)
     {
@@ -412,33 +439,13 @@ public class PlayerController : MonoBehaviour
         // }
         // _oldMovingPlatform = currentMovingPlatform;
 
-    } // end parentToPlatform
+    }
+    #region Getters and Setters
 
     public Rigidbody2D GetRigidbody2D()
     {
-        if (_growing == true || Dead)
-            return;
-        Vector3 targetScale = _originalSize * Mathf.Pow(_bunnySizeScalar, newSize - 1);
-        _bunnySize = newSize;
-
-        SetMoveSpeed(_originalMoveSpeed - _moveSpeedAddition * (newSize - 1));
-        SetJumpForce(_originalJumpForce + _jumpForceAddition * (newSize - 1));
-        SetDashForce(_originalDashForce + _dashForceAddition * (newSize - 1));
-
-        StartCoroutine(GrowDamp(targetScale));
-    } // end ChangeSize
-
-    IEnumerator GrowDamp(Vector3 targetScale)
-    {
-        _growing = true;
-        while (Vector3.Distance(transform.localScale, targetScale) > _epsilon)
-        {
-            Vector3 interValue = Vector3.Lerp(transform.localScale, targetScale, _scaleSpeed * Time.deltaTime);
-            transform.localScale = interValue;
-            yield return null;
-        }
-        _growing = false;
-    } // end GrowDamp
+        return _thisRigidbody;
+    } // end GetRigidbody2D
 
     public void SetCanJump(bool value)
     {
@@ -494,13 +501,6 @@ public class PlayerController : MonoBehaviour
         }
         _dust -= scalar;
     } // end RemoveDust
-    #endregion
-
-    #region Getters and Setters
-    public Rigidbody2D GetRigidbody2D()
-    {
-        return _thisRigidbody;
-    } // end GetRigidbody2D
 
     public void SetMoveSpeed(float _newMoveSpeed)
     {
@@ -527,16 +527,6 @@ public class PlayerController : MonoBehaviour
         return _bunnySize;
     } // end GetSize
 
-    public void SetCanJump(bool value)
-    {
-        _canJump = value;
-    } // end SetCanJump
-
-    public void SetCanDash(bool value)
-    {
-        _canDash = value;
-    } // end SetCanDash
-
     void setParent(Transform newParent)
     {
         _originalParent = transform.parent;
@@ -547,16 +537,6 @@ public class PlayerController : MonoBehaviour
     {
         transform.parent = _originalParent;
     } // end resetParent
-
-    public void SetDust(float dust)
-    {
-        _dust = dust;
-    } // end SetDust
-
-    public float GetDust()
-    {
-        return _dust;
-    } // end GetDust
 
     public void SetStickyHeightDivisor(float value)
     {
