@@ -74,9 +74,10 @@ public class PlayerController : MonoBehaviour
     float _stickyHeightDivisor = 1f;
 
     // Platform variables
-    private Transform _originalParent;
+    private Transform _originalParent = null;
 
     private DropDownPlatform _currentDropDownPlatform = null;
+    private RigidBodyRideable _oldRidable = null;
     private Transform _oldMovingPlatform = null;
 
     // Physics
@@ -238,51 +239,28 @@ public class PlayerController : MonoBehaviour
 
     private void checkGrounded()
     {
+        // Raycast to check if the player is grounded
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f * transform.localScale.y, _environmentLayer);
         Debug.DrawRay(transform.position, Vector2.down, Color.red); // Draw the raycast
 
-        if (hit.collider != null)
+        _grounded = (hit.collider != null) && !(hit.collider == null && _lastTimeGrounded < _coyoteTime);
+
+        if (_grounded)
         {
-            _grounded = true;
             _lastTimeGrounded = 0f;
             SetCanJump(true);
             SetCanDash(true);
-
-            _currentDropDownPlatform = hit.collider.GetComponentInChildren<DropDownPlatform>();
-
-            Transform currentMovingPlatform = hit.collider.GetComponentInParent<MovingPlatform>()?.transform;
-            if (currentMovingPlatform != null)
-            {
-                if (currentMovingPlatform != _oldMovingPlatform)
-                {
-                    if (_oldMovingPlatform != null)
-                    {
-                        resetParent();
-                    }
-                    setParent(currentMovingPlatform);
-                }
-            }
-            else
-            {
-                resetParent();
-            }
-            _oldMovingPlatform = currentMovingPlatform;
         }
-        else
+
+        _currentDropDownPlatform = hit.collider?.GetComponentInChildren<DropDownPlatform>();
+        // Handle Ridable Calculations
+        RigidBodyRideable currentRidable = hit.collider?.GetComponentInParent<RigidBodyRideable>();
+        if (currentRidable != _oldRidable)
         {
-            //Only is not grounded if coyote time has passed
-            if (_lastTimeGrounded > _coyoteTime)
-            {
-                _grounded = false;
-            }
-
-            _currentDropDownPlatform = null;
-            if (_oldMovingPlatform != null)
-            {
-                resetParent();
-                _oldMovingPlatform = null;
-            }
+            _oldRidable?.RemoveRider(this);
+            currentRidable?.SetRider(this);
         }
+        _oldRidable = currentRidable;
     } // end checkGrounded
 
     void Move()
@@ -305,6 +283,7 @@ public class PlayerController : MonoBehaviour
         Vector2 _newMovement = new Vector2(MathF.Sign(_speedToTargetSpeed) * Mathf.Pow(_horizontalMovement, 0.9f), 0);// * Time.fixedDeltaTime, 0);
         _thisRigidbody.AddForce(_newMovement, ForceMode2D.Force);
     } // end Move
+
 
     void updateFriction()
     {
@@ -411,7 +390,31 @@ public class PlayerController : MonoBehaviour
         }
     } // end updateDustSize
 
-    public void ChangeSize(int newSize)
+    // Deprecated. To Make player a parent of the platform.
+    private void parentToPlatform(RaycastHit2D hit)
+    {
+        Transform currentMovingPlatform = hit.collider.GetComponentInParent<MovingPlatform>()?.transform;
+
+        // if (currentMovingPlatform != null)
+        // {
+        //     if (currentMovingPlatform != _oldMovingPlatform)
+        //     {
+        //         if (_oldMovingPlatform != null)
+        //         {
+        //             resetParent();
+        //         }
+        //         SetParent(currentMovingPlatform);
+        //     }
+        // }
+        // else
+        // {
+        //     resetParent();
+        // }
+        // _oldMovingPlatform = currentMovingPlatform;
+
+    } // end parentToPlatform
+
+    public Rigidbody2D GetRigidbody2D()
     {
         if (_growing == true || Dead)
             return;
@@ -436,6 +439,37 @@ public class PlayerController : MonoBehaviour
         }
         _growing = false;
     } // end GrowDamp
+
+    public void SetCanJump(bool value)
+    {
+        _canJump = value;
+    } // end SetCanJump
+
+    public void SetCanDash(bool value)
+    {
+        _canDash = value;
+    } // end SetCanDash
+
+    public void SetParent(Transform newParent)
+    {
+        //_originalParent = transform.parent;
+        transform.parent = newParent;
+    } // end SetParent
+
+    public void ResetParent()
+    {
+        transform.parent = _originalParent;
+    } // end ResetParent
+
+    public void SetDust(float dust)
+    {
+        _dust = dust;
+    } // end SetDust
+
+    public float GetDust()
+    {
+        return _dust;
+    } // end GetDust
 
     public bool MaxedOutDust()
     {

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SwitchablePlatform : Switchable
+public class SwitchablePlatform : MonoBehaviour, ISwitchable
 {
     [SerializeField] bool _isTimed = false;
     [SerializeField] float _timedToggleLength = 1f;
@@ -23,13 +23,13 @@ public class SwitchablePlatform : Switchable
         }
     }
 
-    public override void Disable()
+    public void Disable()
     {
         _collider.enabled = false;
         _sprite.enabled = false;
     }
 
-    public override void Enable()
+    public void Enable()
     {
         _collider.enabled = true;
         _sprite.enabled = true;
