@@ -95,6 +95,7 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D _thisRigidbody;
     float _standardGravity;
     Collider2D _thisCollider;
+    Vector2 _previousVelocity;
     [SerializeField] LayerMask _environmentLayer;
     #endregion
 
@@ -113,7 +114,7 @@ public class PlayerController : MonoBehaviour
     [Header("Death")]
     [SerializeField] private Animator _deathTransition;
     [SerializeField] private float _deathTransitionTime = 1f;
-    bool Dead = false;
+    bool _isDead = false;
     #endregion
 
     #region External References
@@ -123,7 +124,6 @@ public class PlayerController : MonoBehaviour
     public bool IsGrounded => _grounded;
     public bool IsCoyoteTime => _isCoyoteTime;
     public bool IsGrowing => _growing;
-    public bool IsDead => Dead;
     public bool IsMaxedOutDust => _dust >= _maxDust;
     public bool IsOnDropDownPlatform => _currentDropDownPlatform != null;
     public bool IsOnRideable => _oldRidable != null;
@@ -159,6 +159,14 @@ public class PlayerController : MonoBehaviour
         set => _stickyHeightDivisor = value;
     }
     #endregion
+
+    #region Actions
+    public event Action Dead;
+    public event Action Jumped;
+    public event Action DoubleJumped;
+    public event Action<bool, float> GroundedChanged; // Grounded - Impact force
+    public event Action<bool, Vector2> DashingChanged; // Dashing - Dir
+    #endregion
     #endregion
 
     private void Awake()
@@ -188,7 +196,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (Dead) return;
+        if (_isDead) return;
         gatherInput();
         //updateFriction(); //TODO: Ensure it doesnt flipflop
         updateDustSize();
@@ -226,6 +234,7 @@ public class PlayerController : MonoBehaviour
         }
         _doJump = false;
         _doDash = false;
+        _previousVelocity = _thisRigidbody.velocity;
     } // end FixedUpdate
 
     private void gatherInput()
@@ -301,10 +310,16 @@ public class PlayerController : MonoBehaviour
 
         if (_grounded)
         {
+            GroundedChanged?.Invoke(true, Mathf.Abs(_previousVelocity.y));
             _lastTimeGrounded = 0f;
             _canJump = true;
             _canDash = true;
         }
+        else
+        {
+            GroundedChanged?.Invoke(false, 0);
+        }
+
 
         _currentDropDownPlatform = hit.collider?.GetComponentInChildren<DropDownPlatform>();
         // Handle Ridable Calculations
@@ -374,7 +389,7 @@ public class PlayerController : MonoBehaviour
             _thisRigidbody.AddForce(_jumpForceVector, ForceMode2D.Impulse);
         }
         _canJump = false;
-        _sfx.PlaySFX(PlayerSFXController.SFX.Jump);
+        Jumped?.Invoke();
     } // end Jump
 
     // Starts a timer for _coyoteTime seconds, once finished it will set grounded to false
@@ -402,6 +417,7 @@ public class PlayerController : MonoBehaviour
         _thisRigidbody.velocity = Vector2.zero;
 
         _thisRigidbody.velocity = new Vector2(_dashDirection.x * _dashForce, _dashDirection.y * _dashForce);
+        DashingChanged?.Invoke(true, _dashDirection);
         yield return new WaitForSeconds(_dashTime);
         _thisRigidbody.gravityScale = _standardGravity;
         _thisRigidbody.velocity = Vector2.zero;
@@ -446,7 +462,7 @@ public class PlayerController : MonoBehaviour
 
     public void ChangeSize(int newSize)
     {
-        if (_growing == true || Dead)
+        if (_growing == true || _isDead)
             return;
         Vector3 targetScale = _originalSize * Mathf.Pow(_bunnySizeScalar, newSize - 1);
         _bunnySize = newSize;
@@ -518,7 +534,7 @@ public class PlayerController : MonoBehaviour
 
     public void RemoveDust(float scalar)
     {
-        if (_dust - scalar < 0 && !Dead)
+        if (_dust - scalar < 0 && !_isDead)
         {
             Die();
             return;
@@ -539,7 +555,8 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        Dead = true;
+        Dead?.Invoke();
+        _isDead = true;
         _thisCollider.enabled = false;
         _thisRigidbody.simulated = false;
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();

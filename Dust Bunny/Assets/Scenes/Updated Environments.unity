@@ -512,6 +512,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &482624261 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7576746281246606283, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
+  m_PrefabInstance: {fileID: 2287683688347141753}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92e50e632ed6f2a9194c37796b8dd6f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &564576055
 GameObject:
   m_ObjectHideFlags: 0
@@ -1269,6 +1280,11 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 1172379901}
+--- !u!95 &862838508 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2177905673605714212, guid: 5a1ade1d34868624d99dfa4d098d8789, type: 3}
+  m_PrefabInstance: {fileID: 2000948130}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &882793101
 GameObject:
   m_ObjectHideFlags: 3
@@ -1526,11 +1542,6 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!95 &1055752185 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 2177905673605714212, guid: 5a1ade1d34868624d99dfa4d098d8789, type: 3}
-  m_PrefabInstance: {fileID: 2000948130}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1130970912
 GameObject:
   m_ObjectHideFlags: 0
@@ -25952,6 +25963,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 4406931236201458285, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
+      propertyPath: _sfx
+      value: 
+      objectReference: {fileID: 482624261}
+    - target: {fileID: 4406931236201458285, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
+      propertyPath: _idleStartTime
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 7734578263794980869, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -8.5
@@ -25993,15 +26012,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8581144152350569031, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8581144152350569031, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
       propertyPath: _deathTransition
       value: 
-      objectReference: {fileID: 1055752185}
-    m_RemovedComponents:
-    - {fileID: 1754437265604579669, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
+      objectReference: {fileID: 862838508}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
