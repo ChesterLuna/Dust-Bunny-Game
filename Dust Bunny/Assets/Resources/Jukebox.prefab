@@ -48,8 +48,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   exposedSongClips:
   - song: 0
-    introClip: {fileID: 8300000, guid: 26dce9f115132501f95069939f1a2d2d, type: 3}
-    loopClip: {fileID: 8300000, guid: b6217ce2f0fc68a59a50c08e193069f6, type: 3}
+    introClip: {fileID: 8300000, guid: 9c428862c25225cfcb658592017d783e, type: 3}
+    loopClip: {fileID: 8300000, guid: 5c90e4485272859e487685208cf0abfd, type: 3}
   initialSong: 1
   fadeSpeed: 50
   bgmSwapBuffer: 0

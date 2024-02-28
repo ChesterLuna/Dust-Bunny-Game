@@ -109,6 +109,7 @@ public class Jukebox : MonoBehaviour
         
 
         introSource.volume = fadeTimer / 100;
+        loopSource.volume = fadeTimer / 100;
     }
 
     private void SwapClip(){
