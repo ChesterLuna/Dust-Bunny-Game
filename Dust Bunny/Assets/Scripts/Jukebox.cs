@@ -11,15 +11,16 @@ public class Jukebox : MonoBehaviour
     public static Jukebox instance = null;
     public enum Song{BEDROOM, NONE};
     [Serializable]
-    public struct InspectorSong{
+    public struct SongInfo{
         public Song song;
-        public AudioClip clip;
+        public AudioClip introClip;
+        public AudioClip loopClip;
     }
     private const string JUKEBOX_PATH = "Jukebox";
 
     // Song clips
-    public InspectorSong[] exposedSongClips;
-    private Dictionary<Song, AudioClip> songClips;
+    public SongInfo[] exposedSongClips;
+    private Dictionary<Song, SongInfo> songClips;
 
     // Variables
     public Song initialSong = Song.NONE;
@@ -39,7 +40,9 @@ public class Jukebox : MonoBehaviour
     private bool initalized = false;
 
     // References
-    private AudioSource source;
+    private AudioSource introSource;
+    private AudioSource loopSource;
+
 
     // Start is called before the first frame update
     void Start()
@@ -66,14 +69,19 @@ public class Jukebox : MonoBehaviour
         if (!initalized){
             DontDestroyOnLoad(gameObject);
             instance = this;
-            source = GetComponent<AudioSource>();
+            introSource = GetComponents<AudioSource>()[0];
+            loopSource = GetComponents<AudioSource>()[1];
 
             //Assemble the disctionary from the inspector songs
-            songClips = new Dictionary<Song, AudioClip>();
+            songClips = new Dictionary<Song, SongInfo>();
             for(int i = 0; i < exposedSongClips.Length; i++){
-                songClips.Add(exposedSongClips[i].song, exposedSongClips[i].clip);
+                songClips.Add(exposedSongClips[i].song, exposedSongClips[i]);
             }
-            songClips.Add(Song.NONE, null);
+            SongInfo noneSong;
+            noneSong.song = Song.NONE; //lol
+            noneSong.introClip = null;
+            noneSong.loopClip = null;
+            songClips.Add(Song.NONE, noneSong);
 
             //Play the initial song
             bgmSwapBuffer = initialSong;
@@ -100,21 +108,27 @@ public class Jukebox : MonoBehaviour
         fadeTimer = Mathf.Max(Mathf.Min(fadeTimer, 100), 0);
         
 
-        source.volume = fadeTimer / 100;
+        introSource.volume = fadeTimer / 100;
     }
 
     private void SwapClip(){
         fadingOut = false;
-        AudioClip newClip = songClips[bgmSwapBuffer];
-        if(newClip != null){
-            source.Stop();
-            source.clip = newClip;
-            source.Play();
+        AudioClip newIntroClip = songClips[bgmSwapBuffer].introClip;
+        AudioClip newLoopClip = songClips[bgmSwapBuffer].loopClip;
+        if(songClips[bgmSwapBuffer].song != Song.NONE){
+            introSource.Stop();
+            introSource.clip = newIntroClip;
+            introSource.Play();
+
+            loopSource.Stop();
+            loopSource.clip = newLoopClip;
+            loopSource.PlayScheduled(AudioSettings.dspTime + newIntroClip.length);
         } else {
-            source.Stop();
+            introSource.Stop();
+            loopSource.Stop();
         }
 
-        string name = newClip == null ? "None" : newClip.name;
+        string name = newIntroClip == null ? "None" : newIntroClip.name;
         Debug.Log("Now Playing: " + name);
     }
 
