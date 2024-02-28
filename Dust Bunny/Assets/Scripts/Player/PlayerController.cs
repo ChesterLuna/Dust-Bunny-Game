@@ -425,6 +425,7 @@ public class PlayerController : MonoBehaviour
         _lastTimeDashed = 0f;
         _canDash = false;
         _isDashing = false;
+        DashingChanged?.Invoke(false, Vector2.zero);
     } // end Dash
 
     private void sendInteract()
