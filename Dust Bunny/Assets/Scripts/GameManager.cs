@@ -69,6 +69,15 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
+            if (_scoreTimerRunning == "Stopped")
+            {
+                break;
+            }
+            else if (_scoreTimerRunning == "Paused")
+            {
+                yield return null;
+                continue;
+            }
             _secondTimer = _secondTimer + Time.deltaTime;
             if (_secondTimer >= 1f)
             {
