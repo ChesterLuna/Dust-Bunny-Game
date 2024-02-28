@@ -23,8 +23,9 @@ public class DustCloud : MonoBehaviour
         if (_player)
         {
             InvokeRepeating("tryAddDust", 0f, _dustTickRate);
-            if (!_player.MaxedOutDust()){
-                _player.GetSFX().PlaySFX(PlayerSFXController.SFX.Dust_Collect_Start);
+            if (!_player.IsMaxedOutDust)
+            {
+                _player.SFX.PlaySFX(PlayerSFXController.SFX.Dust_Collect_Start);
             }
         }
     }
@@ -35,15 +36,16 @@ public class DustCloud : MonoBehaviour
         if (player == _player)
         {
             CancelInvoke("tryAddDust");
-            if (!_player.MaxedOutDust()){
-                _player.GetSFX().PlaySFX(PlayerSFXController.SFX.Dust_Collect_Stop_Abrupt);
+            if (!_player.IsMaxedOutDust)
+            {
+                _player.SFX.PlaySFX(PlayerSFXController.SFX.Dust_Collect_Stop_Abrupt);
             }
         }
     }
 
     void tryAddDust()
     {
-        if (!_player.MaxedOutDust())
+        if (!_player.IsMaxedOutDust)
         {
             _amountOfDust -= _dustTickAmount;
             if (_amountOfDust < 0 && _maxDustToGive != -1)
@@ -53,8 +55,9 @@ public class DustCloud : MonoBehaviour
             _player.AddDust(_dustTickAmount);
 
             //Check if this dust add has now filled up the player, to stop the sfx
-            if(_player.MaxedOutDust()){
-                _player.GetSFX().PlaySFX(PlayerSFXController.SFX.Dust_Collect_Stop_Clean);
+            if (_player.IsMaxedOutDust)
+            {
+                _player.SFX.PlaySFX(PlayerSFXController.SFX.Dust_Collect_Stop_Clean);
             }
         }
     }

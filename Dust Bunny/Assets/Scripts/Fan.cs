@@ -9,13 +9,12 @@ public class Fan : MonoBehaviour, ISwitchable
     [SerializeField] float _timedToggleLength = 1f;
     [SerializeField] float _force = 75;
     [SerializeField] SpriteRenderer _baseSprite;
-    SpriteRenderer _fanSprite;
+    [SerializeField] SpriteRenderer _fanSprite;
     Collider2D _fanCollider;
 
     void Awake()
     {
         _fanCollider = GetComponent<Collider2D>();
-        _fanSprite = GetComponent<SpriteRenderer>();
     }
 
     void Start()
@@ -53,7 +52,7 @@ public class Fan : MonoBehaviour, ISwitchable
     {
         if (collider.gameObject.CompareTag("Player"))
         {
-            Rigidbody2D player = collider.gameObject.GetComponent<PlayerController>().GetRigidbody2D();
+            Rigidbody2D player = collider.gameObject.GetComponent<PlayerController>().RB;
             player.AddForce(transform.up * _force);
         }
     }

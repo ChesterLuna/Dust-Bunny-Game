@@ -4,9 +4,17 @@ using UnityEngine;
 
 public class PlayerSFXController : MonoBehaviour
 {
-    public enum SFX { Jump, Dust_Collect_Start, Dust_Collect_Stop_Clean, Dust_Collect_Stop_Abrupt};
+    public enum SFX { Jump, Dust_Collect_Start, Dust_Collect_Stop_Clean, Dust_Collect_Stop_Abrupt, Foot_Step, Land, Dash, Dead };
 
     public Vector2 randomPitchVariationRange;
+    // private int _stepIndex;
+
+    // This funciton is called by the Walking animation
+    public void PlayFootstep()
+    {
+        PlaySFX(SFX.Foot_Step);
+    } // end PlayFootstep
+
 
     public void PlaySFX(SFX soundEffect)
     {
@@ -62,26 +70,46 @@ public class PlayerSFXController : MonoBehaviour
                 _soundObject = GetChildSoundEffect("Dust Collect End");
                 PlaySoundObject(_soundObject, _pitch);
                 break;
-
+            case SFX.Foot_Step:
+                _soundObject = GetChildSoundEffect("Foot Step");
+                // PlaySound(_footstepClips[_stepIndex++ % _footstepClips.Length]);
+                PlaySoundObject(_soundObject);
+                break;
+            case SFX.Land:
+                _soundObject = GetChildSoundEffect("Land");
+                PlaySoundObject(_soundObject);
+                break;
+            case SFX.Dash:
+                _soundObject = GetChildSoundEffect("Dash");
+                PlaySoundObject(_soundObject);
+                break;
+            case SFX.Dead:
+                _soundObject = GetChildSoundEffect("Death");
+                PlaySoundObject(_soundObject);
+                break;
             default:
                 Debug.Log("Requested to play an unimplemented sound effect...");
                 break;
         }
     }
 
-    private void PlaySoundObject(GameObject _soundObject){
+    private void PlaySoundObject(GameObject _soundObject)
+    {
         QueueSoundObject(_soundObject, 0);
     }
 
-    private void PlaySoundObject(GameObject _soundObject, float pitch){
+    private void PlaySoundObject(GameObject _soundObject, float pitch)
+    {
         QueueSoundObject(_soundObject, 0, pitch);
     }
 
-    private void QueueSoundObject(GameObject _soundObject, float _delay){
+    private void QueueSoundObject(GameObject _soundObject, float _delay)
+    {
         QueueSoundObject(_soundObject, _delay, GetRandomPitch());
     }
 
-    private void QueueSoundObject(GameObject _soundObject, float _delay, float pitch){
+    private void QueueSoundObject(GameObject _soundObject, float _delay, float pitch)
+    {
         AudioSource _audio = GetSourceFromObject(_soundObject);
 
         //Queue the requested sound effect
@@ -89,12 +117,14 @@ public class PlayerSFXController : MonoBehaviour
         _audio.PlayDelayed(_delay - 0.1f);
     }
 
-    float GetRandomPitch(){
+    float GetRandomPitch()
+    {
         return Random.Range(randomPitchVariationRange.x, randomPitchVariationRange.y);
     }
 
     //Helper to get an audio source from a game object, with safety checks
-    private AudioSource GetSourceFromObject(GameObject _soundObject){
+    private AudioSource GetSourceFromObject(GameObject _soundObject)
+    {
         //Check if we were able to find the sound effect
         if (_soundObject == null)
         {

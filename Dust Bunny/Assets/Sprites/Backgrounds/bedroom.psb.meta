@@ -115,69 +115,6 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 4, y: 4}
     spritePosition: {x: 0, y: 0}
-  - name: shading
-    originalName: 
-    pivot: {x: 0.5, y: 0.5}
-    alignment: 0
-    border: {x: 0, y: 0, z: 0, w: 0}
-    rect:
-      serializedVersion: 2
-      x: 4
-      y: 5280
-      width: 7680
-      height: 822
-    spriteID: c322c51f494ac924db4438ea86b67765
-    spriteBone: []
-    spriteOutline: []
-    vertices: []
-    spritePhysicsOutline: []
-    indices: 
-    edges: []
-    tessellationDetail: 0
-    uvTransform: {x: 4, y: 5280}
-    spritePosition: {x: 0, y: 68}
-  - name: floor
-    originalName: 
-    pivot: {x: 0.5, y: 0.5}
-    alignment: 0
-    border: {x: 0, y: 0, z: 0, w: 0}
-    rect:
-      serializedVersion: 2
-      x: 4
-      y: 4340
-      width: 7680
-      height: 932
-    spriteID: 714e6d2173e03904fb6ca05abe429c5b
-    spriteBone: []
-    spriteOutline: []
-    vertices: []
-    spritePhysicsOutline: []
-    indices: 
-    edges: []
-    tessellationDetail: 0
-    uvTransform: {x: 4, y: 4340}
-    spritePosition: {x: 0, y: 0}
-  - name: wall
-    originalName: 
-    pivot: {x: 0.5, y: 0.5}
-    alignment: 0
-    border: {x: 0, y: 0, z: 0, w: 0}
-    rect:
-      serializedVersion: 2
-      x: 4
-      y: 2172
-      width: 7680
-      height: 2160
-    spriteID: 4ab19a78377d9724081f962047cf2200
-    spriteBone: []
-    spriteOutline: []
-    vertices: []
-    spritePhysicsOutline: []
-    indices: 
-    edges: []
-    tessellationDetail: 0
-    uvTransform: {x: 4, y: 2172}
-    spritePosition: {x: 0, y: 0}
   characterData:
     bones: []
     parts: []
@@ -219,36 +156,6 @@ ScriptedImporter:
     spriteID: 2e67f979d6d0a324780ad522193431e0
     layerID: 330
     mosaicPosition: {x: 4, y: 4}
-    flatten: 0
-    isImported: 1
-    isVisible: 1
-  - name: shading
-    spriteName: shading
-    isGroup: 0
-    parentIndex: -1
-    spriteID: c322c51f494ac924db4438ea86b67765
-    layerID: 57
-    mosaicPosition: {x: 4, y: 5280}
-    flatten: 0
-    isImported: 1
-    isVisible: 1
-  - name: floor
-    spriteName: floor
-    isGroup: 0
-    parentIndex: -1
-    spriteID: 714e6d2173e03904fb6ca05abe429c5b
-    layerID: 56
-    mosaicPosition: {x: 4, y: 4340}
-    flatten: 0
-    isImported: 1
-    isVisible: 1
-  - name: wall
-    spriteName: wall
-    isGroup: 0
-    parentIndex: -1
-    spriteID: 4ab19a78377d9724081f962047cf2200
-    layerID: 47
-    mosaicPosition: {x: 4, y: 2172}
     flatten: 0
     isImported: 1
     isVisible: 1

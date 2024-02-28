@@ -4,23 +4,19 @@ using UnityEngine;
 
 public class SizeChanger : MonoBehaviour
 {
-
     [SerializeField] GameObject bunnyPlayer;
     [SerializeField] int newSize = 2;
 
-    // Start is called before the first frame update
     void Start()
     {
         bunnyPlayer = GameObject.FindWithTag("Player");
-    }
-
-    // Update is called once per frame
+    } // end Start
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("Enter collider");
         bunnyPlayer.GetComponent<PlayerController>().ChangeSize(newSize);
 
-    }
+    } // end OnTriggerEnter2D
 
-}
+} // end class SizeChanger
