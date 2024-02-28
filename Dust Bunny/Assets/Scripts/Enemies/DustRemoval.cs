@@ -5,8 +5,9 @@ using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Swiffer : MonoBehaviour
+public class DustRemoval : MonoBehaviour
 {
+    [Tooltip("The maximum amount of dust this object can take before it is destroyed. Set to -1 to make it indestructible")]
     [SerializeField] float _maxDustToTake = 100;
     [SerializeField] float _dustTickAmount = 10;
     float _amountOfDust = 0;
