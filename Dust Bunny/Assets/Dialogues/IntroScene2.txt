@@ -1,0 +1,8 @@
+﻿#Spek
+:Wha- Pip? There you are!
+
+#Pip
+:Quick! Let’s go!
+
+#Spek
+:Wait up!

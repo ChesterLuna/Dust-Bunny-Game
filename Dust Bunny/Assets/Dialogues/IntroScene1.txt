@@ -1,0 +1,26 @@
+﻿#Spek
+:What was that strange sound just now?
+
+#Spek
+:There it is again!
+
+#Hodge
+:(Grunt)
+
+#Spek
+:Hodge? Did you hear it?
+
+#Hodge
+:Only thing I’m hearing is your yammering… 
+
+#Spek
+:Aaah!
+
+#Hodge
+:Oh, I felt that one alright. 
+
+#Spek
+:It’s getting worse. I should go check on Pipsqueak.  
+
+#Hodge
+:Right-o. You know where to find me.

@@ -271,7 +271,7 @@ public class PlayerController : MonoBehaviour
         }
     } // end TurnCheck
 
-    private void Turn()
+    public void Turn()
     {
         Vector3 rotator;
         if (IsFacingRight)
@@ -562,7 +562,7 @@ public class PlayerController : MonoBehaviour
 
     public void RemoveDust(float scalar)
     {
-        if (_dust - scalar < 0 && !_isDead)
+        if (_dust - scalar <= 0 && !_isDead)
         {
             Die();
             return;

@@ -7,7 +7,7 @@ public abstract class RigidBodyRideable : MonoBehaviour
 {
     protected List<PlayerController> _riders = new();
     protected Rigidbody2D _rb;
-    protected void Awake()
+    protected virtual void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
         _rb.isKinematic = true;
@@ -28,12 +28,12 @@ public abstract class RigidBodyRideable : MonoBehaviour
         }
     }
 
-    protected void move_with_riders()
+    protected void MoveWithRiders()
     {
 
         foreach (PlayerController rider in _riders)
         {
-            Debug.Log(this.name);
+            // Debug.Log(this.name);
             rider.SetParent(transform);
         }
     }
