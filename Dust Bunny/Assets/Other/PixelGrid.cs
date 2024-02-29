@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-
+#if UNITY_EDITOR
 public class PixelGrid : EditorWindow
 {
     [MenuItem("Window/Pixel Grid")]
@@ -12,7 +12,7 @@ public class PixelGrid : EditorWindow
         ew.minSize = new Vector2(200, 116);
         ew.maxSize = new Vector2(200, 116);
     }
-    
+
     private float pixelsPerUnit = 48;
     private float gridSize = 8;
 
@@ -32,7 +32,7 @@ public class PixelGrid : EditorWindow
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Pixels Per Unit : ");
         pixelsPerUnit = EditorGUILayout.FloatField(pixelsPerUnit);
-        if(GUI.changed)
+        if (GUI.changed)
             unitScale = 1 / pixelsPerUnit;
         EditorGUILayout.EndHorizontal();
 
@@ -98,7 +98,7 @@ public class PixelGrid : EditorWindow
                 float newX = SnapToGrid(pos.x);
                 t.position = new Vector2(newX, pos.y);
             }
-        }        
+        }
     }
 
     void SnapYToGrid()
@@ -118,7 +118,7 @@ public class PixelGrid : EditorWindow
                 float newY = SnapToGrid(pos.y);
                 t.position = new Vector2(pos.x, newY);
             }
-        }        
+        }
     }
 
     float SnapToGrid(float value)
@@ -129,3 +129,4 @@ public class PixelGrid : EditorWindow
         return newValue;
     }
 }
+#endif
