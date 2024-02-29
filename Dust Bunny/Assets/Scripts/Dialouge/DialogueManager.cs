@@ -30,6 +30,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] TextMeshPro charNameText;
     [SerializeField] TextCrawler dialogueText;
     [SerializeField] bool importantDialogue = false;
+    [SerializeField] bool playOnTrigger = false;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
 
@@ -75,6 +76,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
             _player.GetComponent<PlayerController>().IsStopped = true;
 
         }
+        Debug.Log("Hola");
 
         // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
         if (IsBubble)
@@ -109,7 +111,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     {
         if (importantDialogue)
             GameObject.FindWithTag("Player").GetComponent<PlayerController>().IsStopped = false;
-
+        playOnTrigger = false;
         if (IsBubble)
         {
             Destroy(_textBubble);
@@ -117,6 +119,14 @@ public class DialogueManager : MonoBehaviour, IInteractable
         }
         _isFinishedDialogue = true;
 
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.tag == "Player" && playOnTrigger)
+        {
+            StartDialogue();
+        }
     }
 
 
