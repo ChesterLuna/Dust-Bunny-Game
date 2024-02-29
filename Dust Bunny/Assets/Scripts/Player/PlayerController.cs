@@ -232,14 +232,16 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (_isStopped)
-        {
-            _thisRigidbody.velocity = Vector2.zero;
-            Debug.Log(_thisRigidbody.velocity);
-            return;
-        }
         TurnCheck();
         checkGrounded();
+        if (_isStopped)
+        {
+            _doJump = false;
+            _doDash = false;
+            _thisRigidbody.velocity = new Vector2(0, _thisRigidbody.velocity.y);
+            return;
+        }
+
         if (!_isDashing)
         {
             Move();
