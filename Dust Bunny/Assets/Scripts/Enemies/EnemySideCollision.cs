@@ -10,7 +10,7 @@ public class EnemySideCollision : MonoBehaviour
     {
         if (!other.gameObject.CompareTag("Player"))
         {
-            Debug.Log("EnemySideCollision: OnTriggerEnter2D: other.gameObject.name: " + other.gameObject.name);
+            // Debug.Log("EnemySideCollision: OnTriggerEnter2D: other.gameObject.name: " + other.gameObject.name);
             transform.parent.GetComponent<EnemyMovement>()?.Turn();
             transform.parent.GetComponent<RidableEnemy>()?.Turn();
         }
