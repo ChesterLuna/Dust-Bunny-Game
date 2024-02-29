@@ -93,5 +93,6 @@ public class MyScriptEditor : Editor
             EditorUtility.SetDirty(CameraContolTrigger);
         }
     } // end OnInspectorGUI
+
 } // end class MyScriptEditor
 #endif
