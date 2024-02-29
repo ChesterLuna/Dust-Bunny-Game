@@ -34,6 +34,12 @@ public class PlayerAnimator : MonoBehaviour
 
     private bool _grounded;
     private bool _jumping;
+
+
+    public void OnPlayerFootstep(){
+        _player.SFX.PlaySFX(PlayerSFXController.SFX.Foot_Step);
+    }
+
     private void OnPlayerOnJumped()
     {
         _jumping = true;
