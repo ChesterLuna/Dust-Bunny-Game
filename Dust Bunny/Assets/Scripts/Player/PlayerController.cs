@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _deaccelerationForce = 1f;
     [SerializeField] float _groundFriction = 10f;
     [SerializeField] float _airFriction = 1f;
+    bool _isStopped = false;
     #endregion
 
     #region Abilities
@@ -153,6 +154,11 @@ public class PlayerController : MonoBehaviour
         get => _dashForce;
         set => _dashForce = value;
     }
+    public bool IsStopped
+    {
+        get => _isStopped;
+        set => _isStopped = value;
+    }
     public int BunnySize => _bunnySize;
     public Rigidbody2D RB => _thisRigidbody;
     public Collider2D Col => _thisCollider;
@@ -201,7 +207,14 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (_isDead) return;
+        if(_isStopped)
+        {
+            if (Input.GetButtonDown("Interact"))
+            {
+                sendInteract();
+            }
+        }
+        if (_isDead || _isStopped) return;
         gatherInput();
         //updateFriction(); //TODO: Ensure it doesnt flipflop
         updateDustSize();
@@ -219,6 +232,12 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (_isStopped)
+        {
+            _thisRigidbody.velocity = Vector2.zero;
+            Debug.Log(_thisRigidbody.velocity);
+            return;
+        }
         TurnCheck();
         checkGrounded();
         if (!_isDashing)

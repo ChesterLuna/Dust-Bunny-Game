@@ -29,6 +29,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     [SerializeField] TextMeshPro charNameText;
     [SerializeField] TextCrawler dialogueText;
+    [SerializeField] bool importantDialogue = false;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
 
@@ -68,9 +69,15 @@ public class DialogueManager : MonoBehaviour, IInteractable
     {
         _isStartedDialogue = true;
         _isFinishedDialogue = false;
+        if(importantDialogue)
+        {
+            GameObject _player = GameObject.FindWithTag("Player");
+            _player.GetComponent<PlayerController>().IsStopped = true;
+
+        }
 
         // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
-        if(IsBubble)
+        if (IsBubble)
         {
             _textBubble = Instantiate(textBubble, new Vector3(transform.position.x, transform.position.y + _collider.bounds.size.y + offsetOnTopOfHead), transform.rotation);
 
@@ -100,8 +107,10 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void EndDialogue()
     {
+        if (importantDialogue)
+            GameObject.FindWithTag("Player").GetComponent<PlayerController>().IsStopped = false;
 
-        if(IsBubble)
+        if (IsBubble)
         {
             Destroy(_textBubble);
 
