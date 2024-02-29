@@ -2223,11 +2223,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2145251542363292553, guid: bf7b47f6d6f3f00478ecb632ae54b54c, type: 3}
       propertyPath: _nextLevelSpawnLocation.x
-      value: -6.05
+      value: 0.07
       objectReference: {fileID: 0}
     - target: {fileID: 2145251542363292553, guid: bf7b47f6d6f3f00478ecb632ae54b54c, type: 3}
       propertyPath: _nextLevelSpawnLocation.y
-      value: -3.634
+      value: -1.54
       objectReference: {fileID: 0}
     - target: {fileID: 3380622736166424335, guid: bf7b47f6d6f3f00478ecb632ae54b54c, type: 3}
       propertyPath: m_Name
@@ -2519,7 +2519,7 @@ PrefabInstance:
     - target: {fileID: 8516852593821837261, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: AssetText
       value: 
-      objectReference: {fileID: 4900000, guid: 4d532818f88f4bc4d982662b5552c4a2, type: 3}
+      objectReference: {fileID: 4900000, guid: 1081ab2925d823e2ab038e21a83e3cbd, type: 3}
     - target: {fileID: 8516852593821837261, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: playOnTrigger
       value: 1
