@@ -1028,7 +1028,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1680839638}
+  m_Father: {fileID: 2287683688347141754}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &1918793817
 AudioSource:
@@ -4302,14 +4302,13 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3731121114997445207, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1918793816}
-    - targetCorrespondingSourceObject: {fileID: 3731121114997445207, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 629429475}
-    - targetCorrespondingSourceObject: {fileID: 3731121114997445207, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1471959793}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
+--- !u!4 &2287683688347141754 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3731121114997445207, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
+  m_PrefabInstance: {fileID: 2287683688347141753}
+  m_PrefabAsset: {fileID: 0}
 --- !u!61 &3221761400232084936
 BoxCollider2D:
   m_ObjectHideFlags: 0
