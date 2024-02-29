@@ -11,7 +11,7 @@ public class EnemyFootCollision : MonoBehaviour
     {
         if (!other.gameObject.CompareTag("Player"))
         {
-            // Debug.Log("EnemyFootCollision: OnTriggerExit2D: other.gameObject.name: " + other.gameObject.name);
+            Debug.Log("EnemyFootCollision: OnTriggerExit2D: other.gameObject.name: " + other.gameObject.name);
             transform.parent.GetComponent<EnemyMovement>()?.Turn();
             transform.parent.GetComponent<RidableEnemy>()?.Turn();
         }
