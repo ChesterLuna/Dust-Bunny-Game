@@ -24,6 +24,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] TextAsset AssetText;
     [SerializeField] GameObject textBubble;
     GameObject _textBubble;
+    Collider2D _collider;
+    [SerializeField] float offsetOnTopOfHead = 1.5f;
 
     [SerializeField] TextMeshPro charNameText;
     [SerializeField] TextCrawler dialogueText;
@@ -34,6 +36,10 @@ public class DialogueManager : MonoBehaviour, IInteractable
     bool _isStartedDialogue = false;
     bool _isFinishedDialogue = false;
 
+    private void Awake()
+    {
+        _collider = GetComponent<Collider2D>();
+    }
 
     private void Start()
     {
@@ -42,6 +48,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
             Debug.LogError("No dialogue given. Try adding a .txt to the GameObject.");
             return;
         }
+
         Dialogues = GetComponent<TextAnalyzer>().AnalyzeText(AssetText);
     }
 
@@ -65,9 +72,9 @@ public class DialogueManager : MonoBehaviour, IInteractable
         // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
         if(IsBubble)
         {
-            _textBubble = Instantiate(textBubble, this.transform);
+            _textBubble = Instantiate(textBubble, new Vector3(transform.position.x, transform.position.y + _collider.bounds.size.y + offsetOnTopOfHead), transform.rotation);
 
-            charNameText = _textBubble.transform.Find("Character Name").GetComponent<TextMeshPro>();
+            charNameText = _textBubble.transform.Find("Bubble Canvas").transform.Find("Background").transform.Find("Character Name").GetComponent<TextMeshPro>();
             dialogueText = _textBubble.GetComponent<TextCrawler>().Initalize();
         }
 
