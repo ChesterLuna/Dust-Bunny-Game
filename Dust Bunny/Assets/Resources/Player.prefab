@@ -501,7 +501,7 @@ MonoBehaviour:
   _dashCooldown: 0.1
   _bunnySize: 1
   _bunnySizeScalar: 1.5
-  _scaleSpeed: 1.6
+  _scaleSpeed: 4
   _moveSpeedAddition: 1
   _jumpForceAddition: 2
   _dashForceAddition: 2
