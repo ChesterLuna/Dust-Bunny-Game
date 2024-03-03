@@ -19,9 +19,10 @@ public class DustCloud : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        _player = other.gameObject.GetComponent<PlayerController>();
-        if (_player)
+        PlayerController _newPlayer = other.gameObject.GetComponent<PlayerController>();
+        if (_newPlayer)
         {
+            _player = _newPlayer;
             InvokeRepeating("tryAddDust", 0f, _dustTickRate);
             if (!_player.IsMaxedOutDust)
             {
@@ -33,6 +34,8 @@ public class DustCloud : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         PlayerController player = other.gameObject.GetComponent<PlayerController>();
+        if(player == null)
+            return;
         if (player == _player)
         {
             CancelInvoke("tryAddDust");

@@ -38,6 +38,7 @@ public class Jukebox : MonoBehaviour
 
     // Misc
     private bool initalized = false;
+    private SongInfo currentSong;
 
     // References
     private AudioSource introSource;
@@ -114,9 +115,10 @@ public class Jukebox : MonoBehaviour
 
     private void SwapClip(){
         fadingOut = false;
-        AudioClip newIntroClip = songClips[bgmSwapBuffer].introClip;
-        AudioClip newLoopClip = songClips[bgmSwapBuffer].loopClip;
-        if(songClips[bgmSwapBuffer].song != Song.NONE){
+        currentSong = songClips[bgmSwapBuffer];
+        AudioClip newIntroClip = currentSong.introClip;
+        AudioClip newLoopClip = currentSong.loopClip;
+        if(currentSong.song != Song.NONE){
             introSource.Stop();
             introSource.clip = newIntroClip;
             introSource.Play();
@@ -137,6 +139,11 @@ public class Jukebox : MonoBehaviour
         // If there is no jukebox, make a new one
         if(instance == null){
             Instantiate(Resources.Load(JUKEBOX_PATH)).GetComponent<Jukebox>().Initalize();
+        }
+
+        // If this song is also the currently playing song, do nothing
+        if(song == instance.currentSong.song){
+            return;
         }
 
         instance.StartSwapToClip(song);

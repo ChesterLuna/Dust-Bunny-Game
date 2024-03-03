@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _deaccelerationForce = 1f;
     [SerializeField] float _groundFriction = 10f;
     [SerializeField] float _airFriction = 1f;
+    bool _isStopped = false;
     #endregion
 
     #region Abilities
@@ -52,6 +53,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _moveSpeedAddition = 1f;
     [SerializeField] float _jumpForceAddition = 2f;
     [SerializeField] float _dashForceAddition = 2f;
+    Coroutine _lastDamp;
 
     float _epsilon = 0.01f;
     Vector3 _originalSize = new Vector3(1f, 1f, 1f);
@@ -77,6 +79,7 @@ public class PlayerController : MonoBehaviour
     bool _doJump = false;
     bool _growing = false;
     bool _grounded = false;
+    bool _feetGrounded = false;
     bool _isCoyoteTime = false;
     float _stickyHeightDivisor = 1f;
     #endregion
@@ -87,6 +90,7 @@ public class PlayerController : MonoBehaviour
     private DropDownPlatform _currentDropDownPlatform = null;
     private RigidBodyRideable _oldRidable = null;
     private Transform _oldMovingPlatform = null;
+    private Collider2D _lastCollision = null;
     #endregion
 
     #region Physics
@@ -97,6 +101,7 @@ public class PlayerController : MonoBehaviour
     Collider2D _thisCollider;
     Vector2 _previousVelocity;
     [SerializeField] LayerMask _environmentLayer;
+    int _layerMaskValue;
     #endregion
 
     #region Input
@@ -149,6 +154,11 @@ public class PlayerController : MonoBehaviour
         get => _dashForce;
         set => _dashForce = value;
     }
+    public bool IsStopped
+    {
+        get => _isStopped;
+        set => _isStopped = value;
+    }
     public int BunnySize => _bunnySize;
     public Rigidbody2D RB => _thisRigidbody;
     public Collider2D Col => _thisCollider;
@@ -180,6 +190,7 @@ public class PlayerController : MonoBehaviour
         _originalMoveSpeed = _moveSpeed;
         _originalJumpForce = _jumpForce;
         _originalDashForce = _dashForce;
+        _layerMaskValue = Mathf.RoundToInt(Mathf.Log(_environmentLayer.value, 2));
 
         _sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
     } // end Awake
@@ -196,7 +207,14 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (_isDead) return;
+        if(_isStopped)
+        {
+            if (Input.GetButtonDown("Interact"))
+            {
+                sendInteract();
+            }
+        }
+        if (_isDead || _isStopped) return;
         gatherInput();
         //updateFriction(); //TODO: Ensure it doesnt flipflop
         updateDustSize();
@@ -216,6 +234,14 @@ public class PlayerController : MonoBehaviour
     {
         TurnCheck();
         checkGrounded();
+        if (_isStopped)
+        {
+            _doJump = false;
+            _doDash = false;
+            _thisRigidbody.velocity = new Vector2(0, _thisRigidbody.velocity.y);
+            return;
+        }
+
         if (!_isDashing)
         {
             Move();
@@ -303,10 +329,12 @@ public class PlayerController : MonoBehaviour
     private void checkGrounded()
     {
         // Raycast to check if the player is grounded
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f * transform.localScale.y, _environmentLayer);
-        Debug.DrawRay(transform.position, Vector2.down, Color.red); // Draw the raycast
+        // RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f * transform.localScale.y, _environmentLayer);
+        // Debug.DrawRay(transform.position, Vector2.down, Color.red); // Draw the raycast
 
-        _grounded = (hit.collider != null) && !(hit.collider == null && _lastTimeGrounded < _coyoteTime);
+        // _grounded = (hit.collider != null) && !(hit.collider == null && _lastTimeGrounded < _coyoteTime);
+
+        _grounded = _feetGrounded && !(!_feetGrounded && _lastTimeGrounded < _coyoteTime);
 
         if (_grounded)
         {
@@ -321,9 +349,9 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        _currentDropDownPlatform = hit.collider?.GetComponentInChildren<DropDownPlatform>();
+        _currentDropDownPlatform = _lastCollision?.GetComponentInChildren<DropDownPlatform>();
         // Handle Ridable Calculations
-        RigidBodyRideable currentRidable = hit.collider?.GetComponentInParent<RigidBodyRideable>();
+        RigidBodyRideable currentRidable = _lastCollision?.GetComponentInParent<RigidBodyRideable>();
         if (currentRidable != _oldRidable)
         {
             _oldRidable?.RemoveRider(this);
@@ -331,6 +359,27 @@ public class PlayerController : MonoBehaviour
         }
         _oldRidable = currentRidable;
     } // end checkGrounded
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.layer == _layerMaskValue)
+        {
+            _feetGrounded = true;
+        }
+
+        _lastCollision = other;
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.layer == _layerMaskValue)
+        {
+            _feetGrounded = false;
+        }
+
+        _lastCollision = null;
+    }
+
 
     void Move()
     {
@@ -471,8 +520,9 @@ public class PlayerController : MonoBehaviour
         _moveSpeed = _originalMoveSpeed - _moveSpeedAddition * (newSize - 1);
         _jumpForce = _originalJumpForce + _jumpForceAddition * (newSize - 1);
         _dashForce = _originalDashForce + _dashForceAddition * (newSize - 1);
-
-        StartCoroutine(GrowDamp(targetScale));
+        if(_lastDamp != null)
+            StopCoroutine(_lastDamp);
+        _lastDamp = StartCoroutine(GrowDamp(targetScale));
     }
 
     IEnumerator GrowDamp(Vector3 targetScale)
