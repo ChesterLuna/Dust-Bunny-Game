@@ -36,7 +36,8 @@ public class PlayerAnimator : MonoBehaviour
     private bool _jumping;
 
 
-    public void OnPlayerFootstep(){
+    public void OnPlayerFootstep()
+    {
         _player.SFX.PlaySFX(PlayerSFXController.SFX.Foot_Step);
     }
 
@@ -114,6 +115,10 @@ public class PlayerAnimator : MonoBehaviour
             {
                 return _currentState;
             }
+            else if (_player.PlayerState == PlayerController.PlayerStates.Dialogue)
+            {
+                return Idle;
+            }
             else if (_dashing)
             {
                 return Dash;
@@ -125,7 +130,7 @@ public class PlayerAnimator : MonoBehaviour
             }
             else if (_grounded)
             {
-                if (_player.PlayerInput.x == 0f)
+                if (UserInput.instance.MoveInput.x == 0f)
                 {
                     return Idle;
                 }
