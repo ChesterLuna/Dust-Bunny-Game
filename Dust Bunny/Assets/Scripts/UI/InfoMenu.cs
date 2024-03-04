@@ -17,14 +17,14 @@ public class InfoMenu : MonoBehaviour
     int currentPage = 0;
     string[] infoText = new string[]
     {
-        "\tIn this game, you control the actions of the dust bunny, Spek. You can move using WASD or the arrow keys, and jump with the spacebar. Pressing shift allows you to dash in the direction of your mouse cursor, and you can interact with certain objects and NPCs by pressing E.",
-        "\tScattered across the map, you may find clouds of dust. These clouds will grant Spek dust when you come in contact with them, making Spek bigger, decreasing your movement speed but increasing your jump height. Conversely, you may encounter vacuums, which will take away dust when you come in contact with them and cause Spek to shrink, increasing your movement speed but decreasing your jump height. Furthermore, touching a vacuum when Spek is too small will cause a game over.",
-        "\tVarious other hazards and objects are scattered across the map. Currently, you may encounter the following:\n\t-Levers, which affect the state of the map when interacted with.\n\t-Velcro, which is particularly dangerous to any dust bunny and will cause a game over if touched.\n\t-Fans, which will push Spek in a given direction.\n\t-Vacuums and Swiffers, which will decrease Spek's size if touched, but have blind spots that are safe to touch and may even move across the map."
+        "In this game, you control a dust bunny named Spek.\n\nUse WASD or arrow keys to move, SPACE to jump, and E to interact. SHIFT triggers a dash, aimed in the direction of the mouse cursor.",
+        "Dust clouds are scattered throughout the map. Contact with a cloud will cause Spek to grow, decreasing their movement speed but increasing jump height.\n\nCertain hazards can take away dust and cause Spek to shrink, increasing movement speed but decreasing jump height. Be careful! Losing dust when Spek is too small is a fatal mistake!",
+        "Spek may encounter various other objects on their journey, such as:\n-Levers, which affect the state of the map when interacted with.\n-Velcro, which is especially dangerous to any dust bunny who has the misfortune of touching it.\n-Fans, which will push Spek in the direction of their air currents.\n-Vacuums and Swiffers remove dust if Spek gets too close. Some of these hazards move around! But they might just miss a spot when their back is turned..."
     };
     string[] infoTitles = new string[]
     {
         "CONTROLS",
-        "DUST AND VACUUMS",
+        "DUST",
         "HAZARDS AND OBJECTS"
         };
 
