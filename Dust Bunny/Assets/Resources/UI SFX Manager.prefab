@@ -49,11 +49,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   exposedSFX:
   - sfx: 0
-    clip: {fileID: 8300000, guid: 26dce9f115132501f95069939f1a2d2d, type: 3}
+    clip: {fileID: 8300000, guid: 4cd5b4799e426778e9076440c00a6b18, type: 3}
   - sfx: 1
-    clip: {fileID: 8300000, guid: c139ecb3d85f79abdb1a0a339d31a347, type: 3}
+    clip: {fileID: 8300000, guid: 3233eb10286599adea78c87ef3d5c976, type: 3}
   - sfx: 2
-    clip: {fileID: 8300000, guid: 138332b35499d1e32be728800e0028ca, type: 3}
+    clip: {fileID: 8300000, guid: 3886edc4d9c59ba7495184d413a6ac97, type: 3}
 --- !u!82 &2196758003890778814
 AudioSource:
   m_ObjectHideFlags: 0
