@@ -3,11 +3,11 @@ A short 2D platformer made in Unity. Created for INT D 450, Winter 2024.
 
 Developed by the House Hippos
 ---
-Executive Producer: Victoria Lee
-Producer: Matthew Davies
-Lead Designer: Tea Romanzin
-Programming: Matthew Davies (Lead), Chester Adalberto Pérez Luna, & Alexander Salm
-Level Design: Alexander Salm
-Art: Nick Rutter & Tea Romanzin
-Writing: Matthew Lam & Tea Romanzin
-Audio Design: Alexander Salm
+<br>Executive Producer: Victoria Lee
+<br>Producer: Matthew Davies
+<br>Lead Designer: Tea Romanzin
+<br>Programming: Matthew Davies (Lead), Chester Adalberto Pérez Luna, & Alexander Salm
+<br>Level Design: Alexander Salm
+<br>Art: Nick Rutter & Tea Romanzin
+<br>Writing: Matthew Lam & Tea Romanzin
+<br>Audio Design: Alexander Salm
