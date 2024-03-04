@@ -207,14 +207,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if(_isStopped)
-        {
-            if (Input.GetButtonDown("Interact"))
-            {
-                sendInteract();
-            }
-        }
-        if (_isDead || _isStopped) return;
+        if (_isDead) return;
+        
         gatherInput();
         //updateFriction(); //TODO: Ensure it doesnt flipflop
         updateDustSize();
@@ -266,11 +260,12 @@ public class PlayerController : MonoBehaviour
     private void gatherInput()
     {
         _input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        if (Input.GetButtonDown("Jump"))
+        if(_isStopped) _input = Vector2.zero; //For animations, make sure it is actually stopped.
+        if (Input.GetButtonDown("Jump") && !_isStopped)
         {
             _doJump = true;
         }
-        if (Input.GetButtonDown("Dash"))
+        if (Input.GetButtonDown("Dash") && !_isStopped)
         {
             _doDash = true;
         }
