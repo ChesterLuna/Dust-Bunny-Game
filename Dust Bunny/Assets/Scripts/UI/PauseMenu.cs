@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -11,10 +12,10 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] GameObject _pauseMenuUI;
     [SerializeField] GameObject _timerTextUI;
 
-    [SerializeField] TextMeshProUGUI _titleUI;
-    [SerializeField] TextMeshProUGUI _infoUI;
-    [SerializeField] TextMeshProUGUI _backbuttonUI;
-    [SerializeField] TextMeshProUGUI _nextbuttonUI;
+    TextMeshProUGUI _titleUI;
+    TextMeshProUGUI _infoUI;
+    TextMeshProUGUI _backbuttonUI;
+    TextMeshProUGUI _nextbuttonUI;
 
 
     int currentPage = 0;
@@ -45,6 +46,15 @@ public class PauseMenu : MonoBehaviour
         "Back"
     };
 
+    void Awake()
+    {
+        _titleUI = GameObject.Find("TitleText").GetComponent<TextMeshProUGUI>();
+        _infoUI = GameObject.Find("InfoText").GetComponent<TextMeshProUGUI>();
+        _backbuttonUI = GameObject.Find("Back Button/Text (TMP)").GetComponent<TextMeshProUGUI>();
+        _nextbuttonUI = GameObject.Find("Next Button/Text (TMP)").GetComponent<TextMeshProUGUI>();
+    } // end Awake
+
+
     void Start()
     {
         _pauseMenuUI.SetActive(false);
@@ -53,7 +63,7 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (UserInput.instance.ToggleMenu)
         {
             if (GameIsPaused)
             {

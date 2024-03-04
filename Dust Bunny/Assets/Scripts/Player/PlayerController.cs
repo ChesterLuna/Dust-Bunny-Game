@@ -237,7 +237,6 @@ public class PlayerController : MonoBehaviour
         {
             Jump();
         }
-        Debug.Log(_doDash + " " + _canDash + " " + (_lastTimeDashed > _dashCooldown));
         if (_doDash && _canDash && _lastTimeDashed > _dashCooldown)
         {
             StartCoroutine(Dash());

@@ -15,7 +15,7 @@ public class UserInput : MonoBehaviour
     public bool DashInput { get; private set; }
     public Vector2 DashPositionInput { get; private set; }
     public bool InteractInput { get; private set; }
-    public bool MenuToggle { get; private set; }
+    public bool ToggleMenu { get; private set; }
 
     private PlayerInput _playerInput;
     private InputAction _moveAction;
@@ -63,8 +63,8 @@ public class UserInput : MonoBehaviour
         JumpJustReleased = _jumpAction.WasReleasedThisFrame();
         DashInput = _dashAction.WasPressedThisFrame();
         DashPositionInput = _dashPositionAction.ReadValue<Vector2>();
-        Debug.Log(DashPositionInput);
         InteractInput = _interactAction.WasPressedThisFrame();
-        MenuToggle = _menuAction.WasPressedThisFrame();
+        ToggleMenu = _menuAction.WasPressedThisFrame();
+        Debug.Log("ToggleMenu: " + ToggleMenu);
     } // end UpdateInputs
 } // end class UserInput
