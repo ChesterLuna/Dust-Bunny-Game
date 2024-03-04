@@ -20,16 +20,19 @@ public class MainMenu : MonoBehaviour
 
     public void StartGame()
     {
+        UISFXManager.PlaySFX(UISFXManager.SFX.POSITIVE);
         UnityEngine.SceneManagement.SceneManager.LoadScene(firstLevel);
     }
 
     public void OpenInfo()
     {
+        UISFXManager.PlaySFX(UISFXManager.SFX.POSITIVE);
         UnityEngine.SceneManagement.SceneManager.LoadScene("Info Menu");
     }
 
     public void QuitGame()
     {
+        UISFXManager.PlaySFX(UISFXManager.SFX.NEGATIVE);
         Debug.Log("Quit Game.");
         Application.Quit();
     }

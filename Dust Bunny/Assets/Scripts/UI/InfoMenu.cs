@@ -66,6 +66,7 @@ public class InfoMenu : MonoBehaviour
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
         }
+        UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end Next
 
     public void Back()
@@ -79,5 +80,6 @@ public class InfoMenu : MonoBehaviour
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
         }
+        UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end Back
 } // end InfoMenu
