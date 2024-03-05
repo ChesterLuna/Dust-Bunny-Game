@@ -360,9 +360,9 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.layer == _layerMaskValue)
         {
             _feetGrounded = true;
+            _lastCollision = other;
         }
 
-        _lastCollision = other;
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -370,9 +370,8 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.layer == _layerMaskValue)
         {
             _feetGrounded = false;
+            _lastCollision = null;
         }
-
-        _lastCollision = null;
     }
 
 
