@@ -56,9 +56,13 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        if(!_isStartedDialogue)
+        if (!_isStartedDialogue)
         {
             StartDialogue();
+        }
+        else if (!dialogueText.IsFinishedLine())
+        {
+            dialogueText.FinishLine();
         }
         else
         {
