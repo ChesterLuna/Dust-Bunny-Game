@@ -1903,12 +1903,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 218732912}
     m_Modifications:
     - target: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 39.7
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.73
+      value: -3.5
       objectReference: {fileID: 0}
     - target: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1950,6 +1962,26 @@ PrefabInstance:
       propertyPath: m_FlipX
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5336749353464438852, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 1970818433, guid: 84182837b0d735d4b8a29fce359c9d25, type: 3}
+    - target: {fileID: 7591716867782315164, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7591716867782315164, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_Size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7591716867782315164, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_Offset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7591716867782315164, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_Offset.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8516852593821837261, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: AssetText
       value: 
@@ -1961,7 +1993,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5132320362933486253, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2039042809}
   m_SourcePrefab: {fileID: 100100000, guid: 29336384005479c40bc61a1aa4462656, type: 3}
 --- !u!1 &551828049
 GameObject:
@@ -5650,6 +5685,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64f2a56887ba9ae4fb466253d4f04e4b, type: 3}
+--- !u!1 &1689615189 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5132320362933486253, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+  m_PrefabInstance: {fileID: 480537319}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1691938119 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6680292650503350825, guid: f25dcd618d3acd64795bf8bb32edb6c9, type: 3}
@@ -45265,6 +45305,27 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
   m_PrefabInstance: {fileID: 480537319}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &2039042809
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1689615189}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f9b719c7df6737f4198f43a9309ae988, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2046489904
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,10 +11,12 @@ public class Fan : MonoBehaviour, ISwitchable
     [SerializeField] SpriteRenderer _baseSprite;
     [SerializeField] SpriteRenderer _fanSprite;
     Collider2D _fanCollider;
+    Animator _animator;
 
     void Awake()
     {
         _fanCollider = GetComponent<Collider2D>();
+        _animator = GetComponentInChildren<Animator>();
     }
 
     void Start()
@@ -28,12 +30,14 @@ public class Fan : MonoBehaviour, ISwitchable
     {
         _fanCollider.enabled = false;
         _fanSprite.enabled = false;
+        _animator.speed = 0;
     }
 
     public void Enable()
     {
         _fanCollider.enabled = true;
         _fanSprite.enabled = true;
+        _animator.speed = 1;
     }
 
     public void Toggle()
