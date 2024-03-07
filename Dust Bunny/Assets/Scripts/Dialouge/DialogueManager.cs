@@ -60,6 +60,10 @@ public class DialogueManager : MonoBehaviour, IInteractable
         {
             StartDialogue();
         }
+        else if (!dialogueText.IsFinishedLine())
+        {
+            dialogueText.FinishLine();
+        }
         else
         {
             DisplayNextSentence();
