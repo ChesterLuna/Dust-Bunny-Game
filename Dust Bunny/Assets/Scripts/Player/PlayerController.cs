@@ -271,6 +271,8 @@ public class PlayerController : MonoBehaviour
     #region Animations
     private void TurnCheck()
     {
+        if (PlayerState != PlayerStates.Playing) return;
+
         if (UserInput.instance.MoveInput.x > 0 && !IsFacingRight)
         {
             Turn();
