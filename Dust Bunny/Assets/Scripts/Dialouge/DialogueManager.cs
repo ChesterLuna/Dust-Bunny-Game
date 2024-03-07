@@ -10,17 +10,17 @@ using UnityEngine;
 
 public class DialogueManager : MonoBehaviour, IInteractable
 {
-/*
-    How to use:
-    Make a .txt file and fill it up in this format
-    #<This is the name of the character>
-    :<This is the dialogue you want on the character>
+    /*
+        How to use:
+        Make a .txt file and fill it up in this format
+        #<This is the name of the character>
+        :<This is the dialogue you want on the character>
 
-    If you dont write # or : the text wont be recognized, 
-    so try to always write them even if you dont want the
-    character to have name or text for that dialogue.
+        If you dont write # or : the text wont be recognized, 
+        so try to always write them even if you dont want the
+        character to have name or text for that dialogue.
 
-*/
+    */
     [SerializeField] TextAsset AssetText;
     [SerializeField] GameObject textBubble;
     GameObject _textBubble;
@@ -41,7 +41,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     private void Awake()
     {
         _collider = GetComponent<Collider2D>();
-    }
+    } // end Awake
 
     private void Start()
     {
@@ -52,7 +52,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         }
 
         Dialogues = GetComponent<TextAnalyzer>().AnalyzeText(AssetText);
-    }
+    } // end Start
 
     public void Interact()
     {
@@ -68,16 +68,15 @@ public class DialogueManager : MonoBehaviour, IInteractable
         {
             DisplayNextSentence();
         }
-    }
+    } // end Interact
 
     public void StartDialogue()
     {
         _isStartedDialogue = true;
         _isFinishedDialogue = false;
-        if(importantDialogue)
+        if (importantDialogue)
         {
-            GameObject _player = GameObject.FindWithTag("Player");
-            _player.GetComponent<PlayerController>().IsStopped = true;
+            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerController.PlayerStates.Dialogue;
 
         }
         Debug.Log("Hola");
@@ -92,7 +91,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         }
 
         DisplayNextSentence();
-    }
+    } // end StartDialogue
 
 
     public void DisplayNextSentence()
@@ -108,13 +107,13 @@ public class DialogueManager : MonoBehaviour, IInteractable
         charNameText.text = nextDialogue.getName();
         dialogueText.SetText(nextDialogue.getText());
         dialogueText.Advance();
-    }
+    } // end DisplayNextSentence
 
 
     public void EndDialogue()
     {
         if (importantDialogue)
-            GameObject.FindWithTag("Player").GetComponent<PlayerController>().IsStopped = false;
+            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerController.PlayerStates.Playing;
         playOnTrigger = false;
         if (IsBubble)
         {
@@ -122,16 +121,13 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
         }
         _isFinishedDialogue = true;
-
-    }
+    } // end EndDialogue
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.tag == "Player" && playOnTrigger)
+        if (other.tag == "Player" && playOnTrigger)
         {
             StartDialogue();
         }
-    }
-
-
-}
+    } // end OnTriggerEnter2D
+} // end class DialogueManager
