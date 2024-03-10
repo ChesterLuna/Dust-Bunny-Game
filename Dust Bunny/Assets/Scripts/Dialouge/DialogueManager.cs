@@ -81,7 +81,6 @@ public class DialogueManager : MonoBehaviour, IInteractable
             GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerController.PlayerStates.Dialogue;
 
         }
-        Debug.Log("Hola");
 
         // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
         if (IsBubble)

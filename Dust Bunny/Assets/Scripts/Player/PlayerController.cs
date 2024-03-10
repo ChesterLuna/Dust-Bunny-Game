@@ -365,7 +365,7 @@ public class PlayerController : MonoBehaviour
         IInteractable interactScript = other.gameObject.GetComponent<IInteractable>();
         if (interactScript != null && interactScript.showIndicator)
         {
-            transform.Find("Action-Indicator").gameObject.SetActive(true);
+            SetIndicator(true);
         }
 
     }
@@ -380,10 +380,14 @@ public class PlayerController : MonoBehaviour
         IInteractable interactScript = other.gameObject.GetComponent<IInteractable>();
         if (interactScript != null && interactScript.showIndicator)
         {
-            transform.Find("Action-Indicator").gameObject.SetActive(false);
+            SetIndicator(false);
         }
     }
 
+    private void SetIndicator(bool state)
+    {
+        transform.Find("Action-Indicator").gameObject.SetActive(state);
+    }
 
     void Move()
     {
