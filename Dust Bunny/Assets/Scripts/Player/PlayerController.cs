@@ -360,12 +360,27 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    void OnTriggerStay2D(Collider2D other)
+    {
+        IInteractable interactScript = other.gameObject.GetComponent<IInteractable>();
+        if (interactScript != null && interactScript.showIndicator)
+        {
+            transform.Find("Action-Indicator").gameObject.SetActive(true);
+        }
+
+    }
+
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.gameObject.layer == _layerMaskValue)
         {
             _feetGrounded = false;
             _lastCollision = null;
+        }
+        IInteractable interactScript = other.gameObject.GetComponent<IInteractable>();
+        if (interactScript != null && interactScript.showIndicator)
+        {
+            transform.Find("Action-Indicator").gameObject.SetActive(false);
         }
     }
 

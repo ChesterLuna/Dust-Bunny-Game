@@ -31,6 +31,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] TextCrawler dialogueText;
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTrigger = false;
+    [SerializeField] bool _showIndicator = true;
+    public bool showIndicator => _showIndicator;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
 
@@ -121,6 +123,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
         }
         _isFinishedDialogue = true;
+        _isStartedDialogue = false;
+        _showIndicator = false;
     } // end EndDialogue
 
     private void OnTriggerEnter2D(Collider2D other)
