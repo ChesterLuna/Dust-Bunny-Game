@@ -1,0 +1,42 @@
+﻿#Spek
+:Where are you going?
+
+:(Pip turns back toward Spek.)
+
+#Pip
+:To find the source!
+
+#Spek
+:…Of what exactly?
+
+#Pip
+:Dunno! There was a noise and then everything was shaking and no one could settle down and a tunnel collapsed and- 
+
+#Spek
+:Woah woah, slow down little bun.
+
+#Pip
+:The Burrow is all sorts of out of sorts. And I just know something on the Outside is the cause.
+
+#Pip 
+:So I’m going to find out what it is!
+
+#Spek
+:Oh no you don’t. You can’t just hop on out there! That’s nobun’s land!
+
+#Pip
+:But we can’t do nothing. Our home is in danger!
+
+#Spek
+:You’re still no more than a mote. It’s too dangerous for you. 
+
+#Spek
+:*Huff* I’ll go. You stay here with Hodge. 
+
+#Pip
+:But- but-
+
+#Spek
+:Don’t fret Pip, I’ll be back in a jiffy.
+
+:Spek exits the Burrow to the Underbed.
