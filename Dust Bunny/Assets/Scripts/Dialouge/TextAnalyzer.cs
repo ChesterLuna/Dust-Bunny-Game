@@ -33,30 +33,42 @@ public class TextAnalyzer : MonoBehaviour
         string txt = AssetText.text;
         string[] lines = txt.Split(System.Environment.NewLine.ToCharArray());
         Queue<Dialogue> Dialogues = new Queue<Dialogue>();
-        string _Name = null;
-        string _Text = null;
+        // string _Name = null;
+        // string _Text = null;
+        Dialogue nextDialogue = new Dialogue(null, null);
 
         while (i < lines.Length)
         {
             if (!string.IsNullOrEmpty(lines[i]))
             {
 
+                if (lines[i][0] == '$')
+                {
+                    nextDialogue.setPlaySound(true);
+                }
+                if (lines[i][0] == '!')
+                {
+                    nextDialogue.setPlayAnimation(true);
+                }
                 if (lines[i][0] == '#')
                 {
-                    _Name = lines[i].Remove(0, 1);
-
+                    if (lines[i].Remove(0, 1) == "")
+                        nextDialogue.setName(" ");
+                    else
+                        nextDialogue.setName(lines[i].Remove(0, 1));
                 }
                 if (lines[i][0] == ':')
                 {
-                    _Text = lines[i].Remove(0, 1);
+                    nextDialogue.setText(lines[i].Remove(0, 1));
                 }
-                
+
                 // A dialogue should at least have text body. You can still have empty dialogues by only writing :
-                if(_Text != null)
+                if (nextDialogue.getText() != null)
                 {
-                    Dialogues.Enqueue(new Dialogue(_Name, _Text));
-                    _Name = null;
-                    _Text = null;
+                    Dialogues.Enqueue(nextDialogue);
+                    nextDialogue = new Dialogue(null, null);
+                    // _Name = null;
+                    // _Text = null;
                 }
             }
             i++;

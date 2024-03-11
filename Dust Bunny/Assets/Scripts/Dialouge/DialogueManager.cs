@@ -13,12 +13,15 @@ public class DialogueManager : MonoBehaviour, IInteractable
     /*
         How to use:
         Make a .txt file and fill it up in this format
+        $<Add this key to play a sound, please describe it in the dialogue because it has to be implemented by a programmer>
+        !<Add this key to play an animation, please describe it in the dialogue because it has to be implemented by a programmer>
         #<This is the name of the character>
         :<This is the dialogue you want on the character>
 
         If you dont write # or : the text wont be recognized, 
         so try to always write them even if you dont want the
         character to have name or text for that dialogue.
+        The sound and dialogue must always appear before  : .
 
     */
     [SerializeField] TextAsset AssetText;
@@ -39,6 +42,16 @@ public class DialogueManager : MonoBehaviour, IInteractable
     public bool IsBubble = false;
     bool _isStartedDialogue = false;
     bool _isFinishedDialogue = false;
+
+    [SerializeField] AudioClip[] _audioClips;
+    int _iAudio = 0;
+
+    [SerializeField] Animator[] _actors;
+    [SerializeField] AnimationClip [] _animations;
+    // [SerializeField] Animation[] _animations;
+    // [SerializeField] Abuna[] actors;
+    int _iAnim = 0;
+
 
     private void Awake()
     {
@@ -105,11 +118,63 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
         Dialogue nextDialogue = Dialogues.Dequeue();
 
+        if (nextDialogue.isPlaySound())
+            PlayNextSound();
+        if (nextDialogue.isPlayAnimation())
+            PlayNextAnimation();
+
         charNameText.text = nextDialogue.getName();
         dialogueText.SetText(nextDialogue.getText());
         dialogueText.Advance();
     } // end DisplayNextSentence
 
+
+    public void PlayNextSound()
+    {
+        Debug.Log("Play a sound");
+
+        //Find next sound clip
+        if(_iAudio >= _audioClips.Length)
+        {
+            Debug.LogError("There arent enough audioclips set up. Please add some into the dialogue manager or check how many times they are called in the dialogue");
+            return;
+        }
+        AudioClip _nextClip = _audioClips[_iAudio];
+
+        // Play audio clip sfx
+        string name = _nextClip == null ? "None" : _nextClip.name;
+        Debug.Log("Now trying to play: " + name);
+        Debug.Log("Please add implementation of audio");
+
+        _iAudio++; 
+    }
+    public void PlayNextAnimation()
+    {
+
+        Debug.Log("Play an animation");
+
+        //Find next animatior and animation
+        if (_actors.Length != _animations.Length)
+        {
+            Debug.LogWarning("There are not the same amount of actors and animations set up, this might cause some problems so check the arrays.");
+        }
+        if (_iAnim >= _actors.Length || _iAnim >= _animations.Length)
+        {
+            Debug.LogError("There arent enough actors or animations set up. Please add some into the dialogue manager or check how many times they are called in the dialogue");
+            return;
+        }
+        Animator _nextActor = _actors[_iAnim];
+        AnimationClip _nextAnim = _animations[_iAnim];
+
+        // Play animation fx
+        _nextActor.Play(_nextAnim.name);
+        // string name = _nextClip == null ? "None" : _nextClip.name;
+        // Debug.Log("Now trying to play: " + name);
+        // Debug.Log("Please add implementation of audio");
+
+        _iAnim++;
+
+    }
 
     public void EndDialogue()
     {
@@ -131,6 +196,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         if (other.tag == "Player" && playOnTrigger)
         {
             StartDialogue();
+            playOnTrigger = false;
         }
     } // end OnTriggerEnter2D
 } // end class DialogueManager

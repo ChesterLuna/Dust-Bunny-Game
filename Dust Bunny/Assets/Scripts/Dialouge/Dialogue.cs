@@ -12,22 +12,51 @@ namespace Bunny.Dialogues
         string _text;
         bool _bubble;
         bool _lastDialogue;
+        bool _playSound;
+        bool _playAnimation;
 
-        public Dialogue(string theName, string theText, bool isBubble = false, bool isLastDialogue = false)
+        public Dialogue(string _theName, string _theText, bool _isBubble = false, bool _isLastDialogue = false)
         {
             // Leave it empty if there is no given name
-            if (theName != "")
+            if (_theName != "")
             {
-                _name = theName;
+                _name = _theName;
             }
             else
             {
                 _name = " ";
             }
-            _text = theText;
-            _bubble = isBubble;
-            _lastDialogue = isLastDialogue;
+            _text = _theText;
+            _bubble = _isBubble;
+            _lastDialogue = _isLastDialogue;
         }
+
+        public void setName(string _newName)
+        {
+            _name = _newName;
+        }
+        public void setText(string _newText)
+        {
+            _text = _newText;
+        }
+        public void setBubble(bool _newBubble)
+        {
+            _bubble = _newBubble;
+        }
+        public void setPlaySound(bool _newSound)
+        {
+            _playSound = _newSound;
+        }
+        public void setPlayAnimation(bool _newAnim)
+        {
+            _playAnimation = _newAnim;
+        }
+        public void setLastDialogue(bool _newLastDialogue)
+        {
+            _lastDialogue = _newLastDialogue;
+        }
+
+
         public string getName()
         {
             return _name;
@@ -41,7 +70,14 @@ namespace Bunny.Dialogues
         {
             return _bubble;
         }
-
+        public bool isPlaySound()
+        {
+            return _playSound;
+        }
+        public bool isPlayAnimation()
+        {
+            return _playAnimation;
+        }
         internal bool IsLastDialogue()
         {
             return _lastDialogue;
