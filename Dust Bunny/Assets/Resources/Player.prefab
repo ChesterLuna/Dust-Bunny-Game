@@ -319,7 +319,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4955336060963235664}
   - component: {fileID: 570900403999989773}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Feet Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

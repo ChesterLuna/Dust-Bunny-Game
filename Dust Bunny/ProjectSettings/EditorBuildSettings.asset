@@ -9,16 +9,16 @@ EditorBuildSettings:
     path: Assets/Scenes/Main Menu.unity
     guid: 6f681df381a376b47a8a63afa5251718
   - enabled: 0
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 0
-    path: Assets/Scenes/Checkpoint-Test.unity
+    path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/Checkpoint-Test.unity
     guid: a90c45349cbc5ed469a9a50977024377
   - enabled: 0
-    path: Assets/Scenes/Movement-Test.unity
+    path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/Movement-Test.unity
     guid: 3253d3787a07988409dcaac6c5e8377e
   - enabled: 0
-    path: Assets/Scenes/Updated Environments.unity
+    path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/Updated Environments.unity
     guid: 0d5afe99319aced4caec15d289a1cbb4
   - enabled: 1
     path: Assets/Scenes/Info Menu.unity
