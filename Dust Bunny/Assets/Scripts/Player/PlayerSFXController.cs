@@ -1,13 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerSFXController : MonoBehaviour
 {
     public enum SFX { Jump, Dust_Collect_Start, Dust_Collect_Stop_Clean, Dust_Collect_Stop_Abrupt, Foot_Step, Land, Dash, Dead };
-
+    List<GameObject> _soundEffects = new List<GameObject>();
+    private List<string> _soundEffectsNames = new List<string>();
     public Vector2 randomPitchVariationRange;
     // private int _stepIndex;
+
+    void Awake()
+    {
+        foreach (Transform child in transform)
+        {
+            _soundEffects.Add(child.gameObject);
+            _soundEffectsNames.Add(child.gameObject.name);
+        }
+    }
 
     // This funciton is called by the Walking animation
     public void PlayFootstep()
@@ -145,6 +156,6 @@ public class PlayerSFXController : MonoBehaviour
     //Helper to find a child sound effect based on some key; useful if we want to refactor out of using find all the time
     private GameObject GetChildSoundEffect(string _name)
     {
-        return GameObject.Find(_name);
+        return _soundEffects[_soundEffectsNames.IndexOf(_name)];
     }
 }

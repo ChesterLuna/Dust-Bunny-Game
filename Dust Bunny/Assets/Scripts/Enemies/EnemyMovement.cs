@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,8 +11,7 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] float _moveSpeed = 2f;
     [SerializeField] float _gravity = 9.8f;
     [Tooltip("If true, the enemy will move back and forth, turning when they reach the edge of a platform or a wall")]
-    [SerializeField] bool _patrol = true;
-    [SerializeField] StartingDirection startingDirection = StartingDirection.Right;
+    [SerializeField] bool _wander = true;
     [SerializeField] bool _allowTurning = true;
 
     [SerializeField] MovementType _movementType = MovementType.velocity;
@@ -22,14 +22,19 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] Transform _raycastOriginPoint;
     [SerializeField] float _lineOfSightDistance = 5;
     [SerializeField] List<Transform> _patrolPoints = new List<Transform>();
+    [SerializeField] bool _loopPoints = false;
+    [SerializeField] float _patrolThreshold = 0.1f;
+    private int _patrolPointAdder = 1;
 
-
-    int _currentPatrolPoint = 0;
+    int _currentPatrolPointIndex = 0;
+    Vector3 _previousPosition;
+    Vector3 _currentPosition;
+    [SerializeField] float _minMoveDistance = 0.1f;
 
 
     Rigidbody2D _rb;
     Vector2 _newMovement;
-    bool _isFacingRight = true;
+    [SerializeField] bool _isFacingRight = true;
     GameObject _player;
     void Awake()
     {
@@ -38,8 +43,9 @@ public class EnemyMovement : MonoBehaviour
         {
             _raycastOriginPoint = transform;
         }
-        if (startingDirection == StartingDirection.Left)
+        if (!_isFacingRight)
         {
+            _isFacingRight = true;
             Turn(true);
         }
     } // end Awake
@@ -55,11 +61,13 @@ public class EnemyMovement : MonoBehaviour
         {
             SeekPlayer();
         }
-        if (_patrol)
+        if (_wander)
         {
-            Patrol();
+            Wander();
         }
+        _previousPosition = _currentPosition;
         ApplyMovement();
+        _currentPosition = transform.position;
     } // end FixedUpdate
 
     void ApplyMovement()
@@ -77,6 +85,12 @@ public class EnemyMovement : MonoBehaviour
             transform.position = transform.position + (Vector3)_newMovement * Time.fixedDeltaTime;
         }
     } // end ApplyMovement
+
+    bool HasMoved()
+    {
+        return Vector3.Distance(_previousPosition, _currentPosition) > _minMoveDistance;
+    } // end HasMoved
+
 
     private bool CanSeePlayer()
     {
@@ -100,20 +114,47 @@ public class EnemyMovement : MonoBehaviour
 
     private void Patrol()
     {
-        if (_patrolPoints.Count > 0)
+        if (_patrolPoints.Count == 0) return;
+        // TODO: Implement patrol points
+        if (!HasMoved() || _patrolThreshold > Vector2.Distance(transform.position, _patrolPoints[_currentPatrolPointIndex].position))
         {
-            // TODO: Implement patrol points
-
-            // Pathfind to _patrolPoints[_currentPatrolPoint]
-            // If at _patrolPoints[_currentPatrolPoint], _currentPatrolPoint += 1
-            // If _currentPatrolPoint >= _patrolPoints.Count, _currentPatrolPoint = 0
+            _currentPatrolPointIndex += _patrolPointAdder;
+            if (_currentPatrolPointIndex >= _patrolPoints.Count)
+            {
+                if (_loopPoints)
+                {
+                    _currentPatrolPointIndex = 0;
+                }
+                else
+                {
+                    _patrolPointAdder = -1;
+                    _currentPatrolPointIndex = _patrolPoints.Count - 1;
+                }
+            }
+            else if (_currentPatrolPointIndex < 0)
+            {
+                _patrolPointAdder = 1;
+                _currentPatrolPointIndex = 0;
+            }
         }
-        else
-        { // Walk from edge to edge of platform
-            Vector2 direction = _isFacingRight ? Vector2.right : Vector2.left;
-            _newMovement.x = direction.x;
-        }
+        Transform _currentPatrolPoint = _patrolPoints[_currentPatrolPointIndex];
+        Vector2 direction = _currentPatrolPoint.position - transform.position;
+        float targetDirection = Mathf.Sign(direction.x);
+        _isFacingRight = targetDirection == 1; // Set _isFacingRight to true if targetDirection is +1 (right) and false if -1 (left)
+        Turn();
+        _newMovement.x = targetDirection;
     } // end Patrol
+
+    private void Wander()
+    {
+        if (!HasMoved())
+        {
+            Turn();
+        }
+        // Walk from edge to edge of platform
+        Vector2 direction = _isFacingRight ? Vector2.right : Vector2.left;
+        _newMovement.x = direction.x;
+    } // end Wander
 
     public void Turn(bool overwrite = false)
     {
@@ -144,16 +185,10 @@ public class EnemyMovement : MonoBehaviour
         }
     } // end OnDrawGizmos
 
-    private enum StartingDirection
-    {
-        Right,
-        Left
-    } // end StartingDirection
-
     private enum MovementType
     {
         velocity,
         position
-    } // end StartingDirection
+    } // end MovementType
 } // end EnemyMovement
 

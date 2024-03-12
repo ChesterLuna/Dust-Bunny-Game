@@ -11,13 +11,10 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     [SerializeField]
-    public Vector3 CheckpointLocation;
+    public Vector3? CheckpointLocation;
+    public PlayerController _player;
 
-    // Score Timer
-    public int NumSeconds = 0;
-    float _secondTimer;
-    string _scoreTimerRunning = "Stopped";
-
+    // called zero
     private void Awake()
     {
         if (instance == null)
@@ -31,8 +28,35 @@ public class GameManager : MonoBehaviour
         }
     } // end Awake
 
+    // called first
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    } // end OnEnable
+
+    // called second
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ES3AutoSaveMgr.Current.Load();
+        _player = FindObjectOfType<PlayerController>();
+        if (CheckpointLocation.HasValue)
+        {
+            _player.transform.position = CheckpointLocation.Value;
+        }
+    } // end OnSceneLoaded
+
+    // called third
+    private void Start()
+    {
+        StartGameTime();
+    } // end Awake
 
     #region Timer
+    // Score Timer
+    public int NumSeconds = 0;
+    float _secondTimer;
+    string _scoreTimerRunning = "Stopped";
+
     public void StartGameTime()
     {
         UpdateTimerText();

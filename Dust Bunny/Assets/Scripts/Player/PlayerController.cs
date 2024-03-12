@@ -188,13 +188,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        GameManager.instance.StartGameTime();
         _fallSpeedYDampingChangeThreshold = CameraManager.instance._fallSpeedYDampingChangeThreshold;
-        if (GameManager.instance.CheckpointLocation != Vector3.zero)
-        {
-            transform.position = GameManager.instance.CheckpointLocation;
-        }
-        ES3AutoSaveMgr.Current.Load();
     } // end Start
 
     void Update()
@@ -445,7 +439,6 @@ public class PlayerController : MonoBehaviour
     // Dashes for "_dashTime" seconds constantly. Uses AddForce.
     IEnumerator Dash()
     {
-        Debug.Log("Dashing");
         _isDashing = true;
         _lastTimeDashed = 0f;
 

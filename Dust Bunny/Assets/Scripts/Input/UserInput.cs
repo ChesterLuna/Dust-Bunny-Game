@@ -65,6 +65,5 @@ public class UserInput : MonoBehaviour
         DashPositionInput = _dashPositionAction.ReadValue<Vector2>();
         InteractInput = _interactAction.WasPressedThisFrame();
         ToggleMenu = _menuAction.WasPressedThisFrame();
-        Debug.Log("ToggleMenu: " + ToggleMenu);
     } // end UpdateInputs
 } // end class UserInput
