@@ -645,6 +645,7 @@ MonoBehaviour:
   saveChildren: 0
   componentsToSave:
   - {fileID: 3366488407042350610}
+  - {fileID: 8445198543923761199}
 --- !u!1 &8799082803241107375
 GameObject:
   m_ObjectHideFlags: 0

@@ -196,7 +196,7 @@ MonoBehaviour:
   saveTag: 0
   saveName: 0
   saveHideFlags: 0
-  saveActive: 1
+  saveActive: 0
   saveChildren: 0
   componentsToSave:
   - {fileID: 6904809220741559363}
