@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour
     Collider2D _thisCollider;
     Vector2 _previousVelocity;
     [SerializeField] LayerMask _environmentLayer;
-    int _layerMaskValue;
+    // int _layerMaskValue;
     #endregion
 
     #region Input
@@ -181,7 +181,7 @@ public class PlayerController : MonoBehaviour
         _originalMoveSpeed = _moveSpeed;
         _originalJumpForce = _jumpForce;
         _originalDashForce = _dashForce;
-        _layerMaskValue = Mathf.RoundToInt(Mathf.Log(_environmentLayer.value, 2));
+        // _layerMaskValue = Mathf.RoundToInt(Mathf.Log(_environmentLayer.value, 2));
 
         _sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
     } // end Awake
@@ -347,7 +347,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.layer == _layerMaskValue)
+        if (LayerInMask(other.gameObject.layer, _environmentLayer))
         {
             _feetGrounded = true;
             _lastCollision = other;
@@ -357,10 +357,10 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.gameObject.layer == _layerMaskValue)
+        if (LayerInMask(other.gameObject.layer, _environmentLayer))
         {
             _feetGrounded = false;
-            _lastCollision = null;
+            if (other == _lastCollision) _lastCollision = null;
         }
     }
 
@@ -606,4 +606,9 @@ public class PlayerController : MonoBehaviour
         Dialogue,
         Dead
     }
+
+    public bool LayerInMask(int layer, LayerMask mask)
+    {
+        return mask == (mask | (1 << layer));
+    } // end LayerInMask
 } // end class PlayerController

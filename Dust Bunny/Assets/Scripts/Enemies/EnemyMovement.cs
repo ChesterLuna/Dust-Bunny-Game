@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-
     [Header("Movement Variables")]
+    public bool TurnQueued = false;
     GameObject _player;
     Rigidbody2D _rb;
     Vector2 _newMovement;
@@ -74,6 +74,12 @@ public class EnemyMovement : MonoBehaviour
     void FixedUpdate()
     {
         Print("Seek: " + _seekPlayer + " CanSeePlayer: " + CanSeePlayer() + " Wander: " + _wander + " CantReachPatrolPoints: " + CantReachPatrolPoints() + " Patrol: " + _patrol);
+        if (TurnQueued)
+        {
+            IncrementPatrolPoints();
+            Turn();
+            TurnQueued = false;
+        }
         if (_seekPlayer && CanSeePlayer())
         {
             SeekPlayer();
@@ -157,27 +163,12 @@ public class EnemyMovement : MonoBehaviour
         if (!HasMoved())
         {
             reachablePoints[_currentPatrolPointIndex] = false;
+            IncrementPatrolPoints();
         }
-        if (!HasMoved() || _patrolThreshold > Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x))
+        else if (_patrolThreshold > Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x))
         {
-            _currentPatrolPointIndex += _patrolPointAdder;
-            if (_currentPatrolPointIndex >= _patrolPoints.Length)
-            {
-                if (_loopPoints)
-                {
-                    _currentPatrolPointIndex = 0;
-                }
-                else
-                {
-                    _patrolPointAdder = -1;
-                    _currentPatrolPointIndex = _patrolPoints.Length - 1;
-                }
-            }
-            else if (_currentPatrolPointIndex < 0)
-            {
-                _patrolPointAdder = 1;
-                _currentPatrolPointIndex = 0;
-            }
+            reachablePoints[_currentPatrolPointIndex] = true;
+            IncrementPatrolPoints();
         }
         Transform _currentPatrolPoint = _patrolPoints[_currentPatrolPointIndex];
         Vector2 direction = _currentPatrolPoint.position - transform.position;
@@ -205,6 +196,29 @@ public class EnemyMovement : MonoBehaviour
         Vector2 direction = _isFacingRight ? Vector2.right : Vector2.left;
         _newMovement.x = direction.x;
     } // end Wander
+
+    private void IncrementPatrolPoints()
+    {
+        if (_patrolPoints.Length == 0) return;
+        _currentPatrolPointIndex += _patrolPointAdder;
+        if (_currentPatrolPointIndex >= _patrolPoints.Length)
+        {
+            if (_loopPoints)
+            {
+                _currentPatrolPointIndex = 0;
+            }
+            else
+            {
+                _patrolPointAdder = -1;
+                _currentPatrolPointIndex = _patrolPoints.Length - 1;
+            }
+        }
+        else if (_currentPatrolPointIndex < 0)
+        {
+            _patrolPointAdder = 1;
+            _currentPatrolPointIndex = 0;
+        }
+    } // end IncrementPatrolPoints
 
     public void Turn(bool overwrite = false)
     {

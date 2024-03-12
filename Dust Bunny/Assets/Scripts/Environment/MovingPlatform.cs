@@ -21,7 +21,7 @@ public class MovingPlatform : RigidBodyRideable, ISwitchable
         var target = _waypoints[_index].position;
         Vector3 direction = (target - transform.position).normalized;
         transform.position = transform.position + direction * _speed * Time.fixedDeltaTime;
-        MoveWithRiders();
+        // MoveWithRiders();
         // _rb.MovePosition(transform.position + direction * _speed * Time.deltaTime);
         if (Vector2.Distance(_rb.position, target) <= _tolerance)
         {

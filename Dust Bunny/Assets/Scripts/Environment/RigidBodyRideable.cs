@@ -15,7 +15,11 @@ public abstract class RigidBodyRideable : MonoBehaviour
 
     public void SetRider(PlayerController pc)
     {
-        if (!_riders.Contains(pc)) _riders.Add(pc);
+        if (!_riders.Contains(pc))
+        {
+            _riders.Add(pc);
+            pc.SetParent(transform);
+        }
     }
 
     public void RemoveRider(PlayerController pc)
@@ -28,13 +32,13 @@ public abstract class RigidBodyRideable : MonoBehaviour
         }
     }
 
-    protected void MoveWithRiders()
-    {
+    // protected void MoveWithRiders()
+    // {
 
-        foreach (PlayerController rider in _riders)
-        {
-            // Debug.Log(this.name);
-            rider.SetParent(transform);
-        }
-    }
+    //     foreach (PlayerController rider in _riders)
+    //     {
+    //         // Debug.Log(this.name);
+    //         rider.SetParent(transform);
+    //     }
+    // }
 }
