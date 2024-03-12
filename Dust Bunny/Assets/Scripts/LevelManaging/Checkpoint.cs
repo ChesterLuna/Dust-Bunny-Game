@@ -5,20 +5,21 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
-
     [SerializeField] private bool _useCustomLocation;
     [SerializeField] private Vector3 _spawnLocation;
-    [SerializeField] private Sprite _closedSprite;
-    [SerializeField] private Sprite _openSprite;
-    [SerializeField] private Sprite _activatedSprite;
-    private SpriteRenderer _spriteRenderer;
+    // [SerializeField] private Sprite _closedSprite;
+    // [SerializeField] private Sprite _openSprite;
+    // [SerializeField] private Sprite _activatedSprite;
+    // private SpriteRenderer _spriteRenderer;
     private Collider2D _collider;
-    public CheckpointState State = CheckpointState.closed;
+    private CheckpointState _state = CheckpointState.closed;
+    private Animator _animator;
 
     void Awake()
     {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        // _spriteRenderer = GetComponent<SpriteRenderer>();
         _collider = GetComponent<Collider2D>();
+        _animator = GetComponent<Animator>();
     }
 
     void Start()
@@ -34,8 +35,7 @@ public class Checkpoint : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             ResetOtherCheckpoints();
-            _spriteRenderer.sprite = _activatedSprite;
-            _collider.enabled = false;
+            SetState(CheckpointState.active);
             GameManager.instance.CheckpointLocation = _spawnLocation;
             ES3AutoSaveMgr.Current.Save();
         }
@@ -55,10 +55,29 @@ public class Checkpoint : MonoBehaviour
 
     public void ResetCheckpoint()
     {
-        if (State != CheckpointState.active) return;
-        State = CheckpointState.open;
-        _spriteRenderer.sprite = _openSprite;
+        if (_state != CheckpointState.active) return;
+        SetState(CheckpointState.open);
     } // end ResetCheckpoint
+
+    private void SetState(CheckpointState state)
+    {
+        _state = state;
+        switch (_state)
+        {
+            case CheckpointState.closed:
+                _collider.enabled = true;
+                // Nothing for now as this is the defaut state
+                break;
+            case CheckpointState.open:
+                _collider.enabled = false;
+                _animator.SetTrigger("Open");
+                break;
+            case CheckpointState.active:
+                _collider.enabled = false;
+                _animator.SetTrigger("Active");
+                break;
+        }
+    } // end SetState
 
     public enum CheckpointState
     {

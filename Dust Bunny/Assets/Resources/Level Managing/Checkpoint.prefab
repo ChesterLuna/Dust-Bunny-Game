@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8978573270539816614}
   - component: {fileID: 1296877949744303693}
   - component: {fileID: 7627389855624413130}
+  - component: {fileID: 4096914630344069513}
   m_Layer: 0
   m_Name: Checkpoint
   m_TagString: Untagged
@@ -75,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1350585039, guid: ae6a15cc206c6664a907730c38351f8e, type: 3}
+  m_Sprite: {fileID: -817755029, guid: 6c392e41c1de1e444ba2037a5f96ea44, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -145,5 +146,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _useCustomLocation: 0
   _spawnLocation: {x: 0, y: 0, z: 0}
-  _normalSprite: {fileID: 1350585039, guid: ae6a15cc206c6664a907730c38351f8e, type: 3}
-  _activatedSprite: {fileID: -1390360605, guid: ae6a15cc206c6664a907730c38351f8e, type: 3}
+--- !u!95 &4096914630344069513
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7391792665787773044}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4d38167ebefdbf3488996fba9a81a845, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
