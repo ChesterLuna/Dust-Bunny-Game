@@ -33,7 +33,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] TextMeshPro charNameText;
     [SerializeField] TextCrawler dialogueText;
     [SerializeField] bool importantDialogue = false;
-    [SerializeField] bool playOnTrigger = false;
+    [SerializeField] bool playOnTouch = false;
     [SerializeField] bool _showIndicator = true;
     public bool showIndicator => _showIndicator;
 
@@ -47,7 +47,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     int _iAudio = 0;
 
     [SerializeField] Animator[] _actors;
-    [SerializeField] AnimationClip [] _animations;
+    // [SerializeField] AnimationClip [] _animations;
     // [SerializeField] Animation[] _animations;
     // [SerializeField] Abuna[] actors;
     int _iAnim = 0;
@@ -153,25 +153,19 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
         Debug.Log("Play an animation");
 
-        //Find next animatior and animation
-        if (_actors.Length != _animations.Length)
+        //Find next animator
+        if (_iAnim >= _actors.Length)
         {
-            Debug.LogWarning("There are not the same amount of actors and animations set up, this might cause some problems so check the arrays.");
-        }
-        if (_iAnim >= _actors.Length || _iAnim >= _animations.Length)
-        {
-            Debug.LogError("There arent enough actors or animations set up. Please add some into the dialogue manager or check how many times they are called in the dialogue");
+            Debug.LogError("There arent enough actors (Animators) set up. Please add some into the dialogue manager or check how many times they are called in the dialogue");
             return;
         }
         Animator _nextActor = _actors[_iAnim];
-        AnimationClip _nextAnim = _animations[_iAnim];
 
         // Play animation fx
-        _nextActor.Play(_nextAnim.name);
+        _nextActor.SetTrigger("DialogueTrigger");
         // string name = _nextClip == null ? "None" : _nextClip.name;
         // Debug.Log("Now trying to play: " + name);
         // Debug.Log("Please add implementation of audio");
-
         _iAnim++;
 
     }
@@ -180,7 +174,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     {
         if (importantDialogue)
             GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerController.PlayerStates.Playing;
-        playOnTrigger = false;
+        playOnTouch = false;
         if (IsBubble)
         {
             Destroy(_textBubble);
@@ -193,10 +187,10 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Player" && playOnTrigger)
+        if (other.tag == "Player" && playOnTouch)
         {
             StartDialogue();
-            playOnTrigger = false;
+            playOnTouch = false;
         }
     } // end OnTriggerEnter2D
 } // end class DialogueManager
