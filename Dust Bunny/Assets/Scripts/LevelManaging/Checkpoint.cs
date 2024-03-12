@@ -8,11 +8,12 @@ public class Checkpoint : MonoBehaviour
 
     [SerializeField] private bool _useCustomLocation;
     [SerializeField] private Vector3 _spawnLocation;
-
-    [SerializeField] private Sprite _normalSprite;
+    [SerializeField] private Sprite _closedSprite;
+    [SerializeField] private Sprite _openSprite;
     [SerializeField] private Sprite _activatedSprite;
     private SpriteRenderer _spriteRenderer;
     private Collider2D _collider;
+    public CheckpointState State = CheckpointState.closed;
 
     void Awake()
     {
@@ -45,14 +46,24 @@ public class Checkpoint : MonoBehaviour
         var checkpoints = FindObjectsOfType<Checkpoint>();
         foreach (Checkpoint checkpoint in checkpoints)
         {
-            checkpoint.ResetCheckpoint();
+            if (checkpoint != this)
+            {
+                checkpoint.ResetCheckpoint();
+            }
         }
     } // end ResetCheckpoint
 
     public void ResetCheckpoint()
     {
-        _collider.enabled = true;
-        _spriteRenderer.sprite = _normalSprite;
+        if (State != CheckpointState.active) return;
+        State = CheckpointState.open;
+        _spriteRenderer.sprite = _openSprite;
     } // end ResetCheckpoint
 
+    public enum CheckpointState
+    {
+        closed,
+        open,
+        active
+    } // end enum CheckpointState
 } // end class Checkpoint
