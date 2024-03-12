@@ -194,6 +194,7 @@ public class PlayerController : MonoBehaviour
         {
             transform.position = GameManager.instance.CheckpointLocation;
         }
+        ES3AutoSaveMgr.Current.Load();
     } // end Start
 
     void Update()

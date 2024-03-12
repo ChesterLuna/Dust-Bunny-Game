@@ -22,6 +22,9 @@ public class Checkpoint : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             GameManager.instance.CheckpointLocation = _spawnLocation;
+            ES3AutoSaveMgr.Current.Save();
+
+
         }
     } // end OnTriggerEnter2D
 } // end class Checkpoint

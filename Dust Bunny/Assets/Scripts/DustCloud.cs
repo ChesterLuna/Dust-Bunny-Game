@@ -34,7 +34,7 @@ public class DustCloud : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         PlayerController player = other.gameObject.GetComponent<PlayerController>();
-        if(player == null)
+        if (player == null)
             return;
         if (player == _player)
         {
@@ -53,7 +53,7 @@ public class DustCloud : MonoBehaviour
             _amountOfDust -= _dustTickAmount;
             if (_amountOfDust < 0 && _maxDustToGive != -1)
             {
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
             _player.AddDust(_dustTickAmount);
 

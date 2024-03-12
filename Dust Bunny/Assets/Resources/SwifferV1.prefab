@@ -378,6 +378,8 @@ GameObject:
   - component: {fileID: 3945821482875423718}
   - component: {fileID: 3529541792354069837}
   - component: {fileID: 8445198543923761199}
+  - component: {fileID: 6605950861344216278}
+  - component: {fileID: 515298935914869144}
   m_Layer: 6
   m_Name: SwifferV1
   m_TagString: Untagged
@@ -566,6 +568,83 @@ MonoBehaviour:
   _patrol: 1
   startingDirection: 0
   _allowTurning: 1
+--- !u!114 &6605950861344216278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8704846433610183097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: baff8732cd3074ef88b34f9cc487846d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabId: 991410644281252240
+  localRefs:
+    _Keys:
+    - {fileID: 6605950861344216278}
+    - {fileID: 515298935914869144}
+    - {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
+    - {fileID: 8445198543923761199}
+    - {fileID: 6216752565799701706}
+    - {fileID: 7269799063817715049}
+    - {fileID: 571425430853905776}
+    - {fileID: 3586460934320551413}
+    - {fileID: 5332922229527985218}
+    - {fileID: 6659584485392434149}
+    - {fileID: 8078812169557494480}
+    - {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+    - {fileID: 2800000, guid: 9f4d7b25626aae54eb9c8ec42cd2c9f6, type: 3}
+    - {fileID: 8704846433610183097}
+    - {fileID: 3366488407042350610}
+    - {fileID: 3529541792354069837}
+    - {fileID: 2800000, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+    - {fileID: 11500000, guid: 9482b25105752984fa07532f2e480ed9, type: 3}
+    - {fileID: 3945821482875423718}
+    - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+    - {fileID: 11500000, guid: 339f91960edaa714f89f73263b9662e3, type: 3}
+    - {fileID: 11500000, guid: baff8732cd3074ef88b34f9cc487846d, type: 3}
+    - {fileID: 11500000, guid: 8411f5798863a9642bfec07c5af1c2d7, type: 3}
+    - {fileID: 11500000, guid: 68e70e6c09959294ea44bfda72fcb5a4, type: 3}
+    - {fileID: 21300000, guid: 9f4d7b25626aae54eb9c8ec42cd2c9f6, type: 3}
+    - {fileID: 3401524130567190018}
+    - {fileID: 8369381075605772093}
+    - {fileID: 6837194026140576261}
+    - {fileID: 6389735558948026}
+    - {fileID: 375329317732737614}
+    - {fileID: 6252640206563274982}
+    - {fileID: 8799082803241107375}
+    - {fileID: 6618895809606159946}
+    - {fileID: 4387936991675555142}
+    - {fileID: 517277675069399209}
+    - {fileID: 8126398430356395541}
+    - {fileID: 3278409125875216381}
+    - {fileID: 11500000, guid: c9b4f768e0b3b0b4fab015fd2c44e2f5, type: 3}
+    - {fileID: 11500000, guid: 9cfcc9ceea0bf419cb3bcaf548c2600d, type: 3}
+    - {fileID: 4394660567170294367}
+    - {fileID: 1267503852993741415}
+    _Values: c3316b84255c733a0ca4c80914aa2f757a06e4e66609a7784baa11af719b43309dd2d0df5109ea456222232309f87334367ff7af8e9d29667e9a469abb8e8127ee3be7538b93e9701c9e8343e5836e5237dd79f2a493a10057969f493daf752b5f03ca31eedf575d6b796c0fe6197e052bf363de148f825a671855decccc523414afa2e94ea04117cc29a3e1ff4e193de8658acfedacbf1279da342a76866f6228382395bc6853744eb456c1cd9ba51700e739cda8dede671170908b94e95e5267fa4539d57c7f51b9fe1da10281df1480b3d571b25e4606188b854cd7c7df64560329c7e0dfed7b68e814a9c13d656e50a50ce113eda03ac0b4af9ffe34d77ede81f606aaa7f55fc75ad99a72f0c754f1f3fc32bbfd506763ef082c304d7d63bf93cb3f475ec3086594e446ebf93830f1f9d8e9cfee4941ee5aae0a38a4c3242fa296654fde7078
+--- !u!114 &515298935914869144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8704846433610183097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cfcc9ceea0bf419cb3bcaf548c2600d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveLayer: 0
+  saveTag: 0
+  saveName: 0
+  saveHideFlags: 0
+  saveActive: 1
+  saveChildren: 0
+  componentsToSave:
+  - {fileID: 3366488407042350610}
 --- !u!1 &8799082803241107375
 GameObject:
   m_ObjectHideFlags: 0
