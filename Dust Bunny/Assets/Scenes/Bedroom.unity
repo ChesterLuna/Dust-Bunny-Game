@@ -925,6 +925,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4900000, guid: 9a51c913bdeb24045926bc522097abb7, type: 3}
     - target: {fileID: 8516852593821837261, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: playOnTouch
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516852593821837261, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: playOnTrigger
       value: 1
       objectReference: {fileID: 0}

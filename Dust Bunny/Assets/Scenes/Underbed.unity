@@ -6886,6 +6886,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4900000, guid: 1081ab2925d823e2ab038e21a83e3cbd, type: 3}
     - target: {fileID: 8516852593821837261, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: playOnTouch
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516852593821837261, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: playOnTrigger
       value: 1
       objectReference: {fileID: 0}
@@ -7542,6 +7546,10 @@ PrefabInstance:
       propertyPath: AssetText
       value: 
       objectReference: {fileID: 4900000, guid: af3c98fa5512db642b9a0ff1fa7cee42, type: 3}
+    - target: {fileID: 8516852593821837261, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: playOnTouch
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8516852593821837261, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: playOnTrigger
       value: 1
