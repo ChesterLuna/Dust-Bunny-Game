@@ -2546,7 +2546,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b008c5ada3441d24dac43fdb41755bfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CheckpointLocation: {x: 0, y: 0, z: 0}
+  _player: {fileID: 0}
+  ShowTimer: 0
   NumSeconds: 0
 --- !u!4 &656847926
 Transform:
@@ -6640,7 +6641,8 @@ MonoBehaviour:
   _pauseMenuUI: {fileID: 535279546}
   _infoUI: {fileID: 244831962}
   _rebindUI: {fileID: 1261642923}
-  _timerTextUI: {fileID: 1825385865}
+  _settingsUI: {fileID: 0}
+  _gameplayOverlayUI: {fileID: 0}
 --- !u!4 &1532411460
 Transform:
   m_ObjectHideFlags: 0
@@ -7232,7 +7234,7 @@ PrefabInstance:
     - target: {fileID: 8516852593821837261, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: AssetText
       value: 
-      objectReference: {fileID: 4900000, guid: 1081ab2925d823e2ab038e21a83e3cbd, type: 3}
+      objectReference: {fileID: 4900000, guid: ff1a75cd1e617834ebc332eb08f6e07e, type: 3}
     - target: {fileID: 8516852593821837261, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: playOnTrigger
       value: 1
@@ -7928,23 +7930,23 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 20344595b2eff2e46943801713223df2, type: 2}
     - target: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.16
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.16
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.16
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.84
+      value: -3.82
       objectReference: {fileID: 0}
     - target: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.52
+      value: -3.68
       objectReference: {fileID: 0}
     - target: {fileID: 3298605635405173664, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_LocalPosition.z
@@ -7991,9 +7993,21 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5336749353464438852, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5336749353464438852, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_Size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5336749353464438852, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 6fc9765d64a05af448f23a4074144d20, type: 3}
+      objectReference: {fileID: -1591397394, guid: 67fe1416087a73f43baebc3d7e88003b, type: 3}
+    - target: {fileID: 5336749353464438852, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6567293610200098961, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_FlipX
       value: 1
@@ -8004,11 +8018,11 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 6fc9765d64a05af448f23a4074144d20, type: 3}
     - target: {fileID: 7591716867782315164, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_Size.x
-      value: 9.027136
+      value: 1.0527909
       objectReference: {fileID: 0}
     - target: {fileID: 7591716867782315164, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_Size.y
-      value: 7.7301407
+      value: 1.1797631
       objectReference: {fileID: 0}
     - target: {fileID: 7591716867782315164, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_Enabled
@@ -8016,11 +8030,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7591716867782315164, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_Offset.x
-      value: -0.6546688
+      value: -0.06954396
       objectReference: {fileID: 0}
     - target: {fileID: 7591716867782315164, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_Offset.y
-      value: -0.20656395
+      value: 0.056956887
       objectReference: {fileID: 0}
     - target: {fileID: 7591716867782315164, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_UsedByEffector
@@ -8028,11 +8042,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7591716867782315164, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.x
-      value: 10
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7591716867782315164, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.y
-      value: 10
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8516852593821837261, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: AssetText
