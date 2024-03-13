@@ -1,6 +1,8 @@
 ﻿#Spek
 :Where are you going?
 
+:(Pip turns back toward Spek.)
+
 #Pip
 :To find the source!
 
@@ -29,10 +31,12 @@
 :You’re still no more than a mote. It’s too dangerous for you. 
 
 #Spek
-:(Huff) I’ll go. You stay here with Hodge. 
+:*Huff* I’ll go. You stay here with Hodge. 
 
 #Pip
 :But- but-
 
 #Spek
-:Don’t fret Pip, I’ll be back in a jiffy. 
+:Don’t fret Pip, I’ll be back in a jiffy.
+
+:Spek exits the Burrow to the Underbed.

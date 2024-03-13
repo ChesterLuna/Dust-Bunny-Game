@@ -1,8 +1,12 @@
-﻿#Spek
+﻿:(Pip appears, seemingly out of nowhere.)
+
+#Spek
 :Wha- Pip? There you are!
 
 #Pip
 :Quick! Let’s go!
+
+:(Pip rushes away into the next area.)
 
 #Spek
 :Wait up!
