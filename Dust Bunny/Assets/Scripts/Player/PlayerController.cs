@@ -355,6 +355,16 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    void OnTriggerStay2D(Collider2D other)
+    {
+        IInteractable interactScript = other.gameObject.GetComponent<IInteractable>();
+        if (interactScript != null && interactScript.showIndicator)
+        {
+            SetIndicator(true);
+        }
+
+    }
+
     private void OnTriggerExit2D(Collider2D other)
     {
         if (LayerInMask(other.gameObject.layer, _environmentLayer))
@@ -362,8 +372,17 @@ public class PlayerController : MonoBehaviour
             _feetGrounded = false;
             if (other == _lastCollision) _lastCollision = null;
         }
+        IInteractable interactScript = other.gameObject.GetComponent<IInteractable>();
+        if (interactScript != null && interactScript.showIndicator)
+        {
+            SetIndicator(false);
+        }
     }
 
+    private void SetIndicator(bool state)
+    {
+        transform.Find("Action-Indicator").gameObject.SetActive(state);
+    }
 
     void Move()
     {

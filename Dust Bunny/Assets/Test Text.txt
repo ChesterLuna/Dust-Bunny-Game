@@ -1,14 +1,32 @@
-#brother
-: Hi, I am your brother
-#charater  2
-: Wujujuju
-#
-: Wujijiji
 
 
-#
-:
+$Rumble
+#Spek
+:What was that strange sound just now?
 
-#Mote
-: wasap?
+#Spek
+:There it is again!
 
+#Hodge
+:(Grunt)
+
+#Spek
+:Hodge? Did you hear it?
+
+#Hodge
+:Only thing I’m hearing is your yammering… 
+
+!Animation
+#Spek
+:Aaah!
+
+#Hodge
+:Oh, I felt that one alright. 
+
+!Animation
+#Spek
+:It’s getting worse. I should go check on Pipsqueak.  
+
+!
+#Hodge
+:Right-o. You know where to find me.
