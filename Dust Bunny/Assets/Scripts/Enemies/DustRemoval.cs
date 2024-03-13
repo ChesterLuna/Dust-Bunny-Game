@@ -40,7 +40,7 @@ public class DustRemoval : MonoBehaviour
         _amountOfDust += _dustTickAmount;
         if (_amountOfDust > _maxDustToTake && _maxDustToTake != -1)
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
         _player?.RemoveDust(_dustTickAmount);
 

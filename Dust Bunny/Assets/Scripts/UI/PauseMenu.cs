@@ -12,14 +12,15 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] GameObject _pauseMenuUI;
     [SerializeField] GameObject _infoUI;
     [SerializeField] GameObject _rebindUI;
-    [SerializeField] GameObject _timerTextUI;
+    [SerializeField] GameObject _settingsUI;
+    [SerializeField] GameObject _gameplayOverlayUI;
 
     void Start()
     {
         _pauseMenuUI.SetActive(false);
         _infoUI.SetActive(false);
         _rebindUI.SetActive(false);
-        _timerTextUI.SetActive(true);
+        _settingsUI.SetActive(false);
     }
 
     // Update is called once per frame
@@ -38,8 +39,23 @@ public class PauseMenu : MonoBehaviour
         }
     } // end Update
 
+    public void ToggleTimerDisplay(bool value)
+    {
+        GameManager.instance.ShowTimer = value;
+    }
+
     public void SetPauseMenuInt(int type)
     {
+        if (type < 0 || type > ((int)PauseMenuPage.None))
+        {
+            Debug.LogError("Invalid PauseMenuPage type.");
+            return;
+        }
+        else if (type == (int)PauseMenuPage.None)
+        {
+            Debug.LogWarning("Should not be setting PauseMenuPage to None Via Int.");
+            return;
+        }
         SetMenu((PauseMenuPage)type);
     }
 
@@ -52,21 +68,36 @@ public class PauseMenu : MonoBehaviour
                 _pauseMenuUI.SetActive(true);
                 _infoUI.SetActive(false);
                 _rebindUI.SetActive(false);
+                _settingsUI.SetActive(false);
+                _gameplayOverlayUI.SetActive(false);
                 break;
             case PauseMenuPage.Info:
                 _pauseMenuUI.SetActive(false);
                 _infoUI.SetActive(true);
                 _rebindUI.SetActive(false);
+                _settingsUI.SetActive(false);
+                _gameplayOverlayUI.SetActive(false);
                 break;
             case PauseMenuPage.Rebind:
                 _pauseMenuUI.SetActive(false);
                 _infoUI.SetActive(false);
                 _rebindUI.SetActive(true);
+                _settingsUI.SetActive(false);
+                _gameplayOverlayUI.SetActive(false);
+                break;
+            case PauseMenuPage.Settings:
+                _pauseMenuUI.SetActive(false);
+                _infoUI.SetActive(false);
+                _rebindUI.SetActive(false);
+                _settingsUI.SetActive(true);
+                _gameplayOverlayUI.SetActive(false);
                 break;
             case PauseMenuPage.None:
                 _pauseMenuUI.SetActive(false);
                 _infoUI.SetActive(false);
                 _rebindUI.SetActive(false);
+                _settingsUI.SetActive(false);
+                _gameplayOverlayUI.SetActive(true);
                 break;
         }
     } // end SetMenu
@@ -77,7 +108,6 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 0f;
         GameIsPaused = true;
         SetMenu(PauseMenuPage.Pause);
-        _timerTextUI.SetActive(false);
         GameManager.instance?.PauseGameTime();
     } // end Pause
 
@@ -87,15 +117,22 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
         GameIsPaused = false;
         SetMenu(PauseMenuPage.None);
-        _timerTextUI.SetActive(true);
         GameManager.instance?.StartGameTime();
     } // end Resume
 
+    public void QuitGame()
+    {
+        UISFXManager.PlaySFX(UISFXManager.SFX.NEGATIVE);
+        Debug.Log("Quit Game.");
+        Application.Quit();
+    } // end QuitGame
+
     public enum PauseMenuPage
     {
-        Pause,
-        Info,
-        Rebind,
-        None
+        Pause, // 0
+        Info, // 1
+        Rebind, // 2
+        Settings, // 3
+        None // 4
     }
 } // end PauseMenu

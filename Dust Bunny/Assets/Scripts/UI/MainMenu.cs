@@ -24,6 +24,12 @@ public class MainMenu : MonoBehaviour
         UnityEngine.SceneManagement.SceneManager.LoadScene(firstLevel);
     }
 
+    public void CustomTransition(string sceneName)
+    {
+        UISFXManager.PlaySFX(UISFXManager.SFX.POSITIVE);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+    }
+
     public void OpenInfo()
     {
         UISFXManager.PlaySFX(UISFXManager.SFX.POSITIVE);

@@ -1,17 +1,23 @@
-﻿#Spek
+﻿$Rumble
+
+#Spek
 :What was that strange sound just now?
+
+$Rumble 
 
 #Spek
 :There it is again!
 
 #Hodge
-:(Grunt)
+:*Grunt*
 
 #Spek
 :Hodge? Did you hear it?
 
 #Hodge
 :Only thing I’m hearing is your yammering… 
+
+$Rumble
 
 #Spek
 :Aaah!

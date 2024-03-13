@@ -32,7 +32,7 @@
 :You’re still no more than a mote. It’s too dangerous for you. 
 
 #Spek
-:(Huff) I’ll go. You stay here with Hodge. 
+:*Huff* I’ll go. You stay here with Hodge. 
 
 #Pip
 :But- but-
