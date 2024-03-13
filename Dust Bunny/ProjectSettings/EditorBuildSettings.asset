@@ -27,6 +27,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Bedroom.unity
     guid: ad53cdafc5e50671c8053a545b50c54b
   - enabled: 1
-    path: Assets/Scenes/Burrow.unity
+    path: Assets/Scenes/Underbed.unity
     guid: 9a48f82a7e09e4846bc659d9f011ccb8
   m_configObjects: {}
