@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using Unity.VisualScripting;
+using System;
 
 
 public class GameManager : MonoBehaviour
@@ -53,13 +54,16 @@ public class GameManager : MonoBehaviour
 
     #region Timer
     // Score Timer
+    public bool ShowTimer = false;
     public int NumSeconds = 0;
     float _secondTimer;
     string _scoreTimerRunning = "Stopped";
+    public event Action UpdateTimerText;
+
 
     public void StartGameTime()
     {
-        UpdateTimerText();
+        UpdateTimerText?.Invoke();
         if (_scoreTimerRunning == "Stopped")
         {
             _scoreTimerRunning = "Running";
@@ -106,19 +110,10 @@ public class GameManager : MonoBehaviour
             {
                 _secondTimer = _secondTimer - 1f;
                 NumSeconds += 1;
-                UpdateTimerText();
+                UpdateTimerText?.Invoke();
             }
             yield return null;
         }
     } // end GameTimeCoroutine
-
-    public void UpdateTimerText()
-    {
-        // Convert seconds to clock format
-        int minutes = (int)(NumSeconds / 60);
-        int seconds = (int)(NumSeconds % 60);
-        string clockFormat = string.Format("{0:00}:{1:00}", minutes, seconds);
-        GameObject.FindWithTag("TimerText").GetComponent<TextMeshProUGUI>().text = clockFormat;
-    } // end UpdateScoreText
     #endregion Timer
 } // end class GameManager
