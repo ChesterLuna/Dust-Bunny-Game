@@ -12,7 +12,7 @@ namespace Bunny.Dialogues
         string _text;
         bool _bubble;
         bool _lastDialogue;
-        bool _playSound;
+        string _playSound = null;
         bool _playAnimation;
 
         public Dialogue(string _theName, string _theText, bool _isBubble = false, bool _isLastDialogue = false)
@@ -43,7 +43,7 @@ namespace Bunny.Dialogues
         {
             _bubble = _newBubble;
         }
-        public void setPlaySound(bool _newSound)
+        public void setSound(string _newSound)
         {
             _playSound = _newSound;
         }
@@ -70,7 +70,7 @@ namespace Bunny.Dialogues
         {
             return _bubble;
         }
-        public bool isPlaySound()
+        public string getSound()
         {
             return _playSound;
         }

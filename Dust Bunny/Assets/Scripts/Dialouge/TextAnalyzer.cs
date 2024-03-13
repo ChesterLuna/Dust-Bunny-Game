@@ -44,7 +44,7 @@ public class TextAnalyzer : MonoBehaviour
 
                 if (lines[i][0] == '$')
                 {
-                    nextDialogue.setPlaySound(true);
+                    nextDialogue.setSound(lines[i].Remove(0, 1));
                 }
                 if (lines[i][0] == '!')
                 {

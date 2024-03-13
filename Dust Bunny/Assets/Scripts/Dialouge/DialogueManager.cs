@@ -43,13 +43,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
     bool _isStartedDialogue = false;
     bool _isFinishedDialogue = false;
 
-    [SerializeField] AudioClip[] _audioClips;
-    int _iAudio = 0;
-
+    PlayerSFXController _sfxControlller;
     [SerializeField] Animator[] _actors;
-    // [SerializeField] AnimationClip [] _animations;
-    // [SerializeField] Animation[] _animations;
-    // [SerializeField] Abuna[] actors;
     int _iAnim = 0;
 
 
@@ -67,6 +62,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
         }
 
         Dialogues = GetComponent<TextAnalyzer>().AnalyzeText(AssetText);
+
+        _sfxControlller = gameObject.GetComponentInChildren<PlayerSFXController>();
     } // end Start
 
     public void Interact()
@@ -118,8 +115,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
         Dialogue nextDialogue = Dialogues.Dequeue();
 
-        if (nextDialogue.isPlaySound())
-            PlayNextSound();
+        if (nextDialogue.getSound() != null)
+            PlaySound(nextDialogue.getSound());
         if (nextDialogue.isPlayAnimation())
             PlayNextAnimation();
 
@@ -129,24 +126,14 @@ public class DialogueManager : MonoBehaviour, IInteractable
     } // end DisplayNextSentence
 
 
-    public void PlayNextSound()
+    public void PlaySound(string _soundToPlay)
     {
         Debug.Log("Play a sound");
 
-        //Find next sound clip
-        if(_iAudio >= _audioClips.Length)
-        {
-            Debug.LogError("There arent enough audioclips set up. Please add some into the dialogue manager or check how many times they are called in the dialogue");
-            return;
-        }
-        AudioClip _nextClip = _audioClips[_iAudio];
+        _sfxControlller.PlaySFXByString(_soundToPlay);
 
         // Play audio clip sfx
-        string name = _nextClip == null ? "None" : _nextClip.name;
-        Debug.Log("Now trying to play: " + name);
-        Debug.Log("Please add implementation of audio");
-
-        _iAudio++; 
+        Debug.Log("Now trying to play: " + _soundToPlay);
     }
     public void PlayNextAnimation()
     {
@@ -163,11 +150,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
         // Play animation fx
         _nextActor.SetTrigger("DialogueTrigger");
-        // string name = _nextClip == null ? "None" : _nextClip.name;
-        // Debug.Log("Now trying to play: " + name);
-        // Debug.Log("Please add implementation of audio");
         _iAnim++;
-
     }
 
     public void EndDialogue()
