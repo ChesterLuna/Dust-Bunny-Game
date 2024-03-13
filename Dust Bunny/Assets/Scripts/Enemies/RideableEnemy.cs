@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,23 +7,59 @@ using UnityEngine;
 
 public class RidableEnemy : RigidBodyRideable
 {
+    [Header("Movement Variables")]
+    public bool TurnQueued = false;
+    GameObject _player;
+    Vector2 _newMovement;
+    Vector3 _previousPosition;
+    Vector3 _currentPosition;
+    [SerializeField] float _minMoveDistance = 0.01f;
+    [SerializeField] bool _isFacingRight = true;
     [SerializeField] LayerMask _environmentLayer;
+    [SerializeField] LayerMask _playerLayer;
+
     [SerializeField] float _moveSpeed = 2f;
-    [Tooltip("If true, the enemy will move back and forth, turning when they reach the edge of a platform or a wall")]
-    [SerializeField] bool _patrol = true;
-    [SerializeField] StartingDirection startingDirection = StartingDirection.Right;
     [SerializeField] bool _allowTurning = true;
 
-    Vector2 _newMovement;
-    bool _isFacingRight = true;
-    GameObject _player;
+    [Header("Seek Settings")]
+    [SerializeField] bool _seekPlayer = false;
+    [Tooltip("The point from which the enemy will cast a ray to detect the player, if none is provided, the enemy will cast a ray from its own position.")]
+    [SerializeField] Transform _raycastOriginPoint;
+    [SerializeField] float _lineOfSightDistance = 5f;
+
+    [Header("Wander Settings")]
+    [SerializeField] bool _wander = true;
+    bool waitExtraFrame = false;
+
+    [Header("Patrol Settings")]
+    [SerializeField] bool _patrol = true;
+    [Tooltip("The points the enemy will patrol between, if none are provided, the enemy will wander.")]
+    [SerializeField] Transform[] _patrolPoints;
+    List<bool> reachablePoints = new List<bool>();
+    [SerializeField] bool _loopPoints = false;
+    [SerializeField] float _patrolThreshold = 0.2f;
+    private int _patrolPointAdder = 1;
+    int _currentPatrolPointIndex = 0;
 
     protected override void Awake()
     {
         base.Awake();
-        if (startingDirection == StartingDirection.Left)
+        if (_raycastOriginPoint == null)
         {
+            _raycastOriginPoint = transform;
+        }
+        if (!_isFacingRight)
+        {
+            _isFacingRight = true;
             Turn(true);
+        }
+
+        if (_patrolPoints.Length > 0)
+        {
+            for (int i = 0; i < _patrolPoints.Length; i++)
+            {
+                reachablePoints.Add(true);
+            }
         }
     } // end Awake
 
@@ -33,36 +70,156 @@ public class RidableEnemy : RigidBodyRideable
 
     void FixedUpdate()
     {
-        if (_patrol)
+        Print("HasMoved: " + HasMoved() + " Seek: " + _seekPlayer + " CanSeePlayer: " + CanSeePlayer() + " Wander: " + _wander + " CantReachPatrolPoints: " + CantReachPatrolPoints() + " Patrol: " + _patrol);
+        if (TurnQueued)
+        {
+            IncrementPatrolPoints();
+            Turn();
+            TurnQueued = false;
+        }
+
+        if (_seekPlayer && CanSeePlayer())
+        {
+            SeekPlayer();
+        }
+        else if (_wander && CantReachPatrolPoints())
+        {
+            Wander();
+        }
+        else if (_patrol)
         {
             Patrol();
         }
+        _previousPosition = _currentPosition;
         ApplyMovement();
+        _currentPosition = transform.position;
     } // end FixedUpdate
 
     void ApplyMovement()
     {
         // Set proper speed & grivity
-        _newMovement = new Vector2(_newMovement.x * _moveSpeed, _newMovement.y);
-
+        _newMovement = new Vector2(_newMovement.x * _moveSpeed, 0);
         // Apply the movement
         transform.position = transform.position + (Vector3)_newMovement * Time.fixedDeltaTime;
-        MoveWithRiders();
+        // MoveWithRiders();
+
     } // end ApplyMovement
 
+    bool HasMoved()
+    {
+        return Vector3.Distance(_previousPosition, _currentPosition) > _minMoveDistance;
+    } // end HasMoved
+
+    private bool CanSeePlayer()
+    {
+        float distanceToPlayer = Vector2.Distance(_raycastOriginPoint.position, _player.transform.position);
+        if (distanceToPlayer > _lineOfSightDistance) return false;
+
+        Vector2 directionToPlayer = (_player.transform.position - _raycastOriginPoint.position).normalized;
+
+        RaycastHit2D hit = Physics2D.Raycast(_raycastOriginPoint.position, directionToPlayer, _lineOfSightDistance, _playerLayer + _environmentLayer);
+        if (hit.collider != null && hit.collider.CompareTag("Player"))
+        {
+            return true;
+        }
+        return false;
+    } // end CanSeePlayer
+
+    private float FacePlayer()
+    {
+        Vector2 direction = _player.transform.position - transform.position;
+        float targetDirection = Mathf.Sign(direction.x);
+        bool tempIsFacingRight = targetDirection == 1; // Set _isFacingRight to true if targetDirection is +1 (right) and false if -1 (left)
+        if (_isFacingRight != tempIsFacingRight)
+        {
+            Turn();
+        }
+        return targetDirection;
+    } // end FacePlayer
+
+
+    private void SeekPlayer()
+    {
+        _newMovement.x = FacePlayer();
+    } // end SeekPlayer
+
+    private bool CantReachPatrolPoints()
+    {
+        return _patrolPoints.Length == 0 || !reachablePoints.Contains(true);
+    } // end CantReachPatrolPoints
 
     private void Patrol()
     {
+        if (_patrolPoints.Length == 0) return;
+        if (!HasMoved())
+        {
+            reachablePoints[_currentPatrolPointIndex] = false;
+            IncrementPatrolPoints();
+
+        }
+        else if (_patrolThreshold > Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x))
+        {
+            reachablePoints[_currentPatrolPointIndex] = true;
+            IncrementPatrolPoints();
+        }
+        Transform _currentPatrolPoint = _patrolPoints[_currentPatrolPointIndex];
+        Vector2 direction = _currentPatrolPoint.position - transform.position;
+        float targetDirection = Mathf.Sign(direction.x);
+        bool tempIsFacingRight = targetDirection == 1; // Set _isFacingRight to true if targetDirection is +1 (right) and false if -1 (left)
+        if (_isFacingRight != tempIsFacingRight)
+        {
+            Turn();
+        }
+        _newMovement.x = targetDirection;
+    } // end Patrol
+
+    private void IncrementPatrolPoints()
+    {
+        if (_patrolPoints.Length == 0) return;
+        _currentPatrolPointIndex += _patrolPointAdder;
+        if (_currentPatrolPointIndex >= _patrolPoints.Length)
+        {
+            if (_loopPoints)
+            {
+                _currentPatrolPointIndex = 0;
+            }
+            else
+            {
+                _patrolPointAdder = -1;
+                _currentPatrolPointIndex = _patrolPoints.Length - 1;
+            }
+        }
+        else if (_currentPatrolPointIndex < 0)
+        {
+            _patrolPointAdder = 1;
+            _currentPatrolPointIndex = 0;
+        }
+    } // end IncrementPatrolPoints
+
+    private void Wander()
+    {
+        if (!HasMoved() && waitExtraFrame)
+        {
+            Turn();
+            waitExtraFrame = false;
+        }
+        else if (!HasMoved())
+        {
+            waitExtraFrame = true;
+        }
         // Walk from edge to edge of platform
         Vector2 direction = _isFacingRight ? Vector2.right : Vector2.left;
         _newMovement.x = direction.x;
-
-    } // end Patrol
+    } // end Wander
 
     public void Turn(bool overwrite = false)
     {
-
         if (!_allowTurning && !overwrite) return;
+        List<PlayerController> tempRiders = new List<PlayerController>(_riders);
+        foreach (PlayerController rider in tempRiders)
+        {
+            RemoveRider(rider);
+        }
         Vector3 rotator;
         if (_isFacingRight)
         {
@@ -74,21 +231,72 @@ public class RidableEnemy : RigidBodyRideable
         }
         transform.rotation = Quaternion.Euler(rotator);
         _isFacingRight = !_isFacingRight;
-        TurnWithRiders();
+        foreach (PlayerController rider in tempRiders)
+        {
+            SetRider(rider);
+        }
     } // end Turn
 
-    protected void TurnWithRiders()
+    private void OnDrawGizmosSelected()
     {
-        foreach (PlayerController rider in _riders)
+        if (Application.isPlaying) return;
+        var previous = (Vector2)transform.position;
+        for (var i = 0; i < _patrolPoints.Length; i++)
         {
-            rider.IsFacingRight = !rider.IsFacingRight;
-        }
-    } // TurnWithRiders
+            var p = (Vector2)_patrolPoints[i].position;
+            Gizmos.DrawWireSphere(p, 0.2f);
+            Gizmos.DrawLine(previous, p);
 
-    private enum StartingDirection
+            previous = p;
+
+            if (_loopPoints && i == _patrolPoints.Length - 1) Gizmos.DrawLine(p, (Vector2)_patrolPoints[0].position);
+        }
+
+        if (_seekPlayer)
+        {
+            Gizmos.color = Color.blue;
+            if (_raycastOriginPoint == null)
+            {
+                _raycastOriginPoint = transform;
+            }
+            Gizmos.DrawWireSphere(_raycastOriginPoint.position, _lineOfSightDistance);
+        }
+    } // end OnDrawGizmosSelected
+
+    #region Debugging
+    [Header("Debug")]
+    [SerializeField] bool PrintDebug = false;
+
+    void Print(string message)
     {
-        Right,
-        Left
-    } // end StartingDirection
+        if (PrintDebug)
+        {
+            Debug.Log(message);
+        }
+    } // end Print
+
+    void Print(bool message)
+    {
+        if (PrintDebug)
+        {
+            Debug.Log(message);
+        }
+    } // end Print
+
+    void Print(int message)
+    {
+        if (PrintDebug)
+        {
+            Debug.Log(message);
+        }
+    } // end Print
+    void Print(float message)
+    {
+        if (PrintDebug)
+        {
+            Debug.Log(message);
+        }
+    } // end Print
+    #endregion
 } // end RidableEnemy
 
