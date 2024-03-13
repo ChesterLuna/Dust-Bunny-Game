@@ -14,8 +14,7 @@ public class NextLevelTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            GameManager gameManager = FindObjectOfType<GameManager>();
-            gameManager.CheckpointLocation = _nextLevelSpawnLocation;
+            GameManager.instance.CheckpointLocation = _nextLevelSpawnLocation;
 
             LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
             levelLoader.StartLoadLevel(_nextLevelName, _transition, _transitionTime);

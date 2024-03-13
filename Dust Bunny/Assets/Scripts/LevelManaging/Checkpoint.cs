@@ -8,12 +8,6 @@ public class Checkpoint : MonoBehaviour
 
     [SerializeField] private bool _useCustomLocation;
     [SerializeField] private Vector3 _spawnLocation;
-    private GameManager _gameManager;
-
-    void Awake()
-    {
-        _gameManager = FindObjectOfType<GameManager>();
-    } // end Awake
 
     void Start()
     {
@@ -27,7 +21,7 @@ public class Checkpoint : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            _gameManager.CheckpointLocation = _spawnLocation;
+            GameManager.instance.CheckpointLocation = _spawnLocation;
         }
     } // end OnTriggerEnter2D
 } // end class Checkpoint

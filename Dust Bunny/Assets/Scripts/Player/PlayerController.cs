@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
 {
 
     #region  Variables
-    private GameManager _gameManager;
+    public PlayerStates PlayerState = PlayerStates.Playing;
 
     #region Camera
     // Camera
@@ -52,6 +52,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _moveSpeedAddition = 1f;
     [SerializeField] float _jumpForceAddition = 2f;
     [SerializeField] float _dashForceAddition = 2f;
+    Coroutine _lastDamp;
 
     float _epsilon = 0.01f;
     Vector3 _originalSize = new Vector3(1f, 1f, 1f);
@@ -72,13 +73,14 @@ public class PlayerController : MonoBehaviour
     // Abilities booleans
     bool _canJump = true;
     bool _canDash = true;
-    bool _doDash = false;
     bool _isDashing = false;
-    bool _doJump = false;
     bool _growing = false;
     bool _grounded = false;
+    bool _feetGrounded = false;
     bool _isCoyoteTime = false;
     float _stickyHeightDivisor = 1f;
+    bool _doJump = false;
+    bool _doDash = false;
     #endregion
 
     #region Platforms
@@ -87,6 +89,7 @@ public class PlayerController : MonoBehaviour
     private DropDownPlatform _currentDropDownPlatform = null;
     private RigidBodyRideable _oldRidable = null;
     private Transform _oldMovingPlatform = null;
+    private Collider2D _lastCollision = null;
     #endregion
 
     #region Physics
@@ -97,11 +100,11 @@ public class PlayerController : MonoBehaviour
     Collider2D _thisCollider;
     Vector2 _previousVelocity;
     [SerializeField] LayerMask _environmentLayer;
+    int _layerMaskValue;
     #endregion
 
     #region Input
     // Input
-    Vector2 _input;
     Vector2 _dashDirection = Vector2.zero;
     Vector2 _jumpForceVector = Vector2.zero;
     public bool IsFacingRight = true;
@@ -114,11 +117,9 @@ public class PlayerController : MonoBehaviour
     [Header("Death")]
     [SerializeField] private Animator _deathTransition;
     [SerializeField] private float _deathTransitionTime = 1f;
-    bool _isDead = false;
     #endregion
 
     #region External References
-    public Vector2 PlayerInput => _input;
     public bool IsDashing => _isDashing;
     public bool CanJump => _canJump;
     public bool IsGrounded => _grounded;
@@ -149,6 +150,7 @@ public class PlayerController : MonoBehaviour
         get => _dashForce;
         set => _dashForce = value;
     }
+
     public int BunnySize => _bunnySize;
     public Rigidbody2D RB => _thisRigidbody;
     public Collider2D Col => _thisCollider;
@@ -171,7 +173,6 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        _gameManager = FindObjectOfType<GameManager>();
         _thisRigidbody = GetComponent<Rigidbody2D>();
         _standardGravity = _thisRigidbody.gravityScale;
         _thisCollider = GetComponent<Collider2D>();
@@ -180,28 +181,30 @@ public class PlayerController : MonoBehaviour
         _originalMoveSpeed = _moveSpeed;
         _originalJumpForce = _jumpForce;
         _originalDashForce = _dashForce;
+        _layerMaskValue = Mathf.RoundToInt(Mathf.Log(_environmentLayer.value, 2));
 
         _sfx = gameObject.GetComponentInChildren<PlayerSFXController>();
     } // end Awake
 
     private void Start()
     {
-        _gameManager.StartGameTime();
+        GameManager.instance.StartGameTime();
         _fallSpeedYDampingChangeThreshold = CameraManager.instance._fallSpeedYDampingChangeThreshold;
-        if (_gameManager.CheckpointLocation != Vector3.zero)
+        if (GameManager.instance.CheckpointLocation != Vector3.zero)
         {
-            transform.position = _gameManager.CheckpointLocation;
+            transform.position = GameManager.instance.CheckpointLocation;
         }
     } // end Start
 
     void Update()
     {
-        if (_isDead) return;
         gatherInput();
+        if (PlayerState != PlayerStates.Playing) return;
         //updateFriction(); //TODO: Ensure it doesnt flipflop
         updateDustSize();
         updateTimers();
         updateCameraYDamping();
+
     } // end Update
 
     void updateTimers()
@@ -216,20 +219,26 @@ public class PlayerController : MonoBehaviour
     {
         TurnCheck();
         checkGrounded();
+        if (PlayerState == PlayerStates.Dialogue)
+        {
+            _doJump = false;
+            _doDash = false;
+            _thisRigidbody.velocity = new Vector2(0, _thisRigidbody.velocity.y);
+            return;
+        }
+
         if (!_isDashing)
         {
             Move();
         }
 
-        //     _thisRigidbody.velocity = Vector2.SmoothDamp(_thisRigidbody.velocity, targetVelocity, ref _zeroVelocity, _moveSmoothing);
+        // _thisRigidbody.velocity = Vector2.SmoothDamp(_thisRigidbody.velocity, targetVelocity, ref _zeroVelocity, _moveSmoothing);
         if (_doJump && _canJump && _grounded)
         {
-            //_doJump = false;
             Jump();
         }
         if (_doDash && _canDash && _lastTimeDashed > _dashCooldown)
         {
-            //_doDash = false;
             StartCoroutine(Dash());
         }
         _doJump = false;
@@ -239,35 +248,42 @@ public class PlayerController : MonoBehaviour
 
     private void gatherInput()
     {
-        _input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        if (Input.GetButtonDown("Jump"))
+        if (!(PlayerState == PlayerStates.Playing || PlayerState == PlayerStates.Dialogue)) return;
+
+        if (UserInput.instance.InteractInput)
+        {
+            sendInteract();
+        }
+
+        if (PlayerState != PlayerStates.Playing) return;
+
+        if (UserInput.instance.JumpJustPressed)
         {
             _doJump = true;
         }
-        if (Input.GetButtonDown("Dash"))
+
+        if (UserInput.instance.DashInput)
         {
             _doDash = true;
-        }
-        if (Input.GetButtonDown("Interact"))
-        {
-            sendInteract();
         }
     } // end gatherInput
 
     #region Animations
     private void TurnCheck()
     {
-        if (_input.x > 0 && !IsFacingRight)
+        if (PlayerState != PlayerStates.Playing) return;
+
+        if (UserInput.instance.MoveInput.x > 0 && !IsFacingRight)
         {
             Turn();
         }
-        else if (_input.x < 0 && IsFacingRight)
+        else if (UserInput.instance.MoveInput.x < 0 && IsFacingRight)
         {
             Turn();
         }
     } // end TurnCheck
 
-    private void Turn()
+    public void Turn()
     {
         Vector3 rotator;
         if (IsFacingRight)
@@ -303,10 +319,12 @@ public class PlayerController : MonoBehaviour
     private void checkGrounded()
     {
         // Raycast to check if the player is grounded
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f * transform.localScale.y, _environmentLayer);
-        Debug.DrawRay(transform.position, Vector2.down, Color.red); // Draw the raycast
+        // RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f * transform.localScale.y, _environmentLayer);
+        // Debug.DrawRay(transform.position, Vector2.down, Color.red); // Draw the raycast
 
-        _grounded = (hit.collider != null) && !(hit.collider == null && _lastTimeGrounded < _coyoteTime);
+        // _grounded = (hit.collider != null) && !(hit.collider == null && _lastTimeGrounded < _coyoteTime);
+
+        _grounded = _feetGrounded && !(!_feetGrounded && _lastTimeGrounded < _coyoteTime);
 
         if (_grounded)
         {
@@ -321,9 +339,9 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        _currentDropDownPlatform = hit.collider?.GetComponentInChildren<DropDownPlatform>();
+        _currentDropDownPlatform = _lastCollision?.GetComponentInChildren<DropDownPlatform>();
         // Handle Ridable Calculations
-        RigidBodyRideable currentRidable = hit.collider?.GetComponentInParent<RigidBodyRideable>();
+        RigidBodyRideable currentRidable = _lastCollision?.GetComponentInParent<RigidBodyRideable>();
         if (currentRidable != _oldRidable)
         {
             _oldRidable?.RemoveRider(this);
@@ -332,9 +350,29 @@ public class PlayerController : MonoBehaviour
         _oldRidable = currentRidable;
     } // end checkGrounded
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.layer == _layerMaskValue)
+        {
+            _feetGrounded = true;
+            _lastCollision = other;
+        }
+
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.layer == _layerMaskValue)
+        {
+            _feetGrounded = false;
+            _lastCollision = null;
+        }
+    }
+
+
     void Move()
     {
-        float _targetSpeed = _input.x * _moveSpeed;
+        float _targetSpeed = UserInput.instance.MoveInput.x * _moveSpeed;
         float _speedToTargetSpeed = _targetSpeed - _thisRigidbody.velocity.x;
         float _accelerationRate;
 
@@ -367,7 +405,7 @@ public class PlayerController : MonoBehaviour
             _friction = _airFriction;
         }
 
-        if (Mathf.Abs(_input.x) == 0f)
+        if (Mathf.Abs(UserInput.instance.MoveInput.x) == 0f)
         {
             Vector2 _addFrictionVector = Mathf.Sign(_thisRigidbody.velocity.x) * new Vector2(_friction * Time.deltaTime, 0);
 
@@ -377,7 +415,7 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
-        if (_currentDropDownPlatform != null && PlayerInput.y < 0f)
+        if (_currentDropDownPlatform != null && UserInput.instance.MoveInput.y < 0f)
         {
             _currentDropDownPlatform.DropDown(_thisCollider);
         }
@@ -406,12 +444,12 @@ public class PlayerController : MonoBehaviour
     // Dashes for "_dashTime" seconds constantly. Uses AddForce.
     IEnumerator Dash()
     {
+        Debug.Log("Dashing");
         _isDashing = true;
         _lastTimeDashed = 0f;
 
-        Vector2 mousePos = Input.mousePosition;
         Vector2 playerPos = Camera.main.WorldToScreenPoint(transform.position);
-        _dashDirection = (mousePos - playerPos).normalized;
+        _dashDirection = (UserInput.instance.DashPositionInput - playerPos).normalized;
 
         _thisRigidbody.gravityScale = 0f;
         _thisRigidbody.velocity = Vector2.zero;
@@ -463,7 +501,7 @@ public class PlayerController : MonoBehaviour
 
     public void ChangeSize(int newSize)
     {
-        if (_growing == true || _isDead)
+        if (_growing == true || PlayerState == PlayerStates.Dead)
             return;
         Vector3 targetScale = _originalSize * Mathf.Pow(_bunnySizeScalar, newSize - 1);
         _bunnySize = newSize;
@@ -471,8 +509,9 @@ public class PlayerController : MonoBehaviour
         _moveSpeed = _originalMoveSpeed - _moveSpeedAddition * (newSize - 1);
         _jumpForce = _originalJumpForce + _jumpForceAddition * (newSize - 1);
         _dashForce = _originalDashForce + _dashForceAddition * (newSize - 1);
-
-        StartCoroutine(GrowDamp(targetScale));
+        if (_lastDamp != null)
+            StopCoroutine(_lastDamp);
+        _lastDamp = StartCoroutine(GrowDamp(targetScale));
     }
 
     IEnumerator GrowDamp(Vector3 targetScale)
@@ -535,7 +574,7 @@ public class PlayerController : MonoBehaviour
 
     public void RemoveDust(float scalar)
     {
-        if (_dust - scalar < 0 && !_isDead)
+        if (_dust - scalar <= 0 && PlayerState != PlayerStates.Dead)
         {
             Die();
             return;
@@ -557,11 +596,20 @@ public class PlayerController : MonoBehaviour
     public void Die()
     {
         Dead?.Invoke();
-        _isDead = true;
+        PlayerState = PlayerStates.Dead;
         _thisCollider.enabled = false;
         _thisRigidbody.simulated = false;
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
         levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
-        _gameManager.PauseGameTime();
+        GameManager.instance.PauseGameTime();
     } // end Die
+
+
+    public enum PlayerStates
+    {
+        Playing,
+        Paused,
+        Dialogue,
+        Dead
+    }
 } // end class PlayerController
