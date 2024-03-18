@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public Vector2 Velocity { get; private set; }
     public int WallDirection { get; private set; }
     public bool ClimbingLadder { get; private set; }
-    public PlayerStates PlayerState { get; private set; } = PlayerStates.Playing;
+    public PlayerStates PlayerState { get; set; } = PlayerStates.Playing;
 
     public void AddFrameForce(Vector2 force, bool resetVelocity = false)
     {
@@ -932,6 +932,13 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private readonly HashSet<ISpeedModifier> _modifiers = new();
     private Vector2 _frameSpeedModifierVelocity;
 
+
+
+    private void SetIndicator(bool state)
+    {
+        transform.Find("Action-Indicator").gameObject.SetActive(state);
+    } // end SetIndicator
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.TryGetComponent(out ISpeedModifier modifier)) _modifiers.Add(modifier);
@@ -942,7 +949,22 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         if (other.TryGetComponent(out ISpeedModifier modifier)) _modifiers.Remove(modifier);
         else if (other.TryGetComponent(out IPhysicsMover mover)) _activatedMovers.Remove(mover);
+
+        other.TryGetComponent(out IInteractable interactScript);
+        if (interactScript != null && interactScript.showIndicator)
+        {
+            SetIndicator(false);
+        }
     } // end OnTriggerExit2D
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        other.TryGetComponent(out IInteractable interactScript);
+        if (interactScript != null && interactScript.showIndicator)
+        {
+            SetIndicator(true);
+        }
+    } // end OnTriggerStay2D
 
     private void CalculateExternalModifiers()
     {
@@ -1019,7 +1041,7 @@ public interface IPlayerController
     public Vector2 Velocity { get; }
     public int WallDirection { get; }
     public bool ClimbingLadder { get; }
-    public PlayerStates PlayerState { get; }
+    public PlayerStates PlayerState { get; set; }
 
     // External force
     public void AddFrameForce(Vector2 force, bool resetVelocity = false);

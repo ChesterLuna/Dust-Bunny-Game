@@ -88,7 +88,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         _isFinishedDialogue = false;
         if (importantDialogue)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerController.PlayerStates.Dialogue;
+            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerStates.Dialogue;
 
         }
 
@@ -156,7 +156,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     public void EndDialogue()
     {
         if (importantDialogue)
-            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerController.PlayerStates.Playing;
+            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerStates.Playing;
         playOnTouch = false;
         if (IsBubble)
         {
