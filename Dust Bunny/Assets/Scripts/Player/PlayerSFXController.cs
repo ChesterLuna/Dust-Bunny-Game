@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerSFXController : MonoBehaviour
 {
-    public enum SFX { Jump, Dust_Collect_Start, Dust_Collect_Stop_Clean, Dust_Collect_Stop_Abrupt, Foot_Step, Land, Dash, Dead };
+    public enum SFX { Jump, Dust_Collect_Start, Dust_Collect_Stop_Clean, Dust_Collect_Stop_Abrupt, Foot_Step, Land, Dash, Dead, Rumble, Rattle };
     List<GameObject> _soundEffects = new List<GameObject>();
     private List<string> _soundEffectsNames = new List<string>();
     public Vector2 randomPitchVariationRange;
@@ -111,10 +111,23 @@ public class PlayerSFXController : MonoBehaviour
                 _soundObject = GetChildSoundEffect("Death");
                 PlaySoundObject(_soundObject);
                 break;
+            case SFX.Rumble:
+                _soundObject = GetChildSoundEffect("Rumble");
+                PlaySoundObject(_soundObject);
+                break;
+            case SFX.Rattle:
+                _soundObject = GetChildSoundEffect("Rattle");
+                PlaySoundObject(_soundObject);
+                break;
             default:
                 Debug.Log("Requested to play an unimplemented sound effect...");
                 break;
         }
+    }
+
+    public void PlaySFXByString(string soundEffectName)
+    {
+        PlaySoundObject(GetChildSoundEffect(soundEffectName));    
     }
 
     private void PlaySoundObject(GameObject _soundObject)
