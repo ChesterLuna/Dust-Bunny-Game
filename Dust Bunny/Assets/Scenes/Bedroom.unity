@@ -2743,7 +2743,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b008c5ada3441d24dac43fdb41755bfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CheckpointLocation: {x: 0, y: 0, z: 0}
+  _player: {fileID: 0}
+  ShowTimer: 0
   NumSeconds: 0
 --- !u!4 &656847926
 Transform:
@@ -2896,7 +2897,8 @@ MonoBehaviour:
   _pauseMenuUI: {fileID: 18177703}
   _infoUI: {fileID: 815525792}
   _rebindUI: {fileID: 1565946719}
-  _timerTextUI: {fileID: 1623607191}
+  _settingsUI: {fileID: 0}
+  _gameplayOverlayUI: {fileID: 0}
 --- !u!224 &719722196 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6680292650503350825, guid: f25dcd618d3acd64795bf8bb32edb6c9, type: 3}
@@ -45416,6 +45418,10 @@ PrefabInstance:
     - target: {fileID: 6625237388966255724, guid: 782db86c808892315a3dd78177d827e1, type: 3}
       propertyPath: m_Name
       value: AreaMusicSelector
+      objectReference: {fileID: 0}
+    - target: {fileID: 8610564084762867669, guid: 782db86c808892315a3dd78177d827e1, type: 3}
+      propertyPath: song
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
