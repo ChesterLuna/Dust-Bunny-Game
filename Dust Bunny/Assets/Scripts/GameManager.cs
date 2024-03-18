@@ -13,8 +13,6 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     public Vector3? CheckpointLocation;
-    public PlayerController _player;
-
     // called zero
     private void Awake()
     {
@@ -35,14 +33,18 @@ public class GameManager : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     } // end OnEnable
 
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    } // end OnDisable
+
     // called second
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        ES3AutoSaveMgr.Current.Load();
-        _player = FindObjectOfType<PlayerController>();
+        // ES3AutoSaveMgr.Current.Load();
         if (CheckpointLocation.HasValue)
         {
-            _player.transform.position = CheckpointLocation.Value;
+            FindObjectOfType<PlayerController>().gameObject.transform.position = CheckpointLocation.Value;
         }
     } // end OnSceneLoaded
 

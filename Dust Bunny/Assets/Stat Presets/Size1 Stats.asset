@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0ce135eb2fe6874cb3c402f13d306c2, type: 3}
+  m_Name: Size1 Stats
+  m_EditorClassIdentifier: 
+  PlayerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  CollisionLayers:
+    serializedVersion: 2
+    m_Bits: 833
+  CharacterSize:
+    Height: 0.69
+    Width: 0.61
+    StepHeight: 0.05
+    RayInset: 0.01
+  VerticalDeadZoneThreshold: 0.3
+  HorizontalDeadZoneThreshold: 0.1
+  PositionCorrectionMode: 0
+  BaseSpeed: 15
+  Acceleration: 100
+  Friction: 70
+  AirFrictionMultiplier: 0.5
+  DirectionCorrectionMultiplier: 3
+  MaxWalkableSlope: 46
+  ExtraConstantGravity: 40
+  BufferedJumpTime: 0.15
+  CoyoteTime: 0.15
+  JumpPower: 20
+  EndJumpEarlyExtraForceMultiplier: 3
+  MaxAirJumps: 1
+  AllowDash: 1
+  DashVelocity: 30
+  DashDuration: 0.1
+  DashCooldown: 0.5
+  DashEndHorizontalMultiplier: 0.5
+  AllowWalls: 1
+  ClimbableLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  WallJumpTotalInputLossTime: 0.2
+  WallJumpInputLossReturnTime: 0.5
+  RequireInputPush: 1
+  WallJumpPower: {x: 20, y: 18}
+  WallPushPower: {x: 20, y: 18}
+  WallClimbSpeed: 5
+  WallFallAcceleration: 5
+  WallPopForce: 10
+  WallCoyoteTime: 0.3
+  WallDetectorRange: 0.15
+  AllowLadders: 1
+  LadderCooldownTime: 0.15
+  AutoAttachToLadders: 1
+  SnapToLadders: 1
+  LadderLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  LadderSnapTime: 0.05
+  LadderPopForce: 5
+  LadderClimbSpeed: 8
+  LadderSlideSpeed: 12
+  LadderShimmySpeedMultiplier: 0.1
+  NegativeYVelocityNegation: 0.2
+  ExternalVelocityDecayRate: 0.5

@@ -76,7 +76,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         _isFinishedDialogue = false;
         if (importantDialogue)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerController.PlayerStates.Dialogue;
+            GameObject.FindWithTag("Player").GetComponent<OLDPlayerController>().PlayerState = OLDPlayerController.PlayerStates.Dialogue;
 
         }
         Debug.Log("Hola");
@@ -113,7 +113,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     public void EndDialogue()
     {
         if (importantDialogue)
-            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerController.PlayerStates.Playing;
+            GameObject.FindWithTag("Player").GetComponent<OLDPlayerController>().PlayerState = OLDPlayerController.PlayerStates.Playing;
         playOnTrigger = false;
         if (IsBubble)
         {

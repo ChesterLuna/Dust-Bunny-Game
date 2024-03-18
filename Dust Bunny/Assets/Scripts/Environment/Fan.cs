@@ -17,7 +17,7 @@ public class Fan : MonoBehaviour, ISwitchable
     {
         _fanCollider = GetComponent<Collider2D>();
         _animator = GetComponentInChildren<Animator>();
-    }
+    } // end Awake
 
     void Start()
     {
@@ -25,20 +25,21 @@ public class Fan : MonoBehaviour, ISwitchable
         {
             InvokeRepeating("Toggle", 0f, _timedToggleLength);
         }
-    }
+    } // end Start
+
     public void Disable()
     {
         _fanCollider.enabled = false;
         _fanSprite.enabled = false;
         _animator.speed = 0;
-    }
+    } // end Disable
 
     public void Enable()
     {
         _fanCollider.enabled = true;
         _fanSprite.enabled = true;
         _animator.speed = 1;
-    }
+    } // end Enable
 
     public void Toggle()
     {
@@ -50,16 +51,12 @@ public class Fan : MonoBehaviour, ISwitchable
         {
             Enable();
         }
-    }
+    } // end Toggle
 
-    void OnTriggerStay2D(Collider2D collider)
+    void OnTriggerStay2D(Collider2D collision)
     {
-        if (collider.gameObject.CompareTag("Player"))
-        {
-            Rigidbody2D player = collider.gameObject.GetComponent<PlayerController>().RB;
-            player.AddForce(transform.up * _force);
-        }
-    }
-}
-
-
+        if (!collision.TryGetComponent(out IPlayerController controller)) return;
+        Vector2 force = transform.up * _force;
+        controller.AddFrameForce(force, true);
+    } // end OnTriggerStay2D
+} // end class Fan
