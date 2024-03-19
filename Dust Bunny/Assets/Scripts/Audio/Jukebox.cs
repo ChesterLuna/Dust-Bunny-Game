@@ -9,7 +9,7 @@ public class Jukebox : MonoBehaviour
 {
     // Static members & types
     public static Jukebox instance = null;
-    public enum Song{BEDROOM, BOSS, TITLE, NONE};
+    public enum Song{BURROW, BEDROOM, BOSS, TITLE, NONE};
     [Serializable]
     public struct SongInfo{
         public Song song;
