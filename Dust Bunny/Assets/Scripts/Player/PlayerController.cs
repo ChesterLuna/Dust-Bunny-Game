@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(CapsuleCollider2D))]
@@ -34,9 +35,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public event Action<bool, Vector2> DashChanged;
     public event Action<bool> WallGrabChanged;
     public event Action SizeChanged;
-    public event Action DeadChanged;
     public event Action<Vector2> Repositioned;
-    public event Action<bool> ToggledPlayer;
+    public event Action<bool, bool> ToggledPlayer;
 
     public bool Active { get; private set; } = true;
     public Vector2 Up { get; private set; }
@@ -70,12 +70,11 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         Repositioned?.Invoke(position);
     } // end RepositionImmediately
 
-    public void TogglePlayer(bool on)
+    public void TogglePlayer(bool on, bool dead = false)
     {
         Active = on;
-
         _rb.isKinematic = !on;
-        ToggledPlayer?.Invoke(on);
+        ToggledPlayer?.Invoke(on, dead);
     } // end TogglePlayer
 
     #endregion
@@ -97,6 +96,10 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     private void Start()
     {
+        if (GameManager.instance.CheckpointLocation.HasValue)
+        {
+            RepositionImmediately(GameManager.instance.CheckpointLocation.Value, true);
+        }
         _fallSpeedYDampingChangeThreshold = CameraManager.instance._fallSpeedYDampingChangeThreshold;
     } // end Start
 
@@ -117,8 +120,11 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public void TickFixedUpdate(float delta)
     {
         _delta = delta;
-        if (!Active) return;
-
+        if (!Active)
+        {
+            SetVelocity(Vector2.zero);
+            return;
+        }
         RemoveTransientVelocity();
 
         SetFrameData();
@@ -947,15 +953,16 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     } // end ChangeDust
     #endregion
 
+    [Header("Death")]
+    [SerializeField] private Animator _deathTransition;
+    [SerializeField] private float _deathTransitionTime = 1f;
     public void Die() // TODO, Update
     {
-        DeadChanged?.Invoke();
-        // PlayerState = PlayerStates.Dead;
-        // _thisCollider.enabled = false;
-        // _thisRigidbody.simulated = false;
-        // LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
-        // levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
-        // GameManager.instance.PauseGameTime();
+        TogglePlayer(false, true);
+        PlayerState = PlayerStates.Dead;
+        LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
+        levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
+        GameManager.instance.PauseGameTime();
     } // end Die
 
     #region External Triggers
@@ -988,7 +995,6 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         other.TryGetComponent(out IInteractable interactScript);
         if (interactScript != null && interactScript.ShowIndicator)
         {
-            Debug.Log("Show Indicator");
             _actionIndicator.gameObject.SetActive(true);
         }
     } // end OnTriggerStay2D
@@ -1057,9 +1063,8 @@ public interface IPlayerController
     public event Action<bool, Vector2> DashChanged;
     public event Action<bool> WallGrabChanged;
     public event Action SizeChanged;
-    public event Action DeadChanged;
     public event Action<Vector2> Repositioned;
-    public event Action<bool> ToggledPlayer;
+    public event Action<bool, bool> ToggledPlayer;
 
     public bool Active { get; }
     public Vector2 Up { get; }
@@ -1076,7 +1081,7 @@ public interface IPlayerController
     // Utility
     public void LoadState(ControllerState state);
     public void RepositionImmediately(Vector2 position, bool resetVelocity = false);
-    public void TogglePlayer(bool on);
+    public void TogglePlayer(bool on, bool dead = false);
 
     // Dust
     public void ChangeDust(float scalar);

@@ -182,7 +182,7 @@ GameObject:
   - component: {fileID: 3166937504450865008}
   - component: {fileID: 7859736895417857758}
   - component: {fileID: 9038649559988719448}
-  - component: {fileID: 2743690145844561660}
+  - component: {fileID: 1245214873329282388}
   m_Layer: 0
   m_Name: Dust Adder
   m_TagString: Untagged
@@ -303,7 +303,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
---- !u!114 &2743690145844561660
+--- !u!114 &1245214873329282388
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -312,7 +312,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 9137842607826388602}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78204ec02eae4cd47be77be2551ddd6c, type: 3}
+  m_Script: {fileID: 11500000, guid: 339f91960edaa714f89f73263b9662e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dustAmount: 10
+  _maxDustToExchange: -1
+  _dustTickAmount: 10
+  _dustTickRate: 900
+  _cooldownTime: 0

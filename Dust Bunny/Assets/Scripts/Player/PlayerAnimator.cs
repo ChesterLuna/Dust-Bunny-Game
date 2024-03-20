@@ -62,7 +62,6 @@ public class PlayerAnimator : MonoBehaviour
     {
         _player.Jumped -= OnJumped;
         _player.GroundedChanged -= OnGroundedChanged;
-        _player.DeadChanged -= OnDead;
         _player.DashChanged -= OnDashChanged;
         _player.WallGrabChanged -= OnWallGrabChanged;
         _player.SizeChanged -= OnSizeChanged;
@@ -261,9 +260,16 @@ public class PlayerAnimator : MonoBehaviour
 
     #endregion
 
-    private void PlayerOnToggledPlayer(bool on)
+    private void PlayerOnToggledPlayer(bool on, bool dead)
     {
-        _effectsParent.SetActive(on);
+        if (dead)
+        {
+            OnDead();
+        }
+        else
+        {
+            _effectsParent.SetActive(on);
+        }
     } // end PlayerOnToggledPlayer
 
     #region Helpers

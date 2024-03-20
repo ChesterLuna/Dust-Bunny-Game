@@ -39,13 +39,14 @@ public class GameManager : MonoBehaviour
     } // end OnDisable
 
     // called second
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode) // Moved to player controller
     {
-        // ES3AutoSaveMgr.Current.Load();
-        if (CheckpointLocation.HasValue)
-        {
-            FindObjectOfType<PlayerController>().gameObject.transform.position = CheckpointLocation.Value;
-        }
+        ES3AutoSaveMgr.Current.Load();
+        // if (CheckpointLocation.HasValue)
+        // {
+        //     FindObjectOfType<PlayerController>().gameObject.transform.position = CheckpointLocation.Value;
+        // }
+
     } // end OnSceneLoaded
 
     // called third

@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class Fan : MonoBehaviour, ISwitchable
 {
-    [SerializeField] bool _isTimed = false;
+    [Tooltip("The time between toggles (on/off), set to 0 to disable")]
     [SerializeField] float _timedToggleLength = 1f;
     [SerializeField] float _force = 75;
     [SerializeField] SpriteRenderer _baseSprite;
@@ -21,7 +22,7 @@ public class Fan : MonoBehaviour, ISwitchable
 
     void Start()
     {
-        if (_isTimed)
+        if (_timedToggleLength > 0)
         {
             InvokeRepeating("Toggle", 0f, _timedToggleLength);
         }

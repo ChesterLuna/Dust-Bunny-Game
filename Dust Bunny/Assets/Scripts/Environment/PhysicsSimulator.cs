@@ -16,6 +16,12 @@ public class PhysicsSimulator : MonoBehaviour
     public void RemovePlatform(IPhysicsObject platform) => _platforms.Remove(platform);
     public void RemovePlayer(IPhysicsObject player) => _players.Remove(player);
 
+    public void ClearPhysicsObjects()
+    {
+        _platforms.Clear();
+        _players.Clear();
+    }
+
     private float _time;
 
     private void Update()

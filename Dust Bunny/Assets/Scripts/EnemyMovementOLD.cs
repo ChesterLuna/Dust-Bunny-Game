@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using UnityEngine;
 
 
@@ -21,6 +20,7 @@ public class EnemyMovementOLD : MonoBehaviour
 
     [SerializeField] float _moveSpeed = 2f;
     [SerializeField] float _gravity = 9.8f;
+    [SerializeField] GameObject _groundRaycastTarget;
     [SerializeField] float _terminalVelocity = 10f;
     [SerializeField] bool _allowTurning = true;
     [SerializeField] MovementType _movementType = MovementType.velocity;
@@ -74,7 +74,6 @@ public class EnemyMovementOLD : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Print("Seek: " + _seekPlayer + " CanSeePlayer: " + CanSeePlayer() + " Wander: " + _wander + " CantReachPatrolPoints: " + CantReachPatrolPoints() + " Patrol: " + _patrol);
         if (TurnQueued)
         {
             Print("TurnQueued");
@@ -92,10 +91,15 @@ public class EnemyMovementOLD : MonoBehaviour
             Print("Wander");
             Wander();
         }
-        else if (_patrol && _patrolPoints.Length == 0)
+        else if (_patrol && _patrolPoints.Length != 0)
         {
             Print("Patrol");
             Patrol();
+        }
+        else
+        {
+            Print("Fail");
+            Print("Seek: " + _seekPlayer + " CanSeePlayer: " + CanSeePlayer() + " Wander: " + _wander + " CantReachPatrolPoints: " + CantReachPatrolPoints() + " Patrol: " + _patrol);
         }
         _previousPosition = _currentPosition;
         ApplyMovement();
@@ -105,35 +109,38 @@ public class EnemyMovementOLD : MonoBehaviour
 
     bool CheckGrounded()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1f, _environmentLayer);
+        Vector2 direction = (_groundRaycastTarget.transform.position - transform.position).normalized;
+        float distance = Vector2.Distance(_groundRaycastTarget.transform.position, transform.position);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, _environmentLayer);
         return hit.collider != null;
     } // end CheckGrounded
+
     void ApplyMovement()
     {
-        float verticalForce = _rb.velocity.y;
+
+        float verticalForce = -0.5f;
         if (!CheckGrounded())
         {
-            verticalForce = _newMovement.y;
-            // verticalForce = Mathf.Clamp(_newMovement.y - _gravity, -_terminalVelocity, _terminalVelocity);
+            verticalForce = Mathf.Clamp(_newMovement.y - _gravity, -_terminalVelocity, _terminalVelocity);
         }
-        // Set proper speed & grivity
+
         _newMovement = new Vector2(_newMovement.x * _moveSpeed, verticalForce);
 
         // Apply the movement
         if (_movementType == MovementType.velocity)
         {
-            Debug.Log(_newMovement);
             _rb.velocity = _newMovement;
+
         }
         else if (_movementType == MovementType.position)
         {
             transform.position = transform.position + (Vector3)_newMovement * Time.fixedDeltaTime;
         }
+        _newMovement = Vector2.zero;
     } // end ApplyMovement
 
     bool HasMoved()
     {
-        Debug.Log(Vector3.Distance(_previousPosition, _currentPosition) + " " + _minMoveDistance);
         return Vector3.Distance(_previousPosition, _currentPosition) > _minMoveDistance;
     } // end HasMoved
 
@@ -174,7 +181,7 @@ public class EnemyMovementOLD : MonoBehaviour
 
     private bool CantReachPatrolPoints()
     {
-        return _patrolPoints.Length == 0 || !reachablePoints.Contains(true);
+        return !_patrol || _patrolPoints.Length == 0 || !reachablePoints.Contains(true);
     } // end CantReachPatrolPoints
 
     private void Patrol()
@@ -263,6 +270,12 @@ public class EnemyMovementOLD : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        // Draw the raycast
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + Vector3.down);
+        // ... rest of your code
+
+
         if (Application.isPlaying) return;
         var previous = (Vector2)transform.position;
         for (var i = 0; i < _patrolPoints.Length; i++)
@@ -287,6 +300,8 @@ public class EnemyMovementOLD : MonoBehaviour
         }
     } // end OnDrawGizmosSelected
 
+
+
     private enum MovementType
     {
         velocity,
@@ -298,6 +313,22 @@ public class EnemyMovementOLD : MonoBehaviour
     [SerializeField] bool PrintDebug = false;
 
     void Print(string message)
+    {
+        if (PrintDebug)
+        {
+            Debug.Log(message);
+        }
+    } // end Print
+
+    void Print(Vector2 message)
+    {
+        if (PrintDebug)
+        {
+            Debug.Log(message);
+        }
+    } // end Print
+
+    void Print(Vector3 message)
     {
         if (PrintDebug)
         {
