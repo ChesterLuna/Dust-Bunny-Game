@@ -4863,11 +4863,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1371112535}
   m_CullTransparentMesh: 0
---- !u!1 &1399404082 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2705880581571827293, guid: 20729835c3f9ba344a6200343788e69e, type: 3}
-  m_PrefabInstance: {fileID: 2287683688347141753}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1428533067
 GameObject:
   m_ObjectHideFlags: 0
@@ -5214,7 +5209,7 @@ Transform:
   m_GameObject: {fileID: 1480224689}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 157.5, y: 15.0689, z: 0}
+  m_LocalPosition: {x: 144.58, y: 6.9, z: 0}
   m_LocalScale: {x: 0.7, y: 0.7, z: 0.6809}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45774,7 +45769,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 301435611}
-  player: {fileID: 1399404082}
   leftBound: {fileID: 1178054993}
   rightBound: {fileID: 1480224689}
   topBound: {fileID: 1073805305}

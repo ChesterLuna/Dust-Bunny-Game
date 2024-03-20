@@ -24,7 +24,7 @@ public class ParallaxBackground : MonoBehaviour
     private float bottomLimit;
     private float aspectRatio;
     private Vector2 screenSize;
-    private Vector2 backgroundDimensionsWorld;
+    private Vector2 bgDimWorld;
     private Vector2 arenaDimensions;
     private Vector2 bgToArenaRatio;
     
@@ -37,19 +37,22 @@ public class ParallaxBackground : MonoBehaviour
 
         // Find background image limits, adjusted for screen size
         screenSize = new Vector2(mainCamera.orthographicSize * mainCamera.aspect, mainCamera.orthographicSize * (1/mainCamera.aspect));
-        backgroundDimensionsWorld = new Vector2(sprite.size.x * transform.localScale.x, sprite.size.y * transform.localScale.y);
+        bgDimWorld = new Vector2(sprite.size.x * transform.localScale.x, sprite.size.y * transform.localScale.y);
         aspectRatio = sprite.size.y / sprite.size.x;
         arenaDimensions = new Vector2(
             rightBound.transform.position.x - leftBound.transform.position.x,
             bottomBound.transform.position.y - topBound.transform.position.y
         );
 
-        leftLimit = leftBound.transform.position.x;
-        rightLimit = rightBound.transform.position.x;
-        topLimit = topBound.transform.position.y;
-        bottomLimit = bottomBound.transform.position.y;
+        leftLimit = leftBound.transform.position.x - screenSize.x/2 - bgDimWorld.x/2;
+        rightLimit = rightBound.transform.position.x + screenSize.x/2 + bgDimWorld.x/2;
+        topLimit = topBound.transform.position.y + screenSize.y/2 + bgDimWorld.y/2;
+        bottomLimit = bottomBound.transform.position.y - screenSize.y/2 - bgDimWorld.y/2;
 
-        Debug.Log(screenSize);
+        Debug.Log("Left parallax limit: " + leftLimit.ToString());
+        Debug.Log("Right parallax limit: " + rightLimit.ToString());
+        Debug.Log("Top parallax limit: " + topLimit.ToString());
+        Debug.Log("Bottom parallax limit: " + bottomLimit.ToString());
     }
 
     // Update is called once per frame
@@ -63,8 +66,8 @@ public class ParallaxBackground : MonoBehaviour
             (cameraPos.y - topLimit)  / (bottomLimit - topLimit));
 
         Vector3 newPosition = new Vector3(
-            cameraPos.x - (percentThroughLevel.x - 0.5f) * backgroundDimensionsWorld.x - screenSize.x, 
-            cameraPos.y + (percentThroughLevel.y - 0.5f) * backgroundDimensionsWorld.y - screenSize.y, 
+            cameraPos.x - (percentThroughLevel.x - 0.5f) * bgDimWorld.x,
+            cameraPos.y + (percentThroughLevel.y - 0.5f) * bgDimWorld.y,
             1);
         
         transform.position = newPosition;
