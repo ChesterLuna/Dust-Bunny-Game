@@ -14,8 +14,7 @@ public class Switch : MonoBehaviour, IInteractable
     [SerializeField] Sprite _onSprite;
     [SerializeField] Sprite _offSprite;
     SpriteRenderer _spriteRenderer;
-    [SerializeField] bool _showIndicator = true;
-    public bool showIndicator => _showIndicator;
+    public bool ShowIndicator { get; private set; } = true;
 
     // Start is called before the first frame update
     void Awake()

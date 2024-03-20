@@ -6,12 +6,11 @@ public class DialogueTrigger : MonoBehaviour, IInteractable
 {
     [SerializeField] DialogueManager _dialoguePlayer = null;
     bool playOnTouch = true;
-    [SerializeField] bool _showIndicator = false;
-    public bool showIndicator => _showIndicator;
+    public bool ShowIndicator { get; private set; } = false;
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(_dialoguePlayer == null)
+        if (_dialoguePlayer == null)
         {
             Debug.LogError("You didnt add a dialogue npc to the dialogue trigger");
             return;

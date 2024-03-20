@@ -16,6 +16,14 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     #endregion
 
+    [SerializeField] GameObject _actionIndicator;
+    #region Camera
+    // Camera
+    [Header("Camera")]
+    [SerializeField] private CameraFollowObject _cameraFollowObject;
+    private float _fallSpeedYDampingChangeThreshold;
+    #endregion
+
     #region Interface
     [field: SerializeField] private PlayerStats[] _allStats = new PlayerStats[3];
 
@@ -87,6 +95,11 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         PhysicsSimulator.Instance.AddPlayer(this);
     } // end Awake
 
+    private void Start()
+    {
+        _fallSpeedYDampingChangeThreshold = CameraManager.instance._fallSpeedYDampingChangeThreshold;
+    } // end Start
+
     private void OnDestroy() => PhysicsSimulator.Instance.RemovePlayer(this);
 
     public void OnValidate() => SetupCharacter();
@@ -97,6 +110,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         _time = time;
 
         GatherInput();
+        updateCameraYDamping();
+
     } // end TickUpdate
 
     public void TickFixedUpdate(float delta)
@@ -127,6 +142,22 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         SaveCharacterState();
     } // end TickFixedUpdate
 
+    #endregion
+
+    #region Cameras
+    private void updateCameraYDamping()
+    {
+        // If we are falling past a certain speed threshold
+        if (_rb.velocity.y < _fallSpeedYDampingChangeThreshold && !CameraManager.instance.IsLerpingYDamping && !CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpYDamping(true);
+        }
+        if (_rb.velocity.y >= 0f && !CameraManager.instance.IsLerpingYDamping && CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpedFromPlayerFalling = false;
+            CameraManager.instance.LerpYDamping(false);
+        }
+    } // end updateCameraYDamping
     #endregion
 
     #region Setup
@@ -205,7 +236,9 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         var rot = _rb.rotation * Mathf.Deg2Rad;
         Up = new Vector2(-Mathf.Sin(rot), Mathf.Cos(rot));
+        Vector2 previousRight = Right;
         Right = new Vector2(Up.y, -Up.x);
+        if (previousRight != Right) _cameraFollowObject.CallTurn(); // Update Camera
         _framePosition = _rb.position;
 
         _hasInputThisFrame = _frameInput.Move.x != 0;
@@ -932,13 +965,6 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private readonly HashSet<ISpeedModifier> _modifiers = new();
     private Vector2 _frameSpeedModifierVelocity;
 
-
-
-    private void SetIndicator(bool state)
-    {
-        transform.Find("Action-Indicator").gameObject.SetActive(state);
-    } // end SetIndicator
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.TryGetComponent(out ISpeedModifier modifier)) _modifiers.Add(modifier);
@@ -951,18 +977,19 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         else if (other.TryGetComponent(out IPhysicsMover mover)) _activatedMovers.Remove(mover);
 
         other.TryGetComponent(out IInteractable interactScript);
-        if (interactScript != null && interactScript.showIndicator)
+        if (interactScript != null && interactScript.ShowIndicator)
         {
-            SetIndicator(false);
+            _actionIndicator.gameObject.SetActive(false);
         }
     } // end OnTriggerExit2D
 
     void OnTriggerStay2D(Collider2D other)
     {
         other.TryGetComponent(out IInteractable interactScript);
-        if (interactScript != null && interactScript.showIndicator)
+        if (interactScript != null && interactScript.ShowIndicator)
         {
-            SetIndicator(true);
+            Debug.Log("Show Indicator");
+            _actionIndicator.gameObject.SetActive(true);
         }
     } // end OnTriggerStay2D
 

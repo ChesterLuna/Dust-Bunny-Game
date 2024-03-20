@@ -10,8 +10,8 @@ public class EnemySideCollision : MonoBehaviour
     {
         if (!other.gameObject.CompareTag("Player"))
         {
-            Enemy enemy = transform.parent.GetComponent<Enemy>();
-            // if (enemy != null) enemy.TurnQueued = true;
+            var enemy = transform.parent.GetComponent<EnemyMovementOLD>();
+            if (enemy != null) enemy.TurnQueued = true;
         }
     } // end OnTriggerEnter2D
 } // end class EnemySideCollision

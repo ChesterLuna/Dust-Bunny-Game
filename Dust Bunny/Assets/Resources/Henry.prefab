@@ -177,6 +177,7 @@ MonoBehaviour:
     m_Bits: 1
   _moveSpeed: 2
   _gravity: 9.81
+  _terminalVelocity: 10
   _allowTurning: 1
   _movementType: 0
   _seekPlayer: 0
@@ -296,7 +297,7 @@ Transform:
   m_GameObject: {fileID: 980264587702522531}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.36, y: -2.8, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -476,7 +477,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 339f91960edaa714f89f73263b9662e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxDustToTake: -1
+  _maxDustToExchange: 100
   _dustTickAmount: 10
   _dustTickRate: 1
 --- !u!1 &2589948290868419584

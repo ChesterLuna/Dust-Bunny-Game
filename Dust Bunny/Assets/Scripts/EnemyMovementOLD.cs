@@ -21,6 +21,7 @@ public class EnemyMovementOLD : MonoBehaviour
 
     [SerializeField] float _moveSpeed = 2f;
     [SerializeField] float _gravity = 9.8f;
+    [SerializeField] float _terminalVelocity = 10f;
     [SerializeField] bool _allowTurning = true;
     [SerializeField] MovementType _movementType = MovementType.velocity;
 
@@ -73,23 +74,27 @@ public class EnemyMovementOLD : MonoBehaviour
 
     void FixedUpdate()
     {
-        Print("Seek: " + _seekPlayer + " CanSeePlayer: " + CanSeePlayer() + " Wander: " + _wander + " CantReachPatrolPoints: " + CantReachPatrolPoints() + " Patrol: " + _patrol);
+        // Print("Seek: " + _seekPlayer + " CanSeePlayer: " + CanSeePlayer() + " Wander: " + _wander + " CantReachPatrolPoints: " + CantReachPatrolPoints() + " Patrol: " + _patrol);
         if (TurnQueued)
         {
+            Print("TurnQueued");
             IncrementPatrolPoints();
             Turn();
             TurnQueued = false;
         }
         if (_seekPlayer && CanSeePlayer())
         {
+            Print("SeekPlayer");
             SeekPlayer();
         }
         else if (_wander && CantReachPatrolPoints())
         {
+            Print("Wander");
             Wander();
         }
-        else if (_patrol)
+        else if (_patrol && _patrolPoints.Length == 0)
         {
+            Print("Patrol");
             Patrol();
         }
         _previousPosition = _currentPosition;
@@ -97,15 +102,28 @@ public class EnemyMovementOLD : MonoBehaviour
         _currentPosition = transform.position;
     } // end FixedUpdate
 
+
+    bool CheckGrounded()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1f, _environmentLayer);
+        return hit.collider != null;
+    } // end CheckGrounded
     void ApplyMovement()
     {
+        float verticalForce = _rb.velocity.y;
+        if (!CheckGrounded())
+        {
+            verticalForce = _newMovement.y;
+            // verticalForce = Mathf.Clamp(_newMovement.y - _gravity, -_terminalVelocity, _terminalVelocity);
+        }
         // Set proper speed & grivity
-        _newMovement = new Vector2(_newMovement.x * _moveSpeed, _newMovement.y - _gravity);
+        _newMovement = new Vector2(_newMovement.x * _moveSpeed, verticalForce);
 
         // Apply the movement
         if (_movementType == MovementType.velocity)
         {
-            _rb.velocity = new Vector2(_newMovement.x * _moveSpeed, _newMovement.y - _gravity);
+            Debug.Log(_newMovement);
+            _rb.velocity = _newMovement;
         }
         else if (_movementType == MovementType.position)
         {
@@ -115,6 +133,7 @@ public class EnemyMovementOLD : MonoBehaviour
 
     bool HasMoved()
     {
+        Debug.Log(Vector3.Distance(_previousPosition, _currentPosition) + " " + _minMoveDistance);
         return Vector3.Distance(_previousPosition, _currentPosition) > _minMoveDistance;
     } // end HasMoved
 
@@ -141,6 +160,7 @@ public class EnemyMovementOLD : MonoBehaviour
         bool tempIsFacingRight = targetDirection == 1; // Set _isFacingRight to true if targetDirection is +1 (right) and false if -1 (left)
         if (_isFacingRight != tempIsFacingRight)
         {
+            Print("FacePlayer Turn");
             Turn();
         }
         return targetDirection;
@@ -159,7 +179,6 @@ public class EnemyMovementOLD : MonoBehaviour
 
     private void Patrol()
     {
-        if (_patrolPoints.Length == 0) return;
         if (!HasMoved())
         {
             reachablePoints[_currentPatrolPointIndex] = false;
@@ -176,6 +195,7 @@ public class EnemyMovementOLD : MonoBehaviour
         bool tempIsFacingRight = targetDirection == 1; // Set _isFacingRight to true if targetDirection is +1 (right) and false if -1 (left)
         if (_isFacingRight != tempIsFacingRight)
         {
+            Print("Patrol Turn");
             Turn();
         }
         _newMovement.x = targetDirection;
@@ -185,12 +205,17 @@ public class EnemyMovementOLD : MonoBehaviour
     {
         if (!HasMoved() && waitExtraFrame)
         {
+            Print("Wander Turn");
             Turn();
             waitExtraFrame = false;
         }
         else if (!HasMoved())
         {
             waitExtraFrame = true;
+        }
+        else
+        {
+            waitExtraFrame = false;
         }
         // Walk from edge to edge of platform
         Vector2 direction = _isFacingRight ? Vector2.right : Vector2.left;

@@ -22,7 +22,6 @@ MonoBehaviour:
     Height: 1.38
     Width: 1.22
     StepHeight: 0.41
-    CrouchHeight: 0.8
     RayInset: 0.1
   VerticalDeadZoneThreshold: 0.3
   HorizontalDeadZoneThreshold: 0.1
@@ -44,9 +43,6 @@ MonoBehaviour:
   DashDuration: 0.1
   DashCooldown: 0.5
   DashEndHorizontalMultiplier: 0.5
-  AllowCrouching: 0
-  CrouchSlowDownTime: 1
-  CrouchSpeedModifier: 0.3
   AllowWalls: 1
   ClimbableLayer:
     serializedVersion: 2
