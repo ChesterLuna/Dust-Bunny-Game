@@ -9,7 +9,7 @@ public class Jukebox : MonoBehaviour
 {
     // Static members & types
     public static Jukebox instance = null;
-    public enum Song{BEDROOM, NONE};
+    public enum Song{BURROW, BEDROOM, BOSS, TITLE, NONE};
     [Serializable]
     public struct SongInfo{
         public Song song;
@@ -121,11 +121,12 @@ public class Jukebox : MonoBehaviour
         if(currentSong.song != Song.NONE){
             introSource.Stop();
             introSource.clip = newIntroClip;
-            introSource.Play();
 
             loopSource.Stop();
             loopSource.clip = newLoopClip;
+            
             loopSource.PlayScheduled(AudioSettings.dspTime + newIntroClip.length);
+            introSource.Play();
         } else {
             introSource.Stop();
             loopSource.Stop();
