@@ -3,13 +3,16 @@ $Rattle
 #Spek
 :Who's there!?
 
-# 
+$Rattle
+$Clank
+#Vent
 :Rattle… Rattle… Clank!
 
-:(A familiar face falls out of the vent.)
+#Spek
+:Pip!? 
 
 #Spek
-:Pip!? What are you doing here? It's dangerous!
+:What are you doing here? It's dangerous!
 
 #Pip
 :O-Oh! Hi, Spek! I was just leaving, don't worry about me-
@@ -21,25 +24,25 @@ $Rattle
 :…
 
 #Spek
-:I told you it was dangerous! We don't know when the great rumbling will show up again, so you can't be all the way out here!
+:We don't know when the earthshaker will show up again, so you can't be way out here!
 
 #Pip
 :Sorry… I just wanted to help.
 
 #Spek
-:*Sigh* …
+:*Sigh*
 
 #Spek
-:Alright, but just tell me first. How'd you even get out here?
+:How'd you even get here?
 
 #Pip
-:I can fit into the gaps here 'cause I'm so small.
+:I can fit into the gaps 'cause I'm so small.
 
 #Pip
-:They were a bit confusing to explore but you know I'm good at that so eventually I found a way to the Outside.
+:They were a bit confusing to navigate but, you know, I'm good at exploring, so eventually I found my way to the Outside.
 
 #Pip
-:I promise they're safe! Nothing else can get into them anyways. 
+:I promise it's safe! Nothing else can get in there anyways. 
 
 #Pip
 :If you really want me to go back I can, but…
@@ -53,4 +56,3 @@ $Rattle
 #Pip
 :You got it!
 
-:(Pip jumps up and down a few times, then disappears back into the wall.)

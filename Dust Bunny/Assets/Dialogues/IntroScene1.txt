@@ -1,7 +1,7 @@
 ﻿$Rumble
 
 #Spek
-:What was that strange sound just now?
+:What was that strange sound?
 
 $Rumble 
 
