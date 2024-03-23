@@ -3,19 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LevelLoader : MonoBehaviour {
-    
-    public void StartLoadLevel (string LevelName, Animator transition, float transitionTime = 1f) {
-        StartCoroutine(LoadLevel(LevelName, transition, transitionTime));
-    } // end StartLoadLevel
-    
+public class LevelLoader : MonoBehaviour
+{
 
-    IEnumerator LoadLevel (string LevelName, Animator transition, float transitionTime) {
-      transition.SetTrigger("Start");
+  public void StartLoadLevel(string LevelName, Animator transition, float transitionTime = 1f)
+  {
+    StartCoroutine(LoadLevel(LevelName, transition, transitionTime));
+  } // end StartLoadLevel
 
-      yield return new WaitForSeconds(transitionTime);
+  IEnumerator LoadLevel(string LevelName, Animator transition, float transitionTime)
+  {
+    transition.SetTrigger("Start");
 
-      SceneManager.LoadScene(LevelName);
-    } // end IEnumerator LoadLevel
+    yield return new WaitForSeconds(transitionTime);
+    PhysicsSimulator.Instance.ClearPhysicsObjects();
+    SceneManager.LoadScene(LevelName);
+  } // end IEnumerator LoadLevel
 
 } // end class LevelLoader

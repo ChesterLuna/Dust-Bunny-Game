@@ -9,9 +9,12 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] Toggle _displayTimerToggle;
     void OnEnable()
     {
-        // bool temp = GameManager.instance.ShowTimer;
-        // if (GameManager.instance.ShowTimer) _displayTimerToggle.Select();
-        // GameManager.instance.ShowTimer = temp;
         _displayTimerToggle.isOn = GameManager.instance.ShowTimer;
+        _displayTimerToggle.onValueChanged.AddListener((value) => GameManager.instance.ShowTimer = value);
     } // end OnEnable
+
+    void OnDisable()
+    {
+        _displayTimerToggle.onValueChanged.RemoveAllListeners();
+    } // end OnDisable
 } // end SettingsMenu

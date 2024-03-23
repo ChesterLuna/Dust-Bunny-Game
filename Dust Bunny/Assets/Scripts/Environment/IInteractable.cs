@@ -1,5 +1,5 @@
 public interface IInteractable
 {
-    bool showIndicator { get; }
+    public bool ShowIndicator { get; }
     void Interact();
 }

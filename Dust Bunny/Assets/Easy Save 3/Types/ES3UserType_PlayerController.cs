@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ES3Types
 {
 	[UnityEngine.Scripting.Preserve]
-	[ES3PropertiesAttribute("_bunnySize", "_dust", "IsFacingRight")]
+	[ES3PropertiesAttribute("_currentDust", "Stats")]
 	public class ES3UserType_PlayerController : ES3ComponentType
 	{
 		public static ES3Type Instance = null;
@@ -16,9 +16,8 @@ namespace ES3Types
 		{
 			var instance = (PlayerController)obj;
 			
-			writer.WritePrivateField("_bunnySize", instance);
-			writer.WritePrivateField("_dust", instance);
-			writer.WriteProperty("IsFacingRight", instance.IsFacingRight, ES3Type_bool.Instance);
+			writer.WritePrivateField("_currentDust", instance);
+			writer.WritePrivatePropertyByRef("Stats", instance);
 		}
 
 		protected override void ReadComponent<T>(ES3Reader reader, object obj)
@@ -29,15 +28,12 @@ namespace ES3Types
 				switch(propertyName)
 				{
 					
-					case "_bunnySize":
-					instance = (PlayerController)reader.SetPrivateField("_bunnySize", reader.Read<System.Int32>(), instance);
+					case "_currentDust":
+					instance = (PlayerController)reader.SetPrivateField("_currentDust", reader.Read<System.Single>(), instance);
 					break;
-					case "_dust":
-					instance = (PlayerController)reader.SetPrivateField("_dust", reader.Read<System.Single>(), instance);
+					case "Stats":
+					instance = (PlayerController)reader.SetPrivateProperty("Stats", reader.Read<PlayerStats>(), instance);
 					break;
-					case "IsFacingRight":
-						instance.IsFacingRight = reader.Read<System.Boolean>(ES3Type_bool.Instance);
-						break;
 					default:
 						reader.Skip();
 						break;

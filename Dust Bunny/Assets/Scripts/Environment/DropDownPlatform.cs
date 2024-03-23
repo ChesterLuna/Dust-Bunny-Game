@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.Animations;
 
 
-
 public class DropDownPlatform : MonoBehaviour
 {
     private Collider2D _hitbox;
@@ -14,16 +13,19 @@ public class DropDownPlatform : MonoBehaviour
         _hitbox = transform.parent.GetComponentInParent<Collider2D>();
         if (_hitbox == null) _hitbox = GetComponent<Collider2D>();
     } // end Awake
-    public void DropDown(Collider2D other)
+
+    public void DropDown(Collider2D collision)
     {
-        Physics2D.IgnoreCollision(_hitbox, other, true);
+        // Physics2D.IgnoreCollision(_hitbox, collision, true);
+        _hitbox.enabled = false;
     }// end DropDown
 
-    private void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerExit2D(Collider2D collision)
     {
-        if (other.CompareTag("Player"))
-        {
-            Physics2D.IgnoreCollision(_hitbox, other, false);
-        }
+        if (!collision.TryGetComponent(out IPlayerController controller)) return;
+        // Physics2D.IgnoreCollision(_hitbox, collision, false);
+        _hitbox.enabled = true;
+
+
     } // end OnTriggerExit2D
 }

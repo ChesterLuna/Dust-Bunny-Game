@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayerSFXController : MonoBehaviour
 {
@@ -26,6 +25,20 @@ public class PlayerSFXController : MonoBehaviour
         PlaySFX(SFX.Foot_Step);
     } // end PlayFootstep
 
+
+    public void PlayWallClimbSound()
+    {
+        // private int _wallClimbAudioIndex = 0;
+        // _wallClimbAudioIndex = (_wallClimbAudioIndex + 1) % _wallClimbClips.Length;
+        PlaySFX(SFX.Foot_Step);
+    }
+
+    public void PlayLadderClimbSound()
+    {
+        // private int _ladderClimbAudioIndex;
+        // _ladderClimbAudioIndex = (_ladderClimbAudioIndex + 1) % _ladderClimbClips.Length;
+        PlaySFX(SFX.Foot_Step);
+    }
 
     public void PlaySFX(SFX soundEffect)
     {

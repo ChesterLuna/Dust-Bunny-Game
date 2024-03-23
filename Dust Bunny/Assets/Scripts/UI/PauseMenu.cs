@@ -26,7 +26,7 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (UserInput.instance.ToggleMenu)
+        if (UserInput.instance.Gather().MenuDown)
         {
             if (GameIsPaused)
             {
@@ -38,11 +38,6 @@ public class PauseMenu : MonoBehaviour
             }
         }
     } // end Update
-
-    public void ToggleTimerDisplay(bool value)
-    {
-        GameManager.instance.ShowTimer = value;
-    }
 
     public void SetPauseMenuInt(int type)
     {
@@ -104,20 +99,20 @@ public class PauseMenu : MonoBehaviour
 
     void Pause()
     {
-        Debug.Log("Pause Game.");
         Time.timeScale = 0f;
         GameIsPaused = true;
         SetMenu(PauseMenuPage.Pause);
         GameManager.instance?.PauseGameTime();
+        UserInput.instance.gameObject.SetActive(false);
     } // end Pause
 
     public void Resume()
     {
-        Debug.Log("Resume Game.");
         Time.timeScale = 1f;
         GameIsPaused = false;
         SetMenu(PauseMenuPage.None);
         GameManager.instance?.StartGameTime();
+        UserInput.instance.gameObject.SetActive(true);
     } // end Resume
 
     public void QuitGame()
@@ -134,5 +129,5 @@ public class PauseMenu : MonoBehaviour
         Rebind, // 2
         Settings, // 3
         None // 4
-    }
+    } // end enum PauseMenuPage
 } // end PauseMenu

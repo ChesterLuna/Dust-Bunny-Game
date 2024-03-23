@@ -35,7 +35,7 @@ AnimationClip:
     - time: 0.5
       value: {fileID: -1504087479, guid: d39176cfe99f9eb43ad03dd7ba7b8bf6, type: 3}
     attribute: m_Sprite
-    path: Sprites
+    path: 
     classID: 212
     script: {fileID: 0}
     flags: 2
@@ -47,7 +47,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 3274790235
+      path: 0
       attribute: 0
       script: {fileID: 0}
       typeID: 212
@@ -89,7 +89,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.5
-    functionName: OnPlayerFootstep
+    functionName: TellParentPlayFootstep
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

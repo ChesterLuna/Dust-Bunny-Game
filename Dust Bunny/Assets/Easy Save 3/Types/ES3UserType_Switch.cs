@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ES3Types
 {
 	[UnityEngine.Scripting.Preserve]
-	[ES3PropertiesAttribute("_targetGameObjects", "_targets", "_isOn", "_onSprite", "_offSprite")]
+	[ES3PropertiesAttribute("_isOn")]
 	public class ES3UserType_Switch : ES3ComponentType
 	{
 		public static ES3Type Instance = null;
@@ -16,11 +16,7 @@ namespace ES3Types
 		{
 			var instance = (Switch)obj;
 			
-			writer.WritePrivateField("_targetGameObjects", instance);
-			writer.WritePrivateField("_targets", instance);
 			writer.WritePrivateField("_isOn", instance);
-			writer.WritePrivateFieldByRef("_onSprite", instance);
-			writer.WritePrivateFieldByRef("_offSprite", instance);
 		}
 
 		protected override void ReadComponent<T>(ES3Reader reader, object obj)
@@ -31,20 +27,8 @@ namespace ES3Types
 				switch(propertyName)
 				{
 					
-					case "_targetGameObjects":
-					instance = (Switch)reader.SetPrivateField("_targetGameObjects", reader.Read<UnityEngine.GameObject[]>(), instance);
-					break;
-					case "_targets":
-					instance = (Switch)reader.SetPrivateField("_targets", reader.Read<System.Collections.Generic.List<ISwitchable>>(), instance);
-					break;
 					case "_isOn":
 					instance = (Switch)reader.SetPrivateField("_isOn", reader.Read<System.Boolean>(), instance);
-					break;
-					case "_onSprite":
-					instance = (Switch)reader.SetPrivateField("_onSprite", reader.Read<UnityEngine.Sprite>(), instance);
-					break;
-					case "_offSprite":
-					instance = (Switch)reader.SetPrivateField("_offSprite", reader.Read<UnityEngine.Sprite>(), instance);
 					break;
 					default:
 						reader.Skip();

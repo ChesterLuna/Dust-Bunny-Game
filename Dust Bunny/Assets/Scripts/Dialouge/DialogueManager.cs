@@ -34,8 +34,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] TextCrawler dialogueText;
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTouch = false;
-    [SerializeField] bool _showIndicator = true;
-    public bool showIndicator => _showIndicator;
+    public bool ShowIndicator { get; private set; } = false;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
 
@@ -88,7 +87,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         _isFinishedDialogue = false;
         if (importantDialogue)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerController.PlayerStates.Dialogue;
+            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerStates.Dialogue;
 
         }
 
@@ -156,7 +155,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     public void EndDialogue()
     {
         if (importantDialogue)
-            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerController.PlayerStates.Playing;
+            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerStates.Playing;
         playOnTouch = false;
         if (IsBubble)
         {
@@ -165,7 +164,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         }
         _isFinishedDialogue = true;
         _isStartedDialogue = false;
-        _showIndicator = false;
+        ShowIndicator = false;
     } // end EndDialogue
 
     private void OnTriggerEnter2D(Collider2D other)

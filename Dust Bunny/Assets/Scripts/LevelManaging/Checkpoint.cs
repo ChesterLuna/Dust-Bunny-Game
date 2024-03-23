@@ -30,15 +30,14 @@ public class Checkpoint : MonoBehaviour
         }
     } // end Start(
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (other.CompareTag("Player"))
-        {
-            ResetOtherCheckpoints();
-            SetState(CheckpointState.active);
-            GameManager.instance.CheckpointLocation = _spawnLocation;
-            ES3AutoSaveMgr.Current.Save();
-        }
+        if (!collision.TryGetComponent(out IPlayerController controller)) return;
+
+        ResetOtherCheckpoints();
+        SetState(CheckpointState.active);
+        GameManager.instance.CheckpointLocation = _spawnLocation;
+        ES3AutoSaveMgr.Current.Save();
     } // end OnTriggerEnter2D
 
     private void ResetOtherCheckpoints()
