@@ -4,10 +4,20 @@ using UnityEngine;
 
 public class PlayerSFXController : MonoBehaviour
 {
-    public enum SFX { Jump, Dust_Collect_Start, Dust_Collect_Stop_Clean, Dust_Collect_Stop_Abrupt, Foot_Step, Land, Dash, Dead };
-
+    public enum SFX { Jump, Dust_Collect_Start, Dust_Collect_Stop_Clean, Dust_Collect_Stop_Abrupt, Foot_Step, Land, Dash, Dead, Rumble, Rattle };
+    List<GameObject> _soundEffects = new List<GameObject>();
+    private List<string> _soundEffectsNames = new List<string>();
     public Vector2 randomPitchVariationRange;
     // private int _stepIndex;
+
+    void Awake()
+    {
+        foreach (Transform child in transform)
+        {
+            _soundEffects.Add(child.gameObject);
+            _soundEffectsNames.Add(child.gameObject.name);
+        }
+    }
 
     // This funciton is called by the Walking animation
     public void PlayFootstep()
@@ -15,6 +25,20 @@ public class PlayerSFXController : MonoBehaviour
         PlaySFX(SFX.Foot_Step);
     } // end PlayFootstep
 
+
+    public void PlayWallClimbSound()
+    {
+        // private int _wallClimbAudioIndex = 0;
+        // _wallClimbAudioIndex = (_wallClimbAudioIndex + 1) % _wallClimbClips.Length;
+        PlaySFX(SFX.Foot_Step);
+    }
+
+    public void PlayLadderClimbSound()
+    {
+        // private int _ladderClimbAudioIndex;
+        // _ladderClimbAudioIndex = (_ladderClimbAudioIndex + 1) % _ladderClimbClips.Length;
+        PlaySFX(SFX.Foot_Step);
+    }
 
     public void PlaySFX(SFX soundEffect)
     {
@@ -87,10 +111,23 @@ public class PlayerSFXController : MonoBehaviour
                 _soundObject = GetChildSoundEffect("Death");
                 PlaySoundObject(_soundObject);
                 break;
+            case SFX.Rumble:
+                _soundObject = GetChildSoundEffect("Rumble");
+                PlaySoundObject(_soundObject);
+                break;
+            case SFX.Rattle:
+                _soundObject = GetChildSoundEffect("Rattle");
+                PlaySoundObject(_soundObject);
+                break;
             default:
                 Debug.Log("Requested to play an unimplemented sound effect...");
                 break;
         }
+    }
+
+    public void PlaySFXByString(string soundEffectName)
+    {
+        PlaySoundObject(GetChildSoundEffect(soundEffectName));    
     }
 
     private void PlaySoundObject(GameObject _soundObject)
@@ -145,6 +182,6 @@ public class PlayerSFXController : MonoBehaviour
     //Helper to find a child sound effect based on some key; useful if we want to refactor out of using find all the time
     private GameObject GetChildSoundEffect(string _name)
     {
-        return GameObject.Find(_name);
+        return _soundEffects[_soundEffectsNames.IndexOf(_name)];
     }
 }

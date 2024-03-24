@@ -14,6 +14,7 @@ public class Switch : MonoBehaviour, IInteractable
     [SerializeField] Sprite _onSprite;
     [SerializeField] Sprite _offSprite;
     SpriteRenderer _spriteRenderer;
+    public bool ShowIndicator { get; private set; } = true;
 
     // Start is called before the first frame update
     void Awake()
@@ -24,20 +25,21 @@ public class Switch : MonoBehaviour, IInteractable
             _targets.Add(target.GetComponentInChildren<ISwitchable>());
         }
 
-    }
+    } // end Awake
+
     void Start()
     {
         if (_isOn)
         {
-            turnOn();
+            TurnOn();
         }
         else
         {
-            turnOff();
+            TurnOff();
         }
-    }
+    } // end Start
 
-    void turnOn()
+    void TurnOn()
     {
         _isOn = true;
         foreach (ISwitchable target in _targets)
@@ -47,7 +49,7 @@ public class Switch : MonoBehaviour, IInteractable
         _spriteRenderer.sprite = _onSprite;
     }
 
-    void turnOff()
+    void TurnOff()
     {
         _isOn = false;
         foreach (ISwitchable target in _targets)
@@ -55,18 +57,18 @@ public class Switch : MonoBehaviour, IInteractable
             target.Disable();
         }
         _spriteRenderer.sprite = _offSprite;
-    }
+    } // end TurnOff
 
     public void Interact()
     {
         _isOn = !_isOn;
         if (_isOn)
         {
-            turnOn();
+            TurnOn();
         }
         else
         {
-            turnOff();
+            TurnOff();
         }
-    }
-}
+    } // end Interact
+} // end Switch

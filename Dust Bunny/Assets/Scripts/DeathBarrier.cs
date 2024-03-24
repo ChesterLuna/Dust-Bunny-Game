@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class DeathBarrier : MonoBehaviour
 {
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        other.gameObject.GetComponent<PlayerController>()?.Die();
-    }
-}
+        if (!collision.TryGetComponent(out IPlayerController controller)) return;
+
+        controller.Die();
+
+    } // end OnTriggerEnter2D
+} // end DeathBarrier

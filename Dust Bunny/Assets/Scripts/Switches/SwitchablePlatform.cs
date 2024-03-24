@@ -13,7 +13,7 @@ public class SwitchablePlatform : MonoBehaviour, ISwitchable
     {
         _collider = GetComponent<Collider2D>();
         _sprite = GetComponent<SpriteRenderer>();
-    }
+    } // end Awake
 
     void Start()
     {
@@ -21,19 +21,19 @@ public class SwitchablePlatform : MonoBehaviour, ISwitchable
         {
             InvokeRepeating("Toggle", 0f, _timedToggleLength);
         }
-    }
+    } // end Start
 
     public void Disable()
     {
         _collider.enabled = false;
         _sprite.enabled = false;
-    }
+    } // end Disable
 
     public void Enable()
     {
         _collider.enabled = true;
         _sprite.enabled = true;
-    }
+    } // end Enable
 
     public void Toggle()
     {
@@ -45,5 +45,6 @@ public class SwitchablePlatform : MonoBehaviour, ISwitchable
         {
             Enable();
         }
-    }
-}
+    } // end Toggle
+} // end SwitchablePlatform
+
