@@ -820,7 +820,7 @@ GameObject:
   - component: {fileID: 256185887}
   - component: {fileID: 256185886}
   m_Layer: 0
-  m_Name: Underbed
+  m_Name: Burrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -867,7 +867,7 @@ SpriteRenderer:
   m_SortingLayerID: -1087332513
   m_SortingLayer: -1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: dd5b9991cbb39f045accbd58fceeb424, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 972e06f7dd41d8b439fe2f3665a561ae, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2195,7 +2195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b008c5ada3441d24dac43fdb41755bfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CheckpointLocation: {x: 0, y: 0, z: 0}
+  ShowTimer: 0
   NumSeconds: 0
 --- !u!4 &656847926
 Transform:
@@ -6063,7 +6063,8 @@ MonoBehaviour:
   _pauseMenuUI: {fileID: 535279546}
   _infoUI: {fileID: 244831962}
   _rebindUI: {fileID: 1261642923}
-  _timerTextUI: {fileID: 1825385865}
+  _settingsUI: {fileID: 0}
+  _gameplayOverlayUI: {fileID: 0}
 --- !u!4 &1532411460
 Transform:
   m_ObjectHideFlags: 0
