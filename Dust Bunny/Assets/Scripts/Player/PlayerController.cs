@@ -35,6 +35,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public event Action<bool, Vector2> DashChanged;
     public event Action<bool> WallGrabChanged;
     public event Action SizeChanged;
+    public event Action<float> UsedDust;
     public event Action<Vector2> Repositioned;
     public event Action<bool, bool> ToggledPlayer;
 
@@ -88,7 +89,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private void Awake()
     {
         if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
-
+        if (GameManager.instance.CheckpointDustLevel.HasValue) _currentDust = GameManager.instance.CheckpointDustLevel.Value;
         SetupCharacter();
 
         PhysicsSimulator.Instance.AddPlayer(this);
@@ -172,8 +173,9 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private GeneratedCharacterSize _character;
     private const float GRAVITY_SCALE = 1;
 
-    private void SetupCharacter(bool setMode = true)
+    private void SetupCharacter(ColliderMode mode = ColliderMode.Airborne)
     {
+        Stats = _allStats[DustLevelIndex(_currentDust)];
         _character = Stats.CharacterSize.GenerateCharacterSize();
         _cachedQueryMode = Physics2D.queriesStartInColliders;
 
@@ -198,7 +200,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         _airborneCollider.offset = new Vector2(0, _character.Height / 2);
         _airborneCollider.sharedMaterial = _rb.sharedMaterial;
 
-        if (setMode) SetColliderMode(ColliderMode.Airborne);
+        SetColliderMode(mode);
+        SizeChanged?.Invoke();
     } // end SetupCharacter
 
     #endregion
@@ -355,7 +358,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             SetVelocity(_trimmedFrameVelocity);
             _constantForce.force = Vector2.zero;
             _currentStepDownLength = _character.StepHeight;
-            _canDash = true;
+            ResetDashes();
             _coyoteUsable = true;
             _bufferedJumpUsable = true;
             ResetAirJumps();
@@ -552,7 +555,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private Vector2 _forceToApplyThisFrame;
     private bool _endedJumpEarly;
     private float _endedJumpForce;
-    private int _airJumpsRemaining;
+    private int _totalAirJumpsRemaining;
+    private int _freeAirJumpsRemaining;
     private bool _wallJumpCoyoteUsable;
     private bool _coyoteUsable;
     private float _timeLeftGrounded;
@@ -561,18 +565,33 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + Stats.BufferedJumpTime && !IsWithinJumpClearance;
     private bool CanUseCoyote => _coyoteUsable && !_grounded && _time < _timeLeftGrounded + Stats.CoyoteTime;
-    private bool CanAirJump => !_grounded && _airJumpsRemaining > 0;
+    private bool CanAirJump => !_grounded && _totalAirJumpsRemaining > 0 && (_freeAirJumpsRemaining > 0 || _currentDust + Stats.AirJumpCost > 0);
     private bool CanWallJump => !_grounded && (_isOnWall || _wallDirThisFrame != 0) || (_wallJumpCoyoteUsable && _time < _timeLeftWall + Stats.WallCoyoteTime);
 
     private void CalculateJump()
     {
         if (_jumpToConsume || HasBufferedJump)
         {
-            if (CanWallJump) ExecuteJump(JumpType.WallJump);
-            else if (_currentDropDownPlatform != null && _frameInput.Move.y < 0f) ExecuteJump(JumpType.PlatformJumpDrop);
-            else if (_grounded || ClimbingLadder) ExecuteJump(JumpType.Jump);
-            else if (CanUseCoyote) ExecuteJump(JumpType.Coyote);
-            else if (CanAirJump) ExecuteJump(JumpType.AirJump);
+            if (CanWallJump)
+            {
+                ExecuteJump(JumpType.WallJump);
+            }
+            else if (_currentDropDownPlatform != null && _frameInput.Move.y < 0f)
+            {
+                ExecuteJump(JumpType.PlatformJumpDrop);
+            }
+            else if (_grounded || ClimbingLadder)
+            {
+                ExecuteJump(JumpType.Jump);
+            }
+            else if (CanUseCoyote)
+            {
+                ExecuteJump(JumpType.Coyote);
+            }
+            else if (CanAirJump)
+            {
+                ExecuteJump(JumpType.AirJump);
+            }
         }
 
         if ((!_endedJumpEarly && !_grounded && !_frameInput.JumpHeld && Velocity.y > 0) || Velocity.y < 0) _endedJumpEarly = true; // Early end detection
@@ -597,7 +616,12 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         }
         else if (jumpType is JumpType.AirJump)
         {
-            _airJumpsRemaining--;
+            _totalAirJumpsRemaining--;
+            if (_freeAirJumpsRemaining > 0) _freeAirJumpsRemaining--;
+            else
+            {
+                ChangeDust(Stats.AirJumpCost);
+            }
             AddFrameForce(new Vector2(0, Stats.JumpPower));
         }
         else if (jumpType is JumpType.WallJump)
@@ -625,8 +649,11 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         Jumped?.Invoke(jumpType);
     } // end ExecuteJump
 
-    private void ResetAirJumps() => _airJumpsRemaining = Stats.MaxAirJumps;
-
+    private void ResetAirJumps()
+    {
+        _totalAirJumpsRemaining = Stats.MaxAirJumps;
+        _freeAirJumpsRemaining = Stats.AirJumpBeforeCost;
+    }
     #endregion
 
     #region Dash
@@ -637,13 +664,16 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private bool _dashing;
     private float _startedDashing;
     private float _nextDashTime;
+    private int _totalDashesRemaining;
+    private int _freeDashesRemaining;
 
     private void CalculateDash()
     {
         if (!Stats.AllowDash) return;
 
-        if (_dashToConsume && _canDash && _time > _nextDashTime)
+        if (_dashToConsume && _totalDashesRemaining > 0 && (_canDash || _freeDashesRemaining > 0 || _currentDust + Stats.DashCost > 0) && _time > _nextDashTime)
         {
+            // Handle the dash
             Vector2 dir;
             if (UserInput.instance.UseMouseForDash)
             {
@@ -663,6 +693,15 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             _startedDashing = _time;
             _nextDashTime = _time + Stats.DashCooldown;
             DashChanged?.Invoke(true, dir);
+
+            // Handle Costs
+            if (_freeDashesRemaining > 0) _freeDashesRemaining--;
+            else
+            {
+                ChangeDust(Stats.DashCost);
+            }
+            _totalDashesRemaining--;
+
         }
 
         if (_dashing)
@@ -673,10 +712,20 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
                 DashChanged?.Invoke(false, Vector2.zero);
 
                 SetVelocity(new Vector2(Velocity.x * Stats.DashEndHorizontalMultiplier, Velocity.y));
-                if (_grounded) _canDash = true;
+                if (_grounded)
+                {
+                    ResetDashes();
+                }
             }
         }
     } // end CalculateDash
+
+    private void ResetDashes()
+    {
+        _canDash = true;
+        _totalDashesRemaining = Stats.MaxDashes;
+        _freeDashesRemaining = Stats.DashesBeforeCost;
+    } // end ResetDashes
 
     #endregion
 
@@ -914,6 +963,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     // Dust Changing variables
     [Header("Dust Values")]
     [SerializeField] private float _currentDust = 100f;
+    [HideInInspector] public float CurrentDust => _currentDust;
     [SerializeField] private float _maxDust = 100f;
     [SerializeField] private float[] _dustLevels = new float[5] { 0f, 20f, 40f, 60f, 80f };
 
@@ -932,13 +982,15 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     public void ChangeDust(float scalar)
     {
+        if (scalar < 0) UsedDust?.Invoke(scalar);
+
         float _oldDust = _currentDust;
         _currentDust += scalar;
         if (_currentDust > _maxDust)
         {
             _currentDust = _maxDust;
         }
-        else if (_currentDust < 0)
+        else if (_currentDust <= 0)
         {
             _currentDust = 0;
             Die();
@@ -946,8 +998,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         }
         if (DustLevelIndex(_currentDust) != DustLevelIndex(_oldDust))
         {
-            Stats = _allStats[DustLevelIndex(_currentDust)];
-            SetupCharacter(false);
+            ColliderMode mode = _airborneCollider.enabled ? ColliderMode.Airborne : ColliderMode.Standard;
+            SetupCharacter(mode);
             SizeChanged?.Invoke();
         }
     } // end ChangeDust
@@ -1063,6 +1115,7 @@ public interface IPlayerController
     public event Action<bool, Vector2> DashChanged;
     public event Action<bool> WallGrabChanged;
     public event Action SizeChanged;
+    public event Action<float> UsedDust;
     public event Action<Vector2> Repositioned;
     public event Action<bool, bool> ToggledPlayer;
 
@@ -1073,6 +1126,7 @@ public interface IPlayerController
     public Vector2 Velocity { get; }
     public int WallDirection { get; }
     public bool ClimbingLadder { get; }
+    public float CurrentDust { get; }
     public PlayerStates PlayerState { get; set; }
 
     // External force

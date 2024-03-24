@@ -63,7 +63,7 @@ public class DustChangeTicker : MonoBehaviour
             else
             {
                 _player?.ChangeDust(_dustTickAmount);
-                if (Mathf.Abs(_amountOfDust) == _maxDustToExchange && _maxDustToExchange != -1 || _dustTickRate == -1)
+                if ((Mathf.Abs(_amountOfDust) == _maxDustToExchange && _maxDustToExchange != -1) || _dustTickRate == -1)
                 {
                     break;
                 }

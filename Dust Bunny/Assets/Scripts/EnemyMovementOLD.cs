@@ -270,11 +270,8 @@ public class EnemyMovementOLD : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        // Draw the raycast
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + Vector3.down);
-        // ... rest of your code
-
 
         if (Application.isPlaying) return;
         var previous = (Vector2)transform.position;
@@ -300,7 +297,15 @@ public class EnemyMovementOLD : MonoBehaviour
         }
     } // end OnDrawGizmosSelected
 
-
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (!collision.gameObject.TryGetComponent(out IPlayerController controller)) return;
+        if (collision.transform.position.y > transform.position.y)
+        {
+            Vector2 pushDir = new Vector2(collision.transform.position.x > transform.position.x ? 1 : -1, 0);
+            controller.AddFrameForce(pushDir);
+        }
+    } // end OnCollisionEnter2D
 
     private enum MovementType
     {

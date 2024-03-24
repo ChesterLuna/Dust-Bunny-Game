@@ -19,6 +19,7 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField] private ParticleSystem _moveParticles;
     [SerializeField] private ParticleSystem _landParticles;
     [SerializeField] private ParticleSystem _doubleJumpParticles;
+    [SerializeField] private ParticleSystem _useDustParticles;
     [SerializeField] private ParticleSystem _dashParticles;
     [SerializeField] private ParticleSystem _dashRingParticles;
     [SerializeField] private Transform _dashRingTransform;
@@ -54,6 +55,7 @@ public class PlayerAnimator : MonoBehaviour
         _player.WallGrabChanged += OnWallGrabChanged;
         _player.SizeChanged += OnSizeChanged;
         _player.ToggledPlayer += PlayerOnToggledPlayer;
+        _player.UsedDust += OnUsedDust;
 
         _moveParticles.Play();
     } // end OnEnable
@@ -66,6 +68,7 @@ public class PlayerAnimator : MonoBehaviour
         _player.WallGrabChanged -= OnWallGrabChanged;
         _player.SizeChanged -= OnSizeChanged;
         _player.ToggledPlayer -= PlayerOnToggledPlayer;
+        _player.UsedDust -= OnUsedDust;
 
         _moveParticles.Stop();
     } // end OnDisable
@@ -257,6 +260,11 @@ public class PlayerAnimator : MonoBehaviour
         _dead = true;
         _sfx.PlaySFX(PlayerSFXController.SFX.Dead);
     } // end OnDead
+
+    private void OnUsedDust(float dustAmount)
+    {
+        _useDustParticles.Play();
+    } // end OnUsedDust
 
     #endregion
 
