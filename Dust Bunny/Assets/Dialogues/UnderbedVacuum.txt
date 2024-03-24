@@ -1,9 +1,7 @@
 $Rumble
 
 #???
-:Rumblerumblerumble
-
-:(Spek jumps a step backwards.)
+:Rumblerumblerumble...
 
 #Spek
 :Huh.

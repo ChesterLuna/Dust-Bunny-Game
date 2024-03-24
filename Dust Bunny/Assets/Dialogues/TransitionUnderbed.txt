@@ -1,8 +1,6 @@
 ﻿#Spek
 :Where are you going?
 
-:(Pip turns back toward Spek.)
-
 #Pip
 :To find the source!
 
@@ -22,7 +20,10 @@
 :So I’m going to find out what it is!
 
 #Spek
-:Oh no you don’t. You can’t just hop on out there! That’s nobun’s land!
+:Oh no you don’t. 
+
+#Spek
+:You can’t just hop on out there! That’s nobun’s land!
 
 #Pip
 :But we can’t do nothing. Our home is in danger!
@@ -38,5 +39,3 @@
 
 #Spek
 :Don’t fret Pip, I’ll be back in a jiffy.
-
-:Spek exits the Burrow to the Underbed.

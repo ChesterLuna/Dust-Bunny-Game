@@ -1,5 +1,3 @@
-:(Spek takes several steps forward and then stops.)
-
 #Spek
 :…
 
@@ -10,13 +8,13 @@
 :It's so big.
 
 #Spek
-:*Shiver* I'm glad I sent Pip back. It'd be too dangerous for them here, especially with the rumblers roaming about.
+:*Shiver* I'm glad I sent Pip back. It'd be too dangerous for them here, especially with the earthshaker roaming about.
 
 #Spek
 :Maybe I've chomped off more than I can chew with this. Should I head back, too?
 
 #Spek
-:No, the others are counting on me to put a stop to the great rumbling… 
+:No, the others are counting on me to put a stop to the tremors… 
 
 #Spek
 :I can't squeak out now!
