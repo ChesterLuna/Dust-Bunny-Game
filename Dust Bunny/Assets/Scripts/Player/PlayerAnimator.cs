@@ -38,6 +38,8 @@ public class PlayerAnimator : MonoBehaviour
     private bool _jumping;
     private bool _dead;
 
+    private float timeScale;
+
 
     private void Awake()
     {
@@ -111,6 +113,17 @@ public class PlayerAnimator : MonoBehaviour
     private void OnTookDamage(){
         _sfx.PlaySFX(PlayerSFXController.SFX.Took_Damage);
         _damageParticles.Play();
+        StartCoroutine(FreezeGameOnTakeDamage());
+        
+    }
+
+    private IEnumerator FreezeGameOnTakeDamage(){
+        // Slow down the game effect, maybe undesirable
+        Time.timeScale = 0.1f;
+        yield return new WaitForSeconds(0.023f);
+        Time.timeScale = 1;
+
+        yield return null;
     }
 
     private void HandleWallSlideEffects()
