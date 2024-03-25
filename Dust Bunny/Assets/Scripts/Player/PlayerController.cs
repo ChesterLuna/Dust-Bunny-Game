@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     [field: SerializeField] public PlayerStats Stats { get; private set; }
     public ControllerState State { get; private set; }
     public event Action<JumpType> Jumped;
+    public event Action TookDamage;
     public event Action<bool, float> GroundedChanged;
     public event Action<bool, Vector2> DashChanged;
     public event Action<bool> WallGrabChanged;
@@ -934,6 +935,12 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         float _oldDust = _currentDust;
         _currentDust += scalar;
+
+        //Play damage sfx if we lost dust
+        if(scalar < 0){
+            TookDamage?.Invoke();
+        }
+
         if (_currentDust > _maxDust)
         {
             _currentDust = _maxDust;
@@ -1059,6 +1066,7 @@ public interface IPlayerController
     public PlayerStats Stats { get; }
     public ControllerState State { get; }
     public event Action<JumpType> Jumped;
+    public event Action TookDamage;
     public event Action<bool, float> GroundedChanged;
     public event Action<bool, Vector2> DashChanged;
     public event Action<bool> WallGrabChanged;

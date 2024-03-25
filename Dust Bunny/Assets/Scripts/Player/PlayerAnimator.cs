@@ -20,6 +20,7 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField] private ParticleSystem _landParticles;
     [SerializeField] private ParticleSystem _doubleJumpParticles;
     [SerializeField] private ParticleSystem _dashParticles;
+    [SerializeField] private ParticleSystem _damageParticles;
     [SerializeField] private ParticleSystem _dashRingParticles;
     [SerializeField] private Transform _dashRingTransform;
 
@@ -49,6 +50,7 @@ public class PlayerAnimator : MonoBehaviour
     private void OnEnable()
     {
         _player.Jumped += OnJumped;
+        _player.TookDamage += OnTookDamage;
         _player.GroundedChanged += OnGroundedChanged;
         _player.DashChanged += OnDashChanged;
         _player.WallGrabChanged += OnWallGrabChanged;
@@ -61,6 +63,7 @@ public class PlayerAnimator : MonoBehaviour
     private void OnDisable()
     {
         _player.Jumped -= OnJumped;
+        _player.TookDamage -= OnTookDamage;
         _player.GroundedChanged -= OnGroundedChanged;
         _player.DashChanged -= OnDashChanged;
         _player.WallGrabChanged -= OnWallGrabChanged;
@@ -104,6 +107,11 @@ public class PlayerAnimator : MonoBehaviour
         _isOnWall = onWall;
         if (_isOnWall) _sfx.PlaySFX(PlayerSFXController.SFX.Foot_Step); // TODO: Wall Grab SFX
     } // end OnWallGrabChanged
+
+    private void OnTookDamage(){
+        _sfx.PlaySFX(PlayerSFXController.SFX.Took_Damage);
+        _damageParticles.Play();
+    }
 
     private void HandleWallSlideEffects()
     {
