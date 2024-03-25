@@ -45,6 +45,9 @@ public class PlayerAnimator : MonoBehaviour
         _character = _player.Stats.CharacterSize.GenerateCharacterSize();
         _defaultSpriteSize = new Vector2(_sizeFactor.x / _character.Width, _sizeFactor.y / _character.Height);
         _sprite.size = _defaultSpriteSize;
+
+        // Fix for dying during slow mo effect
+        Time.timeScale = 1.0f;
     } // end Awake
 
     private void OnEnable()
