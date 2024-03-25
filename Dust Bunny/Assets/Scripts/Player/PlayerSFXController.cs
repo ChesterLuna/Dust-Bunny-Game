@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerSFXController : MonoBehaviour
 {
-    public enum SFX { Jump, Dust_Collect_Start, Dust_Collect_Stop_Clean, Dust_Collect_Stop_Abrupt, Foot_Step, Land, Dash, Dead, Rumble, Rattle };
+    public enum SFX { Jump, Dust_Collect_Start, Dust_Collect_Stop_Clean, Dust_Collect_Stop_Abrupt, Foot_Step, Land, Dash, Dead, Rumble, Rattle, Took_Damage };
     List<GameObject> _soundEffects = new List<GameObject>();
     private List<string> _soundEffectsNames = new List<string>();
     public Vector2 randomPitchVariationRange;
@@ -53,6 +53,11 @@ public class PlayerSFXController : MonoBehaviour
         {
             case SFX.Jump:
                 _soundObject = GetChildSoundEffect("Jump");
+                PlaySoundObject(_soundObject);
+                break;
+
+            case SFX.Took_Damage:
+                _soundObject = GetChildSoundEffect("Took Damage");
                 PlaySoundObject(_soundObject);
                 break;
 

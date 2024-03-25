@@ -19,6 +19,7 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField] private ParticleSystem _moveParticles;
     [SerializeField] private ParticleSystem _landParticles;
     [SerializeField] private ParticleSystem _doubleJumpParticles;
+    [SerializeField] private ParticleSystem _useDustParticles;
     [SerializeField] private ParticleSystem _dashParticles;
     [SerializeField] private ParticleSystem _dashRingParticles;
     [SerializeField] private Transform _dashRingTransform;
@@ -44,6 +45,9 @@ public class PlayerAnimator : MonoBehaviour
         _character = _player.Stats.CharacterSize.GenerateCharacterSize();
         _defaultSpriteSize = new Vector2(_sizeFactor.x / _character.Width, _sizeFactor.y / _character.Height);
         _sprite.size = _defaultSpriteSize;
+
+        // Fix for dying during slow mo effect
+        Time.timeScale = 1.0f;
     } // end Awake
 
     private void OnEnable()
@@ -54,6 +58,7 @@ public class PlayerAnimator : MonoBehaviour
         _player.WallGrabChanged += OnWallGrabChanged;
         _player.SizeChanged += OnSizeChanged;
         _player.ToggledPlayer += PlayerOnToggledPlayer;
+        _player.UsedDust += OnUsedDust;
 
         _moveParticles.Play();
     } // end OnEnable
@@ -66,6 +71,7 @@ public class PlayerAnimator : MonoBehaviour
         _player.WallGrabChanged -= OnWallGrabChanged;
         _player.SizeChanged -= OnSizeChanged;
         _player.ToggledPlayer -= PlayerOnToggledPlayer;
+        _player.UsedDust -= OnUsedDust;
 
         _moveParticles.Stop();
     } // end OnDisable
@@ -257,6 +263,24 @@ public class PlayerAnimator : MonoBehaviour
         _dead = true;
         _sfx.PlaySFX(PlayerSFXController.SFX.Dead);
     } // end OnDead
+
+    private void OnUsedDust(float dustAmount, bool hostile)
+    {
+        if(hostile){
+            _sfx.PlaySFX(PlayerSFXController.SFX.Took_Damage);
+            StartCoroutine(FreezeGameOnTakeDamage());
+        }
+        _useDustParticles.Play();
+    } // end OnUsedDust
+
+    private IEnumerator FreezeGameOnTakeDamage(){
+        // Slow down the game effect, maybe undesirable
+        Time.timeScale = 0.1f;
+        yield return new WaitForSeconds(0.023f);
+        Time.timeScale = 1;
+
+        yield return null;
+    }
 
     #endregion
 

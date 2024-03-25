@@ -205,7 +205,7 @@ GameObject:
   - component: {fileID: 5102651715001027023}
   - component: {fileID: 3560059930243376710}
   - component: {fileID: 4990895516505125521}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Henry Itself
   m_TagString: Untagged
   m_Icon: {fileID: 0}

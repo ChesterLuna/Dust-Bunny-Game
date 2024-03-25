@@ -14,20 +14,24 @@ public class Checkpoint : MonoBehaviour
     private Collider2D _collider;
     private CheckpointState _state = CheckpointState.closed;
     private Animator _animator;
+    private GameObject _particleSystemObject;
 
     void Awake()
     {
         // _spriteRenderer = GetComponent<SpriteRenderer>();
         _collider = GetComponent<Collider2D>();
         _animator = GetComponent<Animator>();
+        _particleSystemObject = GetComponentInChildren<ParticleSystem>().gameObject;
     }
 
     void Start()
     {
+        _particleSystemObject.SetActive(false);
         if (!_useCustomLocation)
         {
             _spawnLocation = transform.position;
         }
+        SetState(_state);
     } // end Start(
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -37,6 +41,7 @@ public class Checkpoint : MonoBehaviour
         ResetOtherCheckpoints();
         SetState(CheckpointState.active);
         GameManager.instance.CheckpointLocation = _spawnLocation;
+        GameManager.instance.CheckpointDustLevel = controller.CurrentDust;
         ES3AutoSaveMgr.Current.Save();
     } // end OnTriggerEnter2D
 
@@ -56,6 +61,7 @@ public class Checkpoint : MonoBehaviour
     {
         if (_state != CheckpointState.active) return;
         SetState(CheckpointState.open);
+        _particleSystemObject.SetActive(false);
     } // end ResetCheckpoint
 
     private void SetState(CheckpointState state)
@@ -65,14 +71,17 @@ public class Checkpoint : MonoBehaviour
         {
             case CheckpointState.closed:
                 _collider.enabled = true;
+                _particleSystemObject.SetActive(false);
                 // Nothing for now as this is the defaut state
                 break;
             case CheckpointState.open:
                 _collider.enabled = false;
+                _particleSystemObject.SetActive(false);
                 _animator.SetTrigger("Open");
                 break;
             case CheckpointState.active:
                 _collider.enabled = false;
+                _particleSystemObject.SetActive(true);
                 _animator.SetTrigger("Active");
                 break;
         }
