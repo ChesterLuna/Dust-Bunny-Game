@@ -6908,6 +6908,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5336749353464438852, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7198079283612234612, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -8026,6 +8030,10 @@ PrefabInstance:
     - target: {fileID: 5336749353464438852, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5336749353464438852, guid: 29336384005479c40bc61a1aa4462656, type: 3}
+      propertyPath: m_SortingOrder
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7198079283612234612, guid: 29336384005479c40bc61a1aa4462656, type: 3}
       propertyPath: m_Enabled
@@ -42083,7 +42091,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2051681817}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: d8d2c3fc8c1f53c408e06f8ea9852143, type: 2}
   m_CullingMode: 0
