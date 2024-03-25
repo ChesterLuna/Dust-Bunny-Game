@@ -27,6 +27,9 @@ public class PlayerAnimator : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private PlayerSFXController _sfx;
 
+    [Header("Preferences")]
+    [SerializeField] private bool _slowMoDamageEffect = true;
+
 
     private IPlayerController _player;
     private Vector2 _defaultSpriteSize;
@@ -113,7 +116,7 @@ public class PlayerAnimator : MonoBehaviour
     private void OnTookDamage(){
         _sfx.PlaySFX(PlayerSFXController.SFX.Took_Damage);
         _damageParticles.Play();
-        StartCoroutine(FreezeGameOnTakeDamage());
+        if (_slowMoDamageEffect) StartCoroutine(FreezeGameOnTakeDamage());
         
     }
 

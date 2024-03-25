@@ -15196,6 +15196,7 @@ MonoBehaviour:
   _dashRingParticles: {fileID: 1683217301790537373}
   _dashRingTransform: {fileID: 3677386859957455545}
   _sfx: {fileID: 3948539853620850990}
+  _slowMoDamageEffect: 1
   _wallSlideParticles: {fileID: 2953667081221456782}
   _wallSlideParticleOffset: 0.3
   _distancePerClimbSound: 1
