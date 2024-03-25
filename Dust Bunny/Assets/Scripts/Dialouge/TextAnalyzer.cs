@@ -49,6 +49,9 @@ public class TextAnalyzer : MonoBehaviour
                 if (lines[i][0] == '!')
                 {
                     nextDialogue.setPlayAnimation(true);
+                    int _numberOfAnimations = 1;
+                    if (int.TryParse(lines[i][1].ToString(), out _numberOfAnimations))
+                        nextDialogue.setAnimationsToPlay(_numberOfAnimations);
                 }
                 if (lines[i][0] == '#')
                 {
