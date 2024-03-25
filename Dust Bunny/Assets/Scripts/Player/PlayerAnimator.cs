@@ -261,10 +261,23 @@ public class PlayerAnimator : MonoBehaviour
         _sfx.PlaySFX(PlayerSFXController.SFX.Dead);
     } // end OnDead
 
-    private void OnUsedDust(float dustAmount)
+    private void OnUsedDust(float dustAmount, bool hostile)
     {
+        if(hostile){
+            _sfx.PlaySFX(PlayerSFXController.SFX.Took_Damage);
+            StartCoroutine(FreezeGameOnTakeDamage());
+        }
         _useDustParticles.Play();
     } // end OnUsedDust
+
+    private IEnumerator FreezeGameOnTakeDamage(){
+        // Slow down the game effect, maybe undesirable
+        Time.timeScale = 0.1f;
+        yield return new WaitForSeconds(0.023f);
+        Time.timeScale = 1;
+
+        yield return null;
+    }
 
     #endregion
 

@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public event Action<bool, Vector2> DashChanged;
     public event Action<bool> WallGrabChanged;
     public event Action SizeChanged;
-    public event Action<float> UsedDust;
+    public event Action<float, bool> UsedDust;
     public event Action<Vector2> Repositioned;
     public event Action<bool, bool> ToggledPlayer;
 
@@ -620,7 +620,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             if (_freeAirJumpsRemaining > 0) _freeAirJumpsRemaining--;
             else
             {
-                ChangeDust(Stats.AirJumpCost);
+                ChangeDust(Stats.AirJumpCost, false);
             }
             AddFrameForce(new Vector2(0, Stats.JumpPower));
         }
@@ -698,7 +698,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             if (_freeDashesRemaining > 0) _freeDashesRemaining--;
             else
             {
-                ChangeDust(Stats.DashCost);
+                ChangeDust(Stats.DashCost, false);
             }
             _totalDashesRemaining--;
 
@@ -980,9 +980,9 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         return 0;
     } // end DustLevelIndex
 
-    public void ChangeDust(float scalar)
+    public void ChangeDust(float scalar, bool hostile)
     {
-        if (scalar < 0) UsedDust?.Invoke(scalar);
+        if (scalar < 0) UsedDust?.Invoke(scalar, hostile);
 
         float _oldDust = _currentDust;
         _currentDust += scalar;
@@ -1115,7 +1115,7 @@ public interface IPlayerController
     public event Action<bool, Vector2> DashChanged;
     public event Action<bool> WallGrabChanged;
     public event Action SizeChanged;
-    public event Action<float> UsedDust;
+    public event Action<float, bool> UsedDust;
     public event Action<Vector2> Repositioned;
     public event Action<bool, bool> ToggledPlayer;
 
@@ -1138,7 +1138,7 @@ public interface IPlayerController
     public void TogglePlayer(bool on, bool dead = false);
 
     // Dust
-    public void ChangeDust(float scalar);
+    public void ChangeDust(float scalar, bool hostile);  
 
     // Other
     public void Die();
