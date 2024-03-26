@@ -22,7 +22,6 @@ MonoBehaviour:
     Height: 2.76
     Width: 2.44
     StepHeight: 0.41
-    CrouchHeight: 0.8
     RayInset: 0.1
   VerticalDeadZoneThreshold: 0.3
   HorizontalDeadZoneThreshold: 0.1
@@ -38,15 +37,17 @@ MonoBehaviour:
   CoyoteTime: 0.15
   JumpPower: 20
   EndJumpEarlyExtraForceMultiplier: 3
-  MaxAirJumps: 1
+  MaxAirJumps: 0
+  AirJumpBeforeCost: 1
+  AirJumpCost: -1
   AllowDash: 1
+  MaxDashes: 5
+  DashesBeforeCost: 1
+  DashCost: -1
   DashVelocity: 30
   DashDuration: 0.1
   DashCooldown: 0.5
   DashEndHorizontalMultiplier: 0.5
-  AllowCrouching: 0
-  CrouchSlowDownTime: 1
-  CrouchSpeedModifier: 0.3
   AllowWalls: 1
   ClimbableLayer:
     serializedVersion: 2
@@ -56,7 +57,7 @@ MonoBehaviour:
   RequireInputPush: 1
   WallJumpPower: {x: 20, y: 18}
   WallPushPower: {x: 20, y: 18}
-  WallClimbSpeed: 5
+  WallClimbSpeed: 0
   WallFallAcceleration: 5
   WallPopForce: 10
   WallCoyoteTime: 0.3

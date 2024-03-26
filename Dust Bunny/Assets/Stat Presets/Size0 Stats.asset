@@ -37,7 +37,7 @@ MonoBehaviour:
   CoyoteTime: 0.15
   JumpPower: 20
   EndJumpEarlyExtraForceMultiplier: 3
-  MaxAirJumps: 5
+  MaxAirJumps: 0
   AirJumpBeforeCost: 1
   AirJumpCost: -1
   AllowDash: 1
@@ -57,7 +57,7 @@ MonoBehaviour:
   RequireInputPush: 1
   WallJumpPower: {x: 20, y: 18}
   WallPushPower: {x: 20, y: 18}
-  WallClimbSpeed: 5
+  WallClimbSpeed: 0
   WallFallAcceleration: 5
   WallPopForce: 10
   WallCoyoteTime: 0.3
