@@ -31,6 +31,7 @@ public abstract class PlatformBase : MonoBehaviour, IPhysicsObject, IPhysicsMove
 
     public void TickFixedUpdate(float delta)
     {
+        if (Rb == null) return;
         var newPos = Evaluate(delta);
 
         // Position

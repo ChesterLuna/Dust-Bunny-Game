@@ -34,10 +34,15 @@ public class PlayerStats : ScriptableObject
     public float CoyoteTime = 0.15f;
     public float JumpPower = 20;
     public float EndJumpEarlyExtraForceMultiplier = 3;
-    public int MaxAirJumps = 1;
+    public int MaxAirJumps = 5;
+    public int AirJumpBeforeCost = 1;
+    public float AirJumpCost = -1f;
 
     // Dash
     [Header("Dash"), Space] public bool AllowDash = true;
+    public int MaxDashes = 5;
+    public int DashesBeforeCost = 1;
+    public float DashCost = -1f;
     public float DashVelocity = 50;
     public float DashDuration = 0.2f;
     public float DashCooldown = 1.5f;
