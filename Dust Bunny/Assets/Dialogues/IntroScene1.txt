@@ -1,10 +1,10 @@
 ﻿$Rumble
-
+!Spek exclamation mark and turns around
 #Spek
 :What was that strange sound?
 
-$Rumble 
-
+$Rumble
+!Spek jumps
 #Spek
 :There it is again!
 
@@ -19,12 +19,14 @@ $Rumble
 
 $Rumble
 
+!2 Both exlamation mark
 #Spek
 :Aaah!
 
 #Hodge
 :Oh, I felt that one alright. 
 
+!2 Spek is out of screen?
 #Spek
 :It’s getting worse. I should go check on Pipsqueak.  
 

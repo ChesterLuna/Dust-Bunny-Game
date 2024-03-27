@@ -6,6 +6,7 @@ using Bunny.Dialogues;
 
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class DialogueManager : MonoBehaviour, IInteractable
@@ -26,7 +27,6 @@ public class DialogueManager : MonoBehaviour, IInteractable
     */
     [SerializeField] TextAsset AssetText;
     [SerializeField] GameObject textBubble;
-    GameObject _textBubble;
     Collider2D _collider;
     [SerializeField] float offsetOnTopOfHead = 1.5f;
 
@@ -34,6 +34,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] TextCrawler dialogueText;
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTouch = false;
+    [SerializeField] bool waitToTouchFloor = true;
     public bool ShowIndicator { get; private set; } = false;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
@@ -46,10 +47,16 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] Animator[] _actors;
     int _iAnim = 0;
 
+    PlayerController _player;
+
 
     private void Awake()
     {
         _collider = GetComponent<Collider2D>();
+        textBubble = textBubble != null ? textBubble : transform.Find("Text Bubble").gameObject;
+        textBubble.SetActive(false);
+        _player = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
+
     } // end Awake
 
     private void Start()
@@ -87,22 +94,43 @@ public class DialogueManager : MonoBehaviour, IInteractable
         _isFinishedDialogue = false;
         if (importantDialogue)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerStates.Dialogue;
+            _player.PlayerState = PlayerStates.Dialogue;
 
         }
 
         // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
         if (IsBubble)
         {
-            _textBubble = Instantiate(textBubble, new Vector3(transform.position.x, transform.position.y + _collider.bounds.size.y + offsetOnTopOfHead), transform.rotation);
-
-            charNameText = _textBubble.transform.Find("Bubble Canvas").transform.Find("Background").transform.Find("Character Name").GetComponent<TextMeshPro>();
-            dialogueText = _textBubble.GetComponent<TextCrawler>().Initalize();
+            EnableTextBubble();
         }
+        // EnableAnimators();
 
         DisplayNextSentence();
     } // end StartDialogue
 
+    private void EnableTextBubble()
+    {
+        // _textBubble = Instantiate(textBubble, new Vector3(transform.position.x, transform.position.y + _collider.bounds.size.y + offsetOnTopOfHead), transform.rotation);
+        textBubble.SetActive(true);
+        charNameText = textBubble.transform.Find("Bubble Canvas").transform.Find("Background").transform.Find("Character Name").GetComponent<TextMeshPro>();
+        dialogueText = textBubble.GetComponent<TextCrawler>().Initalize();
+    }
+
+    private void EnableAnimators()
+    {
+        foreach (Animator _animator in _actors)
+        {
+            _animator.enabled = true;
+        }
+    }
+
+    private void DisableAnimators()
+    {
+        foreach (Animator _animator in _actors)
+        {
+            _animator.enabled = false;
+        }
+    }
 
     public void DisplayNextSentence()
     {
@@ -117,7 +145,12 @@ public class DialogueManager : MonoBehaviour, IInteractable
         if (nextDialogue.getSound() != null)
             PlaySound(nextDialogue.getSound());
         if (nextDialogue.isPlayAnimation())
-            PlayNextAnimation();
+        {
+            for (int i = 0; i < nextDialogue.getAnimationsToPlay(); i++)
+            {
+                PlayNextAnimation();
+            }
+        }
 
         charNameText.text = nextDialogue.getName();
         dialogueText.SetText(nextDialogue.getText());
@@ -159,18 +192,19 @@ public class DialogueManager : MonoBehaviour, IInteractable
         playOnTouch = false;
         if (IsBubble)
         {
-            Destroy(_textBubble);
-
+            textBubble.SetActive(false);
         }
         _isFinishedDialogue = true;
         _isStartedDialogue = false;
         ShowIndicator = false;
+        // DisableAnimators();
     } // end EndDialogue
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player" && playOnTouch)
         {
+
             StartDialogue();
             playOnTouch = false;
         }
