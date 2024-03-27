@@ -667,11 +667,15 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private int _totalDashesRemaining;
     private int _freeDashesRemaining;
 
+    public bool CanDash(){
+        return Stats.AllowDash && (_dashToConsume && _totalDashesRemaining > 0 && (_canDash || _freeDashesRemaining > 0 || _currentDust + Stats.DashCost > 0) && _time > _nextDashTime);
+    }
+
     private void CalculateDash()
     {
         if (!Stats.AllowDash) return;
 
-        if (_dashToConsume && _totalDashesRemaining > 0 && (_canDash || _freeDashesRemaining > 0 || _currentDust + Stats.DashCost > 0) && _time > _nextDashTime)
+        if (CanDash())
         {
             // Handle the dash
             Vector2 dir;
@@ -1142,6 +1146,7 @@ public interface IPlayerController
 
     // Other
     public void Die();
+    public bool CanDash();
 } // end interface IPlayerController
 
 public enum PlayerStates

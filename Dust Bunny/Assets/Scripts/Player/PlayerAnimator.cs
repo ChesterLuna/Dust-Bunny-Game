@@ -22,7 +22,11 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField] private ParticleSystem _useDustParticles;
     [SerializeField] private ParticleSystem _dashParticles;
     [SerializeField] private ParticleSystem _dashRingParticles;
+    [SerializeField] private ParticleSystem _idleParticles;
     [SerializeField] private Transform _dashRingTransform;
+
+    [SerializeField] private Color _particleCanDashColor;
+    [SerializeField] private Color _particleCannotDashColor;
 
     [Header("Audio")]
     [SerializeField] private PlayerSFXController _sfx;
@@ -91,6 +95,15 @@ public class PlayerAnimator : MonoBehaviour
         HandleWallSlideEffects();
 
         HandleAnimations();
+
+        //Handle idle particle color
+        ParticleSystem.MainModule _idleParticlesMain = _idleParticles.main;
+        if (_player.CanDash()){
+            //_idleParticlesMain.startColor = _particleCanDashColor;
+        } else {
+            //_idleParticlesMain.startColor = _particleCannotDashColor;
+        }
+
     } // end Update
     #region Walls & Ladders
 
