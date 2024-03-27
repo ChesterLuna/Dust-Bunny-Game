@@ -70,11 +70,11 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         Repositioned?.Invoke(position);
     } // end RepositionImmediately
 
-    public void TogglePlayer(bool on, bool dead = false)
+    public void TogglePlayer(bool on, bool dead = false, bool changeAnimation = true)
     {
         Active = on;
         _rb.isKinematic = !on;
-        ToggledPlayer?.Invoke(on, dead);
+        if (changeAnimation) ToggledPlayer?.Invoke(on, dead);
     } // end TogglePlayer
 
     #endregion
@@ -1081,7 +1081,7 @@ public interface IPlayerController
     // Utility
     public void LoadState(ControllerState state);
     public void RepositionImmediately(Vector2 position, bool resetVelocity = false);
-    public void TogglePlayer(bool on, bool dead = false);
+    public void TogglePlayer(bool on, bool dead = false, bool changeAnimation = true);
 
     // Dust
     public void ChangeDust(float scalar);
