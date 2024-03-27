@@ -99,9 +99,9 @@ public class PlayerAnimator : MonoBehaviour
         //Handle idle particle color
         ParticleSystem.MainModule _idleParticlesMain = _idleParticles.main;
         if (_player.CanDash()){
-            //_idleParticlesMain.startColor = _particleCanDashColor;
+            _idleParticlesMain.startColor = _particleCanDashColor;
         } else {
-            //_idleParticlesMain.startColor = _particleCannotDashColor;
+            _idleParticlesMain.startColor = _particleCannotDashColor;
         }
 
     } // end Update

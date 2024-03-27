@@ -668,14 +668,14 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private int _freeDashesRemaining;
 
     public bool CanDash(){
-        return Stats.AllowDash && (_dashToConsume && _totalDashesRemaining > 0 && (_canDash || _freeDashesRemaining > 0 || _currentDust + Stats.DashCost > 0) && _time > _nextDashTime);
+        return Stats.AllowDash && _totalDashesRemaining > 0 && (_canDash || _freeDashesRemaining > 0 || _currentDust + Stats.DashCost > 0) && _time > _nextDashTime;
     }
 
     private void CalculateDash()
     {
         if (!Stats.AllowDash) return;
 
-        if (CanDash())
+        if (_dashToConsume && CanDash())
         {
             // Handle the dash
             Vector2 dir;
