@@ -1,5 +1,8 @@
 fileFormatVersion: 2
 guid: 9f4d7b25626aae54eb9c8ec42cd2c9f6
+labels:
+- Enemy
+- Vehicle
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}

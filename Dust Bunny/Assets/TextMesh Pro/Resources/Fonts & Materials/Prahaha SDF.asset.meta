@@ -1,12 +1,10 @@
 fileFormatVersion: 2
-guid: 0867f43889af6db499f5a463524c3095
+guid: 7cbe76cf28dae864aad25436ed759b0d
 labels:
-- Effect
-- Particles
-- Player
+- Font
 NativeFormatImporter:
   externalObjects: {}
-  mainObjectFileID: 2100000
+  mainObjectFileID: 11400000
   userData: 
   assetBundleName: 
   assetBundleVariant: 
