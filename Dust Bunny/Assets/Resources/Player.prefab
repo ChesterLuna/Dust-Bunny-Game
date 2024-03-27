@@ -10306,7 +10306,10 @@ MonoBehaviour:
   _useDustParticles: {fileID: 2420949218116739621}
   _dashParticles: {fileID: 4411174998813781380}
   _dashRingParticles: {fileID: 1683217301790537373}
+  _idleParticles: {fileID: 0}
   _dashRingTransform: {fileID: 3677386859957455545}
+  _particleCanDashColor: {r: 0, g: 0, b: 0, a: 0}
+  _particleCannotDashColor: {r: 0, g: 0, b: 0, a: 0}
   _sfx: {fileID: 3948539853620850990}
   _wallSlideParticles: {fileID: 2953667081221456782}
   _wallSlideParticleOffset: 0.3
