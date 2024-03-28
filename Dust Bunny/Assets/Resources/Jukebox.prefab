@@ -59,11 +59,12 @@ MonoBehaviour:
   - song: 0
     introClip: {fileID: 8300000, guid: e3b43727a89bfc3729f5e5cb487934d2, type: 3}
     loopClip: {fileID: 8300000, guid: 9a30185ca71fc8bc695806589cddea4b, type: 3}
-  initialSong: 3
+  initialSong: 4
   fadeSpeed: 50
-  bgmSwapBuffer: 3
+  bgmSwapBuffer: 4
   fadeTimer: 1
   fadingOut: 0
+  _mixer: {fileID: 24100000, guid: 17b70339bc66dbaf4a949058ba583038, type: 2}
 --- !u!82 &9704590321487401
 AudioSource:
   m_ObjectHideFlags: 0
