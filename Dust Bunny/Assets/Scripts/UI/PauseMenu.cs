@@ -14,6 +14,7 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] GameObject _rebindUI;
     [SerializeField] GameObject _settingsUI;
     [SerializeField] GameObject _gameplayOverlayUI;
+    [SerializeField] GameObject _audioSettingsUI;
 
     void Start()
     {
@@ -21,6 +22,7 @@ public class PauseMenu : MonoBehaviour
         _infoUI.SetActive(false);
         _rebindUI.SetActive(false);
         _settingsUI.SetActive(false);
+        _audioSettingsUI.SetActive(false);
     }
 
     // Update is called once per frame
@@ -65,6 +67,7 @@ public class PauseMenu : MonoBehaviour
                 _rebindUI.SetActive(false);
                 _settingsUI.SetActive(false);
                 _gameplayOverlayUI.SetActive(false);
+                _audioSettingsUI.SetActive(false);
                 break;
             case PauseMenuPage.Info:
                 _pauseMenuUI.SetActive(false);
@@ -72,6 +75,7 @@ public class PauseMenu : MonoBehaviour
                 _rebindUI.SetActive(false);
                 _settingsUI.SetActive(false);
                 _gameplayOverlayUI.SetActive(false);
+                _audioSettingsUI.SetActive(false);
                 break;
             case PauseMenuPage.Rebind:
                 _pauseMenuUI.SetActive(false);
@@ -79,6 +83,7 @@ public class PauseMenu : MonoBehaviour
                 _rebindUI.SetActive(true);
                 _settingsUI.SetActive(false);
                 _gameplayOverlayUI.SetActive(false);
+                _audioSettingsUI.SetActive(false);
                 break;
             case PauseMenuPage.Settings:
                 _pauseMenuUI.SetActive(false);
@@ -86,6 +91,7 @@ public class PauseMenu : MonoBehaviour
                 _rebindUI.SetActive(false);
                 _settingsUI.SetActive(true);
                 _gameplayOverlayUI.SetActive(false);
+                _audioSettingsUI.SetActive(false);
                 break;
             case PauseMenuPage.None:
                 _pauseMenuUI.SetActive(false);
@@ -93,6 +99,15 @@ public class PauseMenu : MonoBehaviour
                 _rebindUI.SetActive(false);
                 _settingsUI.SetActive(false);
                 _gameplayOverlayUI.SetActive(true);
+                _audioSettingsUI.SetActive(false);
+                break;
+            case PauseMenuPage.Audio:
+                _pauseMenuUI.SetActive(false);
+                _infoUI.SetActive(false);
+                _rebindUI.SetActive(false);
+                _settingsUI.SetActive(false);
+                _gameplayOverlayUI.SetActive(false);
+                _audioSettingsUI.SetActive(true);
                 break;
         }
     } // end SetMenu
@@ -128,6 +143,7 @@ public class PauseMenu : MonoBehaviour
         Info, // 1
         Rebind, // 2
         Settings, // 3
-        None // 4
+        None, // 4
+        Audio // 5
     } // end enum PauseMenuPage
 } // end PauseMenu
