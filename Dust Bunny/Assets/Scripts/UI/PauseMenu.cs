@@ -43,7 +43,7 @@ public class PauseMenu : MonoBehaviour
 
     public void SetPauseMenuInt(int type)
     {
-        if (type < 0 || type > ((int)PauseMenuPage.None))
+        if (type < 0 || type >= Enum.GetValues(typeof(PauseMenuPage)).Length)
         {
             Debug.LogError("Invalid PauseMenuPage type.");
             return;
