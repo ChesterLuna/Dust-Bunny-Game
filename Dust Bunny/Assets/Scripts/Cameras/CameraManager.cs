@@ -12,6 +12,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float _fallPanAmount = 0.25f;
     [SerializeField] private float _fallYPanTime = 0.35f;
     public float _fallSpeedYDampingChangeThreshold = -15f;
+    private float _currentCameraOrthographicSize = 8f;
     public bool IsLerpingYDamping { get; private set; }
     public bool LerpedFromPlayerFalling { get; set; }
     private Coroutine _lerpYPanCoroutine;
@@ -39,6 +40,9 @@ public class CameraManager : MonoBehaviour
 
         // Set the starting position of the tracked object offset
         _startingTrackedObjectOffset = _framingTransposer.m_TrackedObjectOffset;
+
+        // Set the orthographic size of the camera
+        _currentCamera.m_Lens.OrthographicSize = _currentCameraOrthographicSize;
     } // end Awake
 
     #region Lerp the Y Damping
@@ -159,6 +163,13 @@ public class CameraManager : MonoBehaviour
             // Update our composer variable
             _framingTransposer = _currentCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
         }
+        _currentCamera.m_Lens.OrthographicSize = _currentCameraOrthographicSize;
     } // end SwapCamera
     #endregion
+
+    public void SetOrthographicSize(float newSize)
+    {
+        _currentCameraOrthographicSize = newSize;
+        _currentCamera.m_Lens.OrthographicSize = _currentCameraOrthographicSize;
+    } // end SetCurrentCameraOrthographicSize
 } // end class CameraManager
