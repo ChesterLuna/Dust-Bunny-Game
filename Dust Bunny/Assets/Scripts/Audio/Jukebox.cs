@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class Jukebox : MonoBehaviour
 {
@@ -43,6 +44,11 @@ public class Jukebox : MonoBehaviour
     // References
     private AudioSource introSource;
     private AudioSource loopSource;
+    [SerializeField] AudioMixer _mixer;
+
+    // Constants
+    const float dbMin = -80;
+    const float dbMax = 20;
 
 
     // Start is called before the first frame update
@@ -140,6 +146,10 @@ public class Jukebox : MonoBehaviour
         // If there is no jukebox, make a new one
         if(instance == null){
             Instantiate(Resources.Load(JUKEBOX_PATH)).GetComponent<Jukebox>().Initalize();
+
+            //Also load the audio settings from disk
+            instance._mixer.SetFloat("bgmVolume", RatioToDB(PlayerPrefs.GetFloat("bgmVolume")));
+            instance._mixer.SetFloat("sfxVolume", RatioToDB(PlayerPrefs.GetFloat("sfxVolume")));
         }
 
         // If this song is also the currently playing song, do nothing
@@ -148,5 +158,14 @@ public class Jukebox : MonoBehaviour
         }
 
         instance.StartSwapToClip(song);
+    }
+
+    //Utility Functions
+    public static float RatioToDB(float ratio){
+        return Mathf.Lerp(dbMin, dbMax, ratio);
+    }
+
+    public static float DBToRatio(float db){
+        return (db - dbMin) / (dbMax - dbMin);
     }
 }

@@ -10,42 +10,31 @@ public class AudioSettingsUIManager : MonoBehaviour
     [SerializeField] private Slider _sfxSlider;
     [SerializeField] private AudioMixer _mixer;
 
-    const float dbMin = -80;
-    const float dbMax = 20;
-    // Start is called before the first frame update
-    void Start()
+    public void OnBGMSliderChange(){
+        _mixer.SetFloat("bgmVolume", Jukebox.RatioToDB(_bgmSlider.value));
+    }
+
+    public void OnSFXSliderChange(){
+        _mixer.SetFloat("sfxVolume", Jukebox.RatioToDB(_sfxSlider.value));
+    }
+
+    public void OnEnable()
     {
         float volume = 1.0f;
         if (!_mixer.GetFloat("bgmVolume", out volume)){
             Debug.LogError("Provided mixer did not have the bgmVolume parameter");
         }
-        _bgmSlider.value = DBToRatio(volume);
+        _bgmSlider.value = Jukebox.DBToRatio(volume);
 
         if (!_mixer.GetFloat("sfxVolume", out volume)){
             Debug.LogError("Provided mixer did not have the sfxVolume parameter");
         }
-        _sfxSlider.value = DBToRatio(volume);
+        _sfxSlider.value = Jukebox.DBToRatio(volume);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void OnBGMSliderChange(){
-        _mixer.SetFloat("bgmVolume", RatioToDB(_bgmSlider.value));
-    }
-
-    public void OnSFXSliderChange(){
-        _mixer.SetFloat("sfxVolume", RatioToDB(_sfxSlider.value));
-    }
-
-    public float RatioToDB(float ratio){
-        return Mathf.Lerp(dbMin, dbMax, ratio);
-    }
-
-    public float DBToRatio(float db){
-        return (db - dbMin) / (dbMax - dbMin);
+    public void OnDisable(){
+        //Write settings to disk
+        PlayerPrefs.SetFloat("bgmVolume", _bgmSlider.value);
+        PlayerPrefs.SetFloat("sfxVolume", _sfxSlider.value);
     }
 }

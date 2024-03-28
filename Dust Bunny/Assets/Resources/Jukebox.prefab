@@ -64,6 +64,7 @@ MonoBehaviour:
   bgmSwapBuffer: 3
   fadeTimer: 1
   fadingOut: 0
+  _mixer: {fileID: 24100000, guid: 17b70339bc66dbaf4a949058ba583038, type: 2}
 --- !u!82 &9704590321487401
 AudioSource:
   m_ObjectHideFlags: 0
