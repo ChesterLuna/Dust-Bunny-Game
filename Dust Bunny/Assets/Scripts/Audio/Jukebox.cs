@@ -102,7 +102,9 @@ public class Jukebox : MonoBehaviour
 
     private void HandleFade(){
         // Determine which direction to fade the audio
-        float fadeDistance = fadeSpeed * Time.deltaTime;
+        // Doing this instead of using unscaled time because this way we still run slower during initial lag on game start (desireable, because otherwise the music reaches fade in immediatly)
+        // TBH i don't know why this doesnt divide by zero when paused, but it doesn't and it doesn't work if I add a check for it
+        float fadeDistance = fadeSpeed * Time.deltaTime / Time.timeScale;
         if(fadingOut) fadeDistance *= -1;
         fadeTimer += fadeDistance;
 
