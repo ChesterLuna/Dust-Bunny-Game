@@ -1,5 +1,8 @@
 fileFormatVersion: 2
 guid: bef42547a64eba24a8455d2e6bd1823f
+labels:
+- Ground
+- Terrain
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}

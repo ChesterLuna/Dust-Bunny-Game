@@ -37,8 +37,13 @@ MonoBehaviour:
   CoyoteTime: 0.15
   JumpPower: 20
   EndJumpEarlyExtraForceMultiplier: 3
-  MaxAirJumps: 1
+  MaxAirJumps: 5
+  AirJumpBeforeCost: 1
+  AirJumpCost: -1
   AllowDash: 1
+  MaxDashes: 5
+  DashesBeforeCost: 1
+  DashCost: -1
   DashVelocity: 30
   DashDuration: 0.1
   DashCooldown: 0.5
