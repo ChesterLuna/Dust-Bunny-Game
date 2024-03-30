@@ -5,7 +5,7 @@ using UnityEngine;
 public class DialogueTrigger : MonoBehaviour, IInteractable
 {
     [SerializeField] DialogueManager _dialoguePlayer = null;
-    bool playOnTouch = true;
+    [SerializeField] bool playOnTouch = true;
     public bool ShowIndicator { get; private set; } = false;
 
     void OnTriggerEnter2D(Collider2D other)
