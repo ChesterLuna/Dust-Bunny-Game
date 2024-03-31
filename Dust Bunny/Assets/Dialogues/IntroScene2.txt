@@ -1,8 +1,11 @@
-﻿#Spek
+﻿!Pip appears and falls
+#Spek
 :Wha- Pip? There you are!
 
+!Pip leaves
 #Pip
 :Quick! Let’s go!
 
+!Pip leaves screen
 #Spek
 :Wait for me!
