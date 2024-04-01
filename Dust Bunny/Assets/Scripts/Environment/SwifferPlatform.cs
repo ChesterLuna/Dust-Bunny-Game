@@ -5,7 +5,7 @@ using UnityEngine;
 public class SwifferPlatform : PlatformBase
 {
     [Header("Movement Variables")]
-    GameObject _player;
+    PlayerController _player;
     Vector3 _previousPosition;
     Vector3 _currentPosition;
     [SerializeField] float _minMoveDistance = 0.01f;
@@ -20,6 +20,7 @@ public class SwifferPlatform : PlatformBase
     [Tooltip("The point from which the enemy will cast a ray to detect the player, if none is provided, the enemy will cast a ray from its own position.")]
     [SerializeField] Transform _raycastOriginPoint;
     [SerializeField] float _lineOfSightDistance = 5f;
+    [SerializeField] float _minXDistance = 0.1f;
 
     [Header("Patrol Settings")]
     [Tooltip("The points the enemy will patrol between, if none are provided, the enemy will wander.")]
@@ -57,7 +58,7 @@ public class SwifferPlatform : PlatformBase
 
     void Start()
     {
-        _player = GameObject.FindGameObjectWithTag("Player");
+        _player = GameObject.FindObjectOfType<PlayerController>();
     } // end Start
 
     protected override Vector2 Evaluate(float delta)
@@ -68,8 +69,19 @@ public class SwifferPlatform : PlatformBase
         float targetDirection;
         if (_seekPlayer && CanSeePlayer())
         { // Seek Player
-            Vector2 direction = _player.transform.position - transform.position;
+            Vector2 direction = _player.State.Position - (Vector2)transform.position;
             targetDirection = Mathf.Sign(direction.x);
+            Debug.Log(direction.x);
+            if (Mathf.Abs(direction.x) < _minXDistance)
+            {
+                return new Vector2(transform.position.x, transform.position.y);
+            }
+            else
+            {
+                var newPos = new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
+                // Debug.Log(newPos);
+                return newPos;
+            }
             // bool tempIsFacingRight = targetDirection == 1; // Set _isFacingRight to true if targetDirection is +1 (right) and false if -1 (left)
             // if (_isFacingRight != tempIsFacingRight)
             // {
@@ -79,7 +91,7 @@ public class SwifferPlatform : PlatformBase
         else
         { // Patrol
             Debug.Log("Patrolling");
-            Debug.Log(HasMoved() + " " + _patrolThreshold + " " + Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x) + " " + _currentPatrolPointIndex);
+            // Debug.Log(HasMoved() + " " + _patrolThreshold + " " + Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x) + " " + _currentPatrolPointIndex);
             if (!HasMoved() || _patrolThreshold > Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x))
             {
                 IncrementPatrolPoints();
@@ -94,19 +106,19 @@ public class SwifferPlatform : PlatformBase
             // }
             // _newMovement.x = targetDirection;
             // return _newMovement * _moveSpeed;
+            var newPos = new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
+            // Debug.Log(newPos);
+            return newPos;
         }
-        var newPos = new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
-        // Debug.Log(newPos);
 
-        return newPos;
 
     }
     private bool CanSeePlayer()
     {
-        float distanceToPlayer = Vector2.Distance(_raycastOriginPoint.position, _player.transform.position);
+        float distanceToPlayer = Vector2.Distance(_raycastOriginPoint.position, _player.State.Position);
         if (distanceToPlayer > _lineOfSightDistance) return false;
 
-        Vector2 directionToPlayer = (_player.transform.position - _raycastOriginPoint.position).normalized;
+        Vector2 directionToPlayer = (_player.GetColliderPosition() - (Vector2)_raycastOriginPoint.position).normalized;
 
         bool tempStart = Physics2D.queriesStartInColliders;
         Physics2D.queriesStartInColliders = false;
@@ -119,7 +131,7 @@ public class SwifferPlatform : PlatformBase
         }
         else
         {
-            // Debug.Log(hit.collider.name);
+            if (hit.collider != null) Debug.Log(hit.collider.name);
             return false;
         }
     } // end CanSeePlayer

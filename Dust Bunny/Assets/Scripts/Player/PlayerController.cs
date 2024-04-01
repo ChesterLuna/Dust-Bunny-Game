@@ -749,6 +749,12 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     } // end CalculateInteract
     #endregion
 
+    public Vector2 GetColliderPosition()
+    {
+        Collider2D activeCollider = _collider.isActiveAndEnabled ? _collider : _airborneCollider;
+        return activeCollider.bounds.center;
+    }
+
     #region Move
 
     private Vector2 _frameTransientVelocity;
