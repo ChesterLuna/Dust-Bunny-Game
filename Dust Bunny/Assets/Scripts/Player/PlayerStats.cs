@@ -25,6 +25,11 @@ public class PlayerStats : ScriptableObject
     [Tooltip("Velocity = smoother, but can be occasionally unreliable on jagged terrain. Immediate = Occasionally jittery, but stable")]
     public PositionCorrectionMode PositionCorrectionMode = PositionCorrectionMode.Velocity;
 
+    // Action Indicator
+    [Header("Action Indicator"), Space] public float ActionIndicatorXOffset = 0f;
+    public float ActionIndicatorYOffset = 1f;
+    public float ActionIndicatoryScale = 1f;
+
     // Movement
     [Header("Movement"), Space] public float BaseSpeed = 9;
     public float Acceleration = 50;

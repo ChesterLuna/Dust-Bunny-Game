@@ -1055,6 +1055,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         other.TryGetComponent(out IInteractable interactScript);
         if (interactScript != null && interactScript.ShowIndicator)
         {
+            _actionIndicator.transform.localPosition = new Vector3(Stats.ActionIndicatorXOffset, Stats.ActionIndicatorYOffset, 0);
+            _actionIndicator.transform.localScale = new Vector3(1 * Stats.ActionIndicatoryScale, 1 * Stats.ActionIndicatoryScale, 0);
             _actionIndicator.gameObject.SetActive(true);
         }
     } // end OnTriggerStay2D
