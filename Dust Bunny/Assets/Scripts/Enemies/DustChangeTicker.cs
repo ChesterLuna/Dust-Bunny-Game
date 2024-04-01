@@ -53,7 +53,7 @@ public class DustChangeTicker : MonoBehaviour
         other.gameObject.TryGetComponent(out IPlayerController player);
         if (player == _player)
         {
-            StopCoroutine(coroutine);
+            if (coroutine != null) StopCoroutine(coroutine);
             _player = null;
         }
     } // end OnTriggerExit2D

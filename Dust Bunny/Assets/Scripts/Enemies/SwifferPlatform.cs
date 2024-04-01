@@ -138,4 +138,31 @@ public class SwifferPlatform : PlatformBase
             _currentPatrolPointIndex = 0;
         }
     } // end IncrementPatrolPoints
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + Vector3.down);
+
+        if (Application.isPlaying) return;
+        var previous = (Vector2)transform.position;
+        for (var i = 0; i < _patrolPoints.Length; i++)
+        {
+            var p = (Vector2)_patrolPoints[i].position;
+            Gizmos.DrawWireSphere(p, 0.2f);
+            Gizmos.DrawLine(previous, p);
+
+            previous = p;
+        }
+
+        if (_seekPlayer)
+        {
+            Gizmos.color = Color.blue;
+            if (_raycastOriginPoint == null)
+            {
+                _raycastOriginPoint = transform;
+            }
+            Gizmos.DrawWireSphere(_raycastOriginPoint.position, _lineOfSightDistance);
+        }
+    } // end OnDrawGizmosSelected
 } // end SwifferPlatform
