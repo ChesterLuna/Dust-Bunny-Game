@@ -32,4 +32,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/Matts Work Shack/TempBedroom.unity
     guid: f9346b5025a95684b9550852d79709a8
+  - enabled: 1
+    path: Assets/Scenes/Burrow.unity
+    guid: 54ba7083dd6fd92b58999044cb284474
+  - enabled: 1
+    path: Assets/Scenes/New Bedroom.unity
+    guid: 0f7216f019fe2d535b4485ca4ee767fd
   m_configObjects: {}

@@ -1,5 +1,8 @@
 fileFormatVersion: 2
-guid: b76c6b6b645adead6a793f67ee20fc0b
+guid: f65ce16ce5d595643988fe8e4b5f3f20
+labels:
+- Architecture
+- Wall
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
