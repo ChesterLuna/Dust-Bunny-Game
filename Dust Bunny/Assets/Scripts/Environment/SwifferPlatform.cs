@@ -4,28 +4,30 @@ using UnityEngine;
 
 public class SwifferPlatform : PlatformBase
 {
-    [SerializeField] private Transform[] _patrolPoints;
-    [SerializeField, Range(0, 100)] private float _duration = 2;
-    [SerializeField, Range(0, 20)] private float _endPauseDuration = 0.2f;
-    [SerializeField] private bool _loop;
-    [SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0, 0, 1, 1);
-    [SerializeField] private bool _smoothPath;
-    [HideInInspector] private Vector2[] _runtimePoints;
+    [Header("Movement Variables")]
+    GameObject _player;
+    Vector3 _previousPosition;
+    Vector3 _currentPosition;
+    [SerializeField] float _minMoveDistance = 0.01f;
+    [SerializeField] bool _isFacingRight = true;
+    [SerializeField] LayerMask _environmentLayer;
+    [SerializeField] LayerMask _playerLayer;
 
-    private float _time, _currentPauseTime;
-    private bool _ascending = true;
-    private IPatrolPath _patrolPath;
-    private const int DEBUG_RESOLUTION = 100;
+    [SerializeField] float _moveSpeed = 0.1f;
 
     [Header("Seek Settings")]
     [SerializeField] bool _seekPlayer = false;
     [Tooltip("The point from which the enemy will cast a ray to detect the player, if none is provided, the enemy will cast a ray from its own position.")]
     [SerializeField] Transform _raycastOriginPoint;
     [SerializeField] float _lineOfSightDistance = 5f;
-    [SerializeField] LayerMask _environmentLayer;
-    [SerializeField] LayerMask _playerLayer;
-    GameObject _player;
 
+    [Header("Patrol Settings")]
+    [Tooltip("The points the enemy will patrol between, if none are provided, the enemy will wander.")]
+    [SerializeField] Transform[] _patrolPoints;
+    List<bool> reachablePoints = new List<bool>();
+    [SerializeField] float _patrolThreshold = 0.2f;
+    private int _patrolPointAdder = 1;
+    int _currentPatrolPointIndex = 0;
 
     protected override void Awake()
     {
@@ -34,7 +36,14 @@ public class SwifferPlatform : PlatformBase
         {
             _raycastOriginPoint = transform;
         }
-        CreateRuntimePoints();
+
+        if (_patrolPoints.Length > 0)
+        {
+            for (int i = 0; i < _patrolPoints.Length; i++)
+            {
+                reachablePoints.Add(true);
+            }
+        }
     }
 
     public override void OnValidate()
@@ -44,7 +53,6 @@ public class SwifferPlatform : PlatformBase
         {
             _raycastOriginPoint = transform;
         }
-        CreateRuntimePoints();
     }
 
     void Start()
@@ -52,66 +60,47 @@ public class SwifferPlatform : PlatformBase
         _player = GameObject.FindGameObjectWithTag("Player");
     } // end Start
 
-
     protected override Vector2 Evaluate(float delta)
     {
-        _currentPauseTime += delta;
+        _previousPosition = _currentPosition;
+        _currentPosition = transform.position;
 
-        if (_currentPauseTime < _endPauseDuration)
-        {
-            Rb.gravityScale = 0;
-            return Rb.position;
-        }
-
-        Rb.gravityScale = 1;
-
+        float targetDirection;
         if (_seekPlayer && CanSeePlayer())
-        {
+        { // Seek Player
             Vector2 direction = _player.transform.position - transform.position;
-            float targetDirection = Mathf.Sign(direction.x);
+            targetDirection = Mathf.Sign(direction.x);
             // bool tempIsFacingRight = targetDirection == 1; // Set _isFacingRight to true if targetDirection is +1 (right) and false if -1 (left)
             // if (_isFacingRight != tempIsFacingRight)
             // {
             //     Turn();
             // }
-            return new Vector2(transform.position.x + targetDirection / 10, transform.position.y);
         }
-
-
-        if (_ascending || _loop) _time += delta / _duration;
-        else _time -= delta / _duration;
-
-        _time = Mathf.Clamp(_time, 0, 1);
-        var curveTime = _curve.Evaluate(_time);
-
-        if (_time is >= 1 or <= 0)
-        {
-            if (_loop) _time = 0;
-            _ascending = !_ascending;
-            _currentPauseTime = 0;
+        else
+        { // Patrol
+            Debug.Log("Patrolling");
+            Debug.Log(HasMoved() + " " + _patrolThreshold + " " + Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x) + " " + _currentPatrolPointIndex);
+            if (!HasMoved() || _patrolThreshold > Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x))
+            {
+                IncrementPatrolPoints();
+            }
+            Transform _currentPatrolPoint = _patrolPoints[_currentPatrolPointIndex];
+            Vector2 direction = _currentPatrolPoint.position - transform.position;
+            targetDirection = Mathf.Sign(direction.x);
+            // bool tempIsFacingRight = targetDirection == 1; // Set _isFacingRight to true if targetDirection is +1 (right) and false if -1 (left)
+            // if (_isFacingRight != tempIsFacingRight)
+            // {
+            //     Turn();
+            // }
+            // _newMovement.x = targetDirection;
+            // return _newMovement * _moveSpeed;
         }
+        var newPos = new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
+        // Debug.Log(newPos);
 
-        return _patrolPath?.GetPointAtDistance(curveTime) ?? Vector2.zero;
+        return newPos;
+
     }
-
-    private void CreateRuntimePoints()
-    {
-        if (_patrolPoints == null || _patrolPoints.Length < 2)
-        {
-            _patrolPath = null;
-            return; // Show editor warning
-        }
-
-        _runtimePoints = new Vector2[_patrolPoints.Length];
-
-        for (var i = 0; i < _patrolPoints.Length; i++)
-        {
-            _runtimePoints[i] = _patrolPoints[i].position;
-        }
-
-        _patrolPath = _smoothPath ? new SmoothPatrol(_runtimePoints) : new LinearPatrol(_runtimePoints);
-    }
-
     private bool CanSeePlayer()
     {
         float distanceToPlayer = Vector2.Distance(_raycastOriginPoint.position, _player.transform.position);
@@ -119,38 +108,47 @@ public class SwifferPlatform : PlatformBase
 
         Vector2 directionToPlayer = (_player.transform.position - _raycastOriginPoint.position).normalized;
 
+        bool tempStart = Physics2D.queriesStartInColliders;
+        Physics2D.queriesStartInColliders = false;
         RaycastHit2D hit = Physics2D.Raycast(_raycastOriginPoint.position, directionToPlayer, _lineOfSightDistance, _playerLayer + _environmentLayer);
+        Physics2D.queriesStartInColliders = tempStart;
+        Debug.DrawRay(_raycastOriginPoint.position, directionToPlayer * _lineOfSightDistance, Color.red);
         if (hit.collider != null && hit.collider.CompareTag("Player"))
         {
             return true;
         }
-        return false;
+        else
+        {
+            // Debug.Log(hit.collider.name);
+            return false;
+        }
     } // end CanSeePlayer
 
-    private void OnDrawGizmosSelected()
+    bool HasMoved()
     {
-        if (_seekPlayer)
+        return Vector3.Distance(_previousPosition, _currentPosition) > _minMoveDistance;
+    } // end HasMoved
+
+    private void IncrementPatrolPoints()
+    {
+        if (_patrolPoints.Length == 0) return;
+        _currentPatrolPointIndex += _patrolPointAdder;
+        if (_currentPatrolPointIndex >= _patrolPoints.Length)
         {
-            Gizmos.color = Color.blue;
-            if (_raycastOriginPoint == null)
-            {
-                _raycastOriginPoint = transform;
-            }
-            Gizmos.DrawWireSphere(_raycastOriginPoint.position, _lineOfSightDistance);
+
+            _patrolPointAdder = -1;
+            _currentPatrolPointIndex = _patrolPoints.Length - 1;
         }
-
-        if (_patrolPath == null) return;
-        Gizmos.color = Color.magenta;
-
-        for (var i = 0; i < DEBUG_RESOLUTION; i++)
+        else if (_currentPatrolPointIndex < 0)
         {
-            var t1 = i / (float)DEBUG_RESOLUTION;
-            var t2 = (i + 1) / (float)DEBUG_RESOLUTION;
-
-            var point1 = _patrolPath.GetPoint(t1);
-            var point2 = _patrolPath.GetPoint(t2);
-
-            Gizmos.DrawLine(point1, point2);
+            _patrolPointAdder = 1;
+            _currentPatrolPointIndex = 0;
         }
-    }
+    } // end IncrementPatrolPoints
+
+    public void Turn()
+    {
+        // Placeholder for now
+        _isFacingRight = !_isFacingRight;
+    } // end Turn
 }
