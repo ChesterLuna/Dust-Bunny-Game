@@ -1,4 +1,6 @@
 using System;
+using ES3Types;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -13,6 +15,9 @@ public class PlayerStats : ScriptableObject
     public LayerMask CollisionLayers;
     public CharacterSize CharacterSize;
 
+    // Camera
+    [Header("Camera"), Space]
+    public float CameraOrthographicSize = 8;
 
     // Controller Setup
     [Header("Controller Setup"), Space] public float VerticalDeadZoneThreshold = 0.3f;

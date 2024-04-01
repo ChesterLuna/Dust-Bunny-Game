@@ -176,6 +176,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private void SetupCharacter(ColliderMode mode = ColliderMode.Airborne)
     {
         Stats = _allStats[DustLevelIndex(_currentDust)];
+        CameraManager.instance?.SetOrthographicSize(Stats.CameraOrthographicSize);
+
         _character = Stats.CharacterSize.GenerateCharacterSize();
         _cachedQueryMode = Physics2D.queriesStartInColliders;
 
@@ -747,6 +749,12 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     } // end CalculateInteract
     #endregion
 
+    public Vector2 GetColliderPosition()
+    {
+        Collider2D activeCollider = _collider.isActiveAndEnabled ? _collider : _airborneCollider;
+        return activeCollider.bounds.center;
+    }
+
     #region Move
 
     private Vector2 _frameTransientVelocity;
@@ -1138,7 +1146,7 @@ public interface IPlayerController
     public void TogglePlayer(bool on, bool dead = false, bool changeAnimation = true);
 
     // Dust
-    public void ChangeDust(float scalar, bool hostile);  
+    public void ChangeDust(float scalar, bool hostile);
 
     // Other
     public void Die();

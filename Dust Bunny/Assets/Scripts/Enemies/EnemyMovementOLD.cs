@@ -151,8 +151,10 @@ public class EnemyMovementOLD : MonoBehaviour
         if (distanceToPlayer > _lineOfSightDistance) return false;
 
         Vector2 directionToPlayer = (_player.transform.position - _raycastOriginPoint.position).normalized;
-
+        bool tempStart = Physics2D.queriesStartInColliders;
+        Physics2D.queriesStartInColliders = false;
         RaycastHit2D hit = Physics2D.Raycast(_raycastOriginPoint.position, directionToPlayer, _lineOfSightDistance, _playerLayer + _environmentLayer);
+        Physics2D.queriesStartInColliders = tempStart;
         if (hit.collider != null && hit.collider.CompareTag("Player"))
         {
             return true;

@@ -23,6 +23,7 @@ MonoBehaviour:
     Width: 1.22
     StepHeight: 0.41
     RayInset: 0.1
+  CameraOrthographicSize: 8
   VerticalDeadZoneThreshold: 0.3
   HorizontalDeadZoneThreshold: 0.1
   PositionCorrectionMode: 0
@@ -38,7 +39,12 @@ MonoBehaviour:
   JumpPower: 20
   EndJumpEarlyExtraForceMultiplier: 3
   MaxAirJumps: 1
+  AirJumpBeforeCost: 1
+  AirJumpCost: -1
   AllowDash: 1
+  MaxDashes: 5
+  DashesBeforeCost: 1
+  DashCost: -1
   DashVelocity: 30
   DashDuration: 0.1
   DashCooldown: 0.5
