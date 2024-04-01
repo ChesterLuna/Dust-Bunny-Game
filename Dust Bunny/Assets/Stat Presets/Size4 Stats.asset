@@ -17,13 +17,13 @@ MonoBehaviour:
     m_Bits: 128
   CollisionLayers:
     serializedVersion: 2
-    m_Bits: 833
+    m_Bits: 2881
   CharacterSize:
     Height: 2.76
     Width: 2.44
     StepHeight: 0.41
-    CrouchHeight: 0.8
     RayInset: 0.1
+  CameraOrthographicSize: 8
   VerticalDeadZoneThreshold: 0.3
   HorizontalDeadZoneThreshold: 0.1
   PositionCorrectionMode: 0
@@ -39,14 +39,16 @@ MonoBehaviour:
   JumpPower: 20
   EndJumpEarlyExtraForceMultiplier: 3
   MaxAirJumps: 1
+  AirJumpBeforeCost: 1
+  AirJumpCost: -1
   AllowDash: 1
+  MaxDashes: 5
+  DashesBeforeCost: 1
+  DashCost: -1
   DashVelocity: 30
   DashDuration: 0.1
   DashCooldown: 0.5
   DashEndHorizontalMultiplier: 0.5
-  AllowCrouching: 0
-  CrouchSlowDownTime: 1
-  CrouchSpeedModifier: 0.3
   AllowWalls: 1
   ClimbableLayer:
     serializedVersion: 2
