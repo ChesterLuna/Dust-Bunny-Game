@@ -9,7 +9,6 @@ public class SwifferPlatform : PlatformBase
     Vector3 _previousPosition;
     Vector3 _currentPosition;
     [SerializeField] float _minMoveDistance = 0.01f;
-    [SerializeField] bool _isFacingRight = true;
     [SerializeField] LayerMask _environmentLayer;
     [SerializeField] LayerMask _playerLayer;
 
@@ -70,23 +69,16 @@ public class SwifferPlatform : PlatformBase
         if (_seekPlayer && CanSeePlayer())
         { // Seek Player
             Vector2 direction = _player.State.Position - (Vector2)transform.position;
-            targetDirection = Mathf.Sign(direction.x);
-            Debug.Log(direction.x);
             if (Mathf.Abs(direction.x) < _minXDistance)
             {
                 return new Vector2(transform.position.x, transform.position.y);
             }
             else
             {
-                var newPos = new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
-                // Debug.Log(newPos);
-                return newPos;
+                targetDirection = Mathf.Sign(direction.x);
+                transform.localScale = new Vector3(targetDirection, 1, 1);
+                return new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
             }
-            // bool tempIsFacingRight = targetDirection == 1; // Set _isFacingRight to true if targetDirection is +1 (right) and false if -1 (left)
-            // if (_isFacingRight != tempIsFacingRight)
-            // {
-            //     Turn();
-            // }
         }
         else
         { // Patrol
@@ -99,19 +91,9 @@ public class SwifferPlatform : PlatformBase
             Transform _currentPatrolPoint = _patrolPoints[_currentPatrolPointIndex];
             Vector2 direction = _currentPatrolPoint.position - transform.position;
             targetDirection = Mathf.Sign(direction.x);
-            // bool tempIsFacingRight = targetDirection == 1; // Set _isFacingRight to true if targetDirection is +1 (right) and false if -1 (left)
-            // if (_isFacingRight != tempIsFacingRight)
-            // {
-            //     Turn();
-            // }
-            // _newMovement.x = targetDirection;
-            // return _newMovement * _moveSpeed;
-            var newPos = new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
-            // Debug.Log(newPos);
-            return newPos;
+            transform.localScale = new Vector3(targetDirection, 1, 1);
+            return new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
         }
-
-
     }
     private bool CanSeePlayer()
     {
@@ -131,7 +113,6 @@ public class SwifferPlatform : PlatformBase
         }
         else
         {
-            if (hit.collider != null) Debug.Log(hit.collider.name);
             return false;
         }
     } // end CanSeePlayer
@@ -157,10 +138,4 @@ public class SwifferPlatform : PlatformBase
             _currentPatrolPointIndex = 0;
         }
     } // end IncrementPatrolPoints
-
-    public void Turn()
-    {
-        // Placeholder for now
-        _isFacingRight = !_isFacingRight;
-    } // end Turn
-}
+} // end SwifferPlatform
