@@ -5,16 +5,19 @@ using UnityEngine.UI;
 
 public class RebindMenu : MonoBehaviour
 {
-    [SerializeField] private Toggle _dashMouseToggle;
+    public Toggle DashMouseToggle;
     private void OnEnable()
     {
-        _dashMouseToggle.isOn = UserInput.instance.UseMouseForDash;
-        _dashMouseToggle.onValueChanged.AddListener((value) => UserInput.instance.UseMouseForDash = value);
+        DashMouseToggle.isOn = UserInput.instance.UseMouseForDash;
+        DashMouseToggle.onValueChanged.AddListener((value) =>
+        {
+            UserInput.instance.SetMouseForDash(value);
+        });
     } // end OnEnable
 
     void OnDisable()
     {
-        _dashMouseToggle.onValueChanged.RemoveAllListeners();
+        DashMouseToggle.onValueChanged.RemoveAllListeners();
     } // end OnDisable
 } // end RebindMenu
 

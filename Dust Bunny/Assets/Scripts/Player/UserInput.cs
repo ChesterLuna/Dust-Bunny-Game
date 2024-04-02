@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class UserInput : MonoBehaviour
 {
     public static UserInput instance;
-    public bool UseMouseForDash = false;
+    public bool UseMouseForDash { get; private set; }
     // private PlayerInputActions _actions;
     private InputActionAsset _actions;
 
@@ -26,8 +26,15 @@ public class UserInput : MonoBehaviour
         SetUpInputActions();
     } // end Awake
 
+    public void SetMouseForDash(bool value)
+    {
+        UseMouseForDash = value;
+        PlayerPrefs.SetInt("UseMouseForDash", value ? 1 : 0);
+    } // end SetMouseForDash
+
     private void SetUpInputActions()
     {
+        UseMouseForDash = PlayerPrefs.GetInt("UseMouseForDash", 1) == 1;
         _move = _actions["Move"];
         _dashPosition = _actions["DashPosition"];
         _jump = _actions["Jump"];
@@ -41,18 +48,47 @@ public class UserInput : MonoBehaviour
 
     private void OnDisable() => _actions.Disable();
 
-    public FrameInput Gather()
+    public FrameInput Gather(PlayerStates playerState = PlayerStates.Playing)
     {
-        return new FrameInput
+        if (playerState == PlayerStates.Paused)
         {
-            JumpDown = _jump.WasPressedThisFrame(),
-            JumpHeld = _jump.IsPressed(),
-            DashDown = _dash.WasPressedThisFrame(),
-            Move = _move.ReadValue<Vector2>(),
-            DashDirection = _dashPosition.ReadValue<Vector2>(),
-            InteractDown = _interact.WasPressedThisFrame(),
-            MenuDown = _menu.WasPressedThisFrame()
-        };
+            return new FrameInput
+            {
+                JumpDown = false,
+                JumpHeld = false,
+                DashDown = false,
+                Move = Vector2.zero,
+                DashDirection = Vector2.zero,
+                InteractDown = false,
+                MenuDown = _menu.WasPressedThisFrame()
+            };
+        }
+        else if (playerState == PlayerStates.Dialogue)
+        {
+            return new FrameInput
+            {
+                JumpDown = false,
+                JumpHeld = false,
+                DashDown = false,
+                Move = Vector2.zero,
+                DashDirection = Vector2.zero,
+                InteractDown = _interact.WasPressedThisFrame(),
+                MenuDown = _menu.WasPressedThisFrame()
+            };
+        }
+        else
+        {
+            return new FrameInput
+            {
+                JumpDown = _jump.WasPressedThisFrame(),
+                JumpHeld = _jump.IsPressed(),
+                DashDown = _dash.WasPressedThisFrame(),
+                Move = _move.ReadValue<Vector2>(),
+                DashDirection = _dashPosition.ReadValue<Vector2>(),
+                InteractDown = _interact.WasPressedThisFrame(),
+                MenuDown = _menu.WasPressedThisFrame()
+            };
+        }
     } // end Gather
 
 } // end class PlayerInput

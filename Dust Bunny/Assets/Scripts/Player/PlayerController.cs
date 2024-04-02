@@ -40,7 +40,6 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public event Action<bool, bool> ToggledPlayer;
 
     public bool Active { get; private set; } = true;
-    public bool ActiveDialogue { get; private set; } = true;
     public Vector2 Up { get; private set; }
     public Vector2 Forward { get; private set; }
     public Vector2 Right { get; private set; }
@@ -73,17 +72,12 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         Repositioned?.Invoke(position);
     } // end RepositionImmediately
 
-    public void TogglePlayer(bool on, bool dead = false, bool changeAnimation = true)
+    public void TogglePlayer(bool on, bool dead = false, PlayerStates playerState = PlayerStates.Playing)
     {
+        PlayerState = playerState;
         Active = on;
         _rb.isKinematic = !on;
-        if (changeAnimation) ToggledPlayer?.Invoke(on, dead);
-    } // end TogglePlayer
-    public void TogglePlayerDialogue(bool on, bool dead = false, bool changeAnimation = true)
-    {
-        ActiveDialogue = on;
-        _rb.isKinematic = !on;
-        if (changeAnimation) ToggledPlayer?.Invoke(on, dead);
+        ToggledPlayer?.Invoke(on, dead);
     } // end TogglePlayer
 
     #endregion
@@ -134,30 +128,6 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             SetVelocity(Vector2.zero);
             return;
         }
-        if (!ActiveDialogue)
-        {
-            RemoveTransientVelocity();
-
-            Vector2 _downVelocity = _rb.velocity;
-            if (_downVelocity.y > 0)
-                _downVelocity = -_downVelocity;
-            SetVelocity(Vector2.up * _downVelocity);
-
-            SetFrameData();
-
-            CalculateCollisions();
-            CalculateDirection();
-
-            CalculateInteract();
-            CleanFrameData();
-            CalculateExternalModifiers();
-
-            TraceGround();
-            // Move();
-
-            return;
-        }
-
         RemoveTransientVelocity();
 
         SetFrameData();
@@ -246,7 +216,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     private void GatherInput()
     {
-        _frameInput = UserInput.instance.Gather();
+        _frameInput = UserInput.instance.Gather(PlayerState);
 
 
         if (_frameInput.JumpDown)
@@ -334,6 +304,10 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private const int RAY_SIDE_COUNT = 5;
     private RaycastHit2D _groundHit;
     private bool _grounded;
+    public bool Grounded
+    {
+        get { return _grounded; }
+    }
     private float _currentStepDownLength;
     private float GrounderLength => _character.StepHeight + SKIN_WIDTH;
 
@@ -996,6 +970,17 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         };
     } // end SaveCharacterState
 
+    void EnableDialouge()
+    {
+        SetVelocity(new Vector2(0, Velocity.y));
+        PlayerState = PlayerStates.Dialogue;
+    }
+
+    void DisableDialouge()
+    {
+        PlayerState = PlayerStates.Playing;
+    }
+
     #region Dust & Size
 
     // Size Changing variables
@@ -1060,8 +1045,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     [SerializeField] private float _deathTransitionTime = 1f;
     public void Die() // TODO, Update
     {
-        TogglePlayer(false, true);
-        PlayerState = PlayerStates.Dead;
+        TogglePlayer(false, true, PlayerStates.Dead);
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
         levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
         GameManager.instance.PauseGameTime();
@@ -1189,7 +1173,7 @@ public interface IPlayerController
     // Utility
     public void LoadState(ControllerState state);
     public void RepositionImmediately(Vector2 position, bool resetVelocity = false);
-    public void TogglePlayer(bool on, bool dead = false, bool changeAnimation = true);
+    public void TogglePlayer(bool on, bool dead = false, PlayerStates playerState = PlayerStates.Playing);
     public void ResetAirJumps();
     public void ResetDashes();
 
