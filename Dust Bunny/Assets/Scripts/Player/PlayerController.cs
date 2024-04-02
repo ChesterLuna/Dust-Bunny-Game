@@ -682,7 +682,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         Jumped?.Invoke(jumpType);
     } // end ExecuteJump
 
-    private void ResetAirJumps()
+    public void ResetAirJumps()
     {
         _totalAirJumpsRemaining = Stats.MaxAirJumps;
         _freeAirJumpsRemaining = Stats.AirJumpBeforeCost;
@@ -758,7 +758,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         }
     } // end CalculateDash
 
-    private void ResetDashes()
+    public void ResetDashes()
     {
         _canDash = true;
         _totalDashesRemaining = Stats.MaxDashes;
@@ -1182,6 +1182,8 @@ public interface IPlayerController
     public void LoadState(ControllerState state);
     public void RepositionImmediately(Vector2 position, bool resetVelocity = false);
     public void TogglePlayer(bool on, bool dead = false, bool changeAnimation = true);
+    public void ResetAirJumps();
+    public void ResetDashes();
 
     // Dust
     public void ChangeDust(float scalar, bool hostile);
