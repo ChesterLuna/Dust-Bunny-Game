@@ -90,17 +90,18 @@ public class PlayerAnimator : MonoBehaviour
 
         HandleSpriteFlip(xInput);
 
-        HandleSizeChange();
-
         HandleWallSlideEffects();
 
         HandleAnimations();
 
         //Handle idle particle color
         ParticleSystem.MainModule _idleParticlesMain = _idleParticles.main;
-        if (_player.CanDash()){
+        if (_player.CanDash())
+        {
             _idleParticlesMain.startColor = _particleCanDashColor;
-        } else {
+        }
+        else
+        {
             _idleParticlesMain.startColor = _particleCannotDashColor;
         }
 
@@ -179,23 +180,6 @@ public class PlayerAnimator : MonoBehaviour
 
     #endregion
 
-    #region Size Changing
-    [SerializeField] private float _sizeEpsilon = 0.01f;
-    [SerializeField] private float _sizeChangeSpeed = 0.03f;
-    private Vector2 _currentSizeVelocity;
-
-    private void HandleSizeChange()
-    {
-        if (!_changingSize) return;
-        _sprite.size = Vector2.SmoothDamp(_sprite.size, _defaultSpriteSize, ref _currentSizeVelocity, _sizeChangeSpeed);
-        if (Vector2.Distance(_sprite.size, _defaultSpriteSize) < _sizeEpsilon)
-        {
-            _sprite.size = _defaultSpriteSize;
-            _changingSize = false;
-        }
-    } // end HandleSizeChange
-    #endregion
-
     #region Event Callbacks
 
     private void OnJumped(JumpType type)
@@ -257,17 +241,15 @@ public class PlayerAnimator : MonoBehaviour
         }
     } // end OnDashChanged
 
-
-    private bool _changingSize = false;
     [SerializeField] Vector2 _sizeFactor = new Vector2(0.69f, 0.61f);
+    [SerializeField] private float lerpTime = 1.7f;
     private void OnSizeChanged()
     {
         _character = _player.Stats.CharacterSize.GenerateCharacterSize();
 
-        _defaultSpriteSize = new Vector2(_character.Width / _sizeFactor.x, _character.Height / _sizeFactor.y);
-        _sprite.size = _defaultSpriteSize;
-
-        // _changingSize = true;
+        Vector2 newSize = new Vector2(_character.Width / _sizeFactor.x, _character.Height / _sizeFactor.y);
+        LeanTween.scale(gameObject, newSize, lerpTime);
+        _defaultSpriteSize = newSize;
     } // end OnSizeChanged
 
 
@@ -279,14 +261,16 @@ public class PlayerAnimator : MonoBehaviour
 
     private void OnUsedDust(float dustAmount, bool hostile)
     {
-        if(hostile){
+        if (hostile)
+        {
             _sfx.PlaySFX(PlayerSFXController.SFX.Took_Damage);
             StartCoroutine(FreezeGameOnTakeDamage());
         }
         _useDustParticles.Play();
     } // end OnUsedDust
 
-    private IEnumerator FreezeGameOnTakeDamage(){
+    private IEnumerator FreezeGameOnTakeDamage()
+    {
         // Slow down the game effect, maybe undesirable
         Time.timeScale = 0.1f;
         yield return new WaitForSeconds(0.023f);
@@ -294,7 +278,6 @@ public class PlayerAnimator : MonoBehaviour
 
         yield return null;
     }
-
     #endregion
 
     private void PlayerOnToggledPlayer(bool on, bool dead)

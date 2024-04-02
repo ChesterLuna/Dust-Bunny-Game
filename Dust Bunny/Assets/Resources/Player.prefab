@@ -10314,9 +10314,8 @@ MonoBehaviour:
   _wallSlideParticles: {fileID: 2953667081221456782}
   _wallSlideParticleOffset: 0.3
   _distancePerClimbSound: 1
-  _sizeEpsilon: 0.01
-  _sizeChangeSpeed: 0.03
   _sizeFactor: {x: 0.61, y: 0.69}
+  lerpTime: 1.7
 --- !u!1 &2763113494509146886
 GameObject:
   m_ObjectHideFlags: 0
