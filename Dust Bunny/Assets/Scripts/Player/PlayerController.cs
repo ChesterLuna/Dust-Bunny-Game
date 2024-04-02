@@ -97,7 +97,6 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
         if (GameManager.instance.CheckpointDustLevel != -1) _currentDust = GameManager.instance.CheckpointDustLevel;
-        Debug.Log((GameManager.instance.CheckpointDustLevel != -1) + " " + _currentDust + " " + GameManager.instance.CheckpointDustLevel);
         SetupCharacter();
 
         PhysicsSimulator.Instance.AddPlayer(this);

@@ -167,8 +167,13 @@ public class CameraManager : MonoBehaviour
     } // end SwapCamera
     #endregion
 
-    public void SetOrthographicSize(float newSize)
+    public void SetOrthographicSize(float newSize, float lerpTime = 1.7f)
     {
+        if (_currentCamera == null) return;
+        LeanTween.value(_currentCamera.gameObject, _currentCameraOrthographicSize, newSize, lerpTime).setOnUpdate((float flt) =>
+        {
+            _currentCamera.m_Lens.OrthographicSize = flt;
+        });
         _currentCameraOrthographicSize = newSize;
         _currentCamera.m_Lens.OrthographicSize = _currentCameraOrthographicSize;
     } // end SetCurrentCameraOrthographicSize

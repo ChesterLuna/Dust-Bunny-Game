@@ -42,7 +42,13 @@ public class GameManager : MonoBehaviour
     // called second
     void OnSceneLoaded(Scene scene, LoadSceneMode mode) // Moved to player controller
     {
-        if (SceneManager.GetActiveScene().name == "MainMenu") { return; }
+        if (SceneManager.GetActiveScene().name == "Main Menu")
+        {
+            ES3.DeleteFile("SaveFile.es3", new ES3Settings(ES3.Location.Cache));
+            ES3.DeleteFile("SaveFile.es3", new ES3Settings(ES3.Location.File));
+            ES3.DeleteFile("SaveFile.es3", new ES3Settings(ES3.Location.PlayerPrefs));
+            return;
+        }
         if (ES3AutoSaveMgr.Current != null) ES3AutoSaveMgr.Current.Load();
         // if (CheckpointLocation.HasValue)
         // {
