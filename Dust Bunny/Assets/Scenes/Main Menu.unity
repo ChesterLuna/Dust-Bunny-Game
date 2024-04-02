@@ -761,7 +761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40af4be8c9080f64481336ab3c293453, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstLevel: Underbed
+  firstLevel: Burrow-NEW
 --- !u!1001 &1322105393
 PrefabInstance:
   m_ObjectHideFlags: 0
