@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public event Action<bool, bool> ToggledPlayer;
 
     public bool Active { get; private set; } = true;
+    public bool ActiveDialogue { get; private set; } = true;
     public Vector2 Up { get; private set; }
     public Vector2 Right { get; private set; }
     public Vector2 Input => _frameInput.Move;
@@ -74,6 +75,12 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public void TogglePlayer(bool on, bool dead = false, bool changeAnimation = true)
     {
         Active = on;
+        _rb.isKinematic = !on;
+        if (changeAnimation) ToggledPlayer?.Invoke(on, dead);
+    } // end TogglePlayer
+    public void TogglePlayerDialogue(bool on, bool dead = false, bool changeAnimation = true)
+    {
+        ActiveDialogue = on;
         _rb.isKinematic = !on;
         if (changeAnimation) ToggledPlayer?.Invoke(on, dead);
     } // end TogglePlayer
@@ -126,6 +133,30 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             SetVelocity(Vector2.zero);
             return;
         }
+        if (!ActiveDialogue)
+        {
+            RemoveTransientVelocity();
+
+            Vector2 _downVelocity = _rb.velocity;
+            if(_downVelocity.y > 0)
+                _downVelocity = -_downVelocity;
+            SetVelocity(Vector2.up * _downVelocity);
+
+            SetFrameData();
+
+            CalculateCollisions();
+            CalculateDirection();
+
+            CalculateInteract();
+            CleanFrameData();
+            CalculateExternalModifiers();
+
+            TraceGround();
+            // Move();
+
+            return;
+        }
+
         RemoveTransientVelocity();
 
         SetFrameData();
@@ -939,7 +970,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         }
     } // end Move
 
-    private void SetVelocity(Vector2 newVel)
+    public void SetVelocity(Vector2 newVel)
     {
         _rb.velocity = newVel;
         Velocity = newVel;

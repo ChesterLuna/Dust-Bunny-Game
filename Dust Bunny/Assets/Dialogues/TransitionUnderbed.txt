@@ -9,14 +9,20 @@
 :…Of what exactly?
 
 #Pip
-:Dunno! There was a noise and then everything was shaking and no one could settle down and a tunnel collapsed and- 
+:Dunno! There was a noise and then everything was shaking
+
+#Pip
+:and no one could settle down and a tunnel collapsed and- 
 
 !Spek gets close to pip
 #Spek
 :Woah woah, slow down little bun.
 
 #Pip
-:The Burrow is all sorts of out of sorts. And I just know something on the Outside is the cause.
+:The Burrow is all sorts of out of sorts.
+
+#Pip
+:And I just know something on the Outside is the cause.
 
 #Pip 
 :So I’m going to find out what it is!
