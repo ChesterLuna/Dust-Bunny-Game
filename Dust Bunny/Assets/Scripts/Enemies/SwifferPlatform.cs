@@ -29,6 +29,8 @@ public class SwifferPlatform : PlatformBase
     private int _patrolPointAdder = 1;
     int _currentPatrolPointIndex = 0;
 
+    private Vector3 _initialScaleCache;
+
     protected override void Awake()
     {
         base.Awake();
@@ -44,6 +46,8 @@ public class SwifferPlatform : PlatformBase
                 reachablePoints.Add(true);
             }
         }
+
+        _initialScaleCache = transform.localScale;
     }
 
     public override void OnValidate()
@@ -76,7 +80,7 @@ public class SwifferPlatform : PlatformBase
             else
             {
                 targetDirection = Mathf.Sign(direction.x);
-                transform.localScale = new Vector3(targetDirection, 1, 1);
+                transform.localScale = new Vector3(targetDirection * _initialScaleCache.x, _initialScaleCache.y, _initialScaleCache.z);
                 return new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
             }
         }
@@ -90,7 +94,7 @@ public class SwifferPlatform : PlatformBase
             Transform _currentPatrolPoint = _patrolPoints[_currentPatrolPointIndex];
             Vector2 direction = _currentPatrolPoint.position - transform.position;
             targetDirection = Mathf.Sign(direction.x);
-            transform.localScale = new Vector3(targetDirection, 1, 1);
+            transform.localScale = new Vector3(targetDirection * _initialScaleCache.x, _initialScaleCache.y, _initialScaleCache.z);
             return new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
         }
     }
