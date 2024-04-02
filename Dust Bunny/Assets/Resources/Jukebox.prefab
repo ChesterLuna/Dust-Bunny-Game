@@ -50,15 +50,19 @@ MonoBehaviour:
   - song: 1
     introClip: {fileID: 8300000, guid: 9c428862c25225cfcb658592017d783e, type: 3}
     loopClip: {fileID: 8300000, guid: 5c90e4485272859e487685208cf0abfd, type: 3}
+    volume: 1
   - song: 2
     introClip: {fileID: 8300000, guid: fc972bfc46459001fa3657bf3aca83c1, type: 3}
     loopClip: {fileID: 8300000, guid: ae2d81049f408ea109074da4dd090539, type: 3}
+    volume: 0.292
   - song: 3
     introClip: {fileID: 8300000, guid: 62d0a4913452e6742ae89060a15e8d10, type: 3}
     loopClip: {fileID: 8300000, guid: a3bf2b8425b80ce76b060f437c3a6c2f, type: 3}
+    volume: 1
   - song: 0
     introClip: {fileID: 8300000, guid: e3b43727a89bfc3729f5e5cb487934d2, type: 3}
     loopClip: {fileID: 8300000, guid: 9a30185ca71fc8bc695806589cddea4b, type: 3}
+    volume: 1
   initialSong: 4
   fadeSpeed: 50
   bgmSwapBuffer: 4

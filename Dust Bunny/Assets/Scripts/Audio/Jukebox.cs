@@ -16,6 +16,8 @@ public class Jukebox : MonoBehaviour
         public Song song;
         public AudioClip introClip;
         public AudioClip loopClip;
+        [Range(0.0f, 1.0f)]
+        public float volume;
     }
     private const string JUKEBOX_PATH = "Jukebox";
 
@@ -88,6 +90,7 @@ public class Jukebox : MonoBehaviour
             noneSong.song = Song.NONE; //lol
             noneSong.introClip = null;
             noneSong.loopClip = null;
+            noneSong.volume = 0;
             songClips.Add(Song.NONE, noneSong);
 
             //Play the initial song
@@ -117,8 +120,8 @@ public class Jukebox : MonoBehaviour
         fadeTimer = Mathf.Max(Mathf.Min(fadeTimer, 100), 0);
         
 
-        introSource.volume = fadeTimer / 100;
-        loopSource.volume = fadeTimer / 100;
+        introSource.volume = (fadeTimer / 100) * currentSong.volume;
+        loopSource.volume = (fadeTimer / 100) * currentSong.volume;
     }
 
     private void SwapClip(){
