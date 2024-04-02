@@ -6,7 +6,6 @@ using Bunny.Dialogues;
 
 using TMPro;
 using Unity.VisualScripting;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class DialogueManager : MonoBehaviour, IInteractable
