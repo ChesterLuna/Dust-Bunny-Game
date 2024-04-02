@@ -970,13 +970,13 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         };
     } // end SaveCharacterState
 
-    void EnableDialouge()
+    public void EnableDialogue()
     {
         SetVelocity(new Vector2(0, Velocity.y));
         PlayerState = PlayerStates.Dialogue;
     }
 
-    void DisableDialouge()
+    public void DisableDialogue()
     {
         PlayerState = PlayerStates.Playing;
     }
