@@ -55,7 +55,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
         _collider = GetComponent<Collider2D>();
         textBubble = textBubble != null ? textBubble : transform.Find("Text Bubble").gameObject;
         textBubble.SetActive(false);
-        _player = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
+        GameObject _playerObj = GameObject.FindWithTag("Player");
+        if (_playerObj != null) _player = _playerObj.GetComponent<PlayerController>();
 
     } // end Awake
 
