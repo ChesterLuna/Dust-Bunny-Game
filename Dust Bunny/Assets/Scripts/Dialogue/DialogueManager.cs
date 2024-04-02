@@ -94,19 +94,37 @@ public class DialogueManager : MonoBehaviour, IInteractable
         _isFinishedDialogue = false;
         if (importantDialogue)
         {
-            _player.PlayerState = PlayerStates.Dialogue;
-            // _player.TogglePlayerDialogue(false,false,false);
+            _player.EnableDialogue();
+            StartCoroutine("WaitUntilGroundedForDialogue");
+        }
+        else
+        {
+            // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
+            if (IsBubble)
+            {
+                EnableTextBubble();
+            }
+            EnableAnimators();
+
+            DisplayNextSentence();
         }
 
-        // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
+    } // end StartDialogue
+
+    IEnumerator WaitUntilGroundedForDialogue()
+    {
+        while(!_player.Grounded)
+        {
+            yield return null;
+        }
         if (IsBubble)
         {
             EnableTextBubble();
         }
         EnableAnimators();
-
         DisplayNextSentence();
-    } // end StartDialogue
+        yield break;
+    }
 
     private void EnableTextBubble()
     {
@@ -189,9 +207,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     {
         if (importantDialogue)
         {
-            _player.PlayerState = PlayerStates.Playing;
-            // _player.TogglePlayerDialogue(true, false, false);
-
+            _player.DisableDialogue();
         }
         playOnTouch = false;
         if (IsBubble)
