@@ -103,7 +103,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         {
             EnableTextBubble();
         }
-        // EnableAnimators();
+        EnableAnimators();
 
         DisplayNextSentence();
     } // end StartDialogue
@@ -197,7 +197,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         _isFinishedDialogue = true;
         _isStartedDialogue = false;
         ShowIndicator = false;
-        // DisableAnimators();
+        DisableAnimators();
     } // end EndDialogue
 
     private void OnTriggerEnter2D(Collider2D other)
