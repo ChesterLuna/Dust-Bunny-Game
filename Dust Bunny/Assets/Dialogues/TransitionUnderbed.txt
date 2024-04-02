@@ -19,7 +19,10 @@
 :Woah woah, slow down little bun.
 
 #Pip
-:The Burrow is all sorts of out of sorts. And I just know something on the Outside is the cause.
+:The Burrow is all sorts of out of sorts.
+
+#Pip
+:And I just know something on the Outside is the cause.
 
 #Pip 
 :So I’m going to find out what it is!
