@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public bool Active { get; private set; } = true;
     public bool ActiveDialogue { get; private set; } = true;
     public Vector2 Up { get; private set; }
+    public Vector2 Forward { get; private set; }
     public Vector2 Right { get; private set; }
     public Vector2 Input => _frameInput.Move;
     public Vector2 GroundNormal { get; private set; }
@@ -278,13 +279,16 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         var rot = _rb.rotation * Mathf.Deg2Rad;
         Up = new Vector2(-Mathf.Sin(rot), Mathf.Cos(rot));
-        Vector2 previousRight = Right;
         Right = new Vector2(Up.y, -Up.x);
-        if (previousRight != Right) _cameraFollowObject.CallTurn(); // Update Camera
         _framePosition = _rb.position;
 
         _hasInputThisFrame = _frameInput.Move.x != 0;
-
+        if (_hasInputThisFrame || Forward == Vector2.zero)
+        {
+            Vector2 previousForward = Forward;
+            Forward = Right * Mathf.Sign(_frameInput.Move.x);
+            if (previousForward != Forward && previousForward != Vector2.zero) _cameraFollowObject.CallTurn();
+        }
         Velocity = _rb.velocity;
         _trimmedFrameVelocity = new Vector2(Velocity.x, 0);
     } // end SetFrameData
@@ -605,7 +609,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         if (_jumpToConsume || HasBufferedJump)
         {
-            if (CanWallJump)
+            if (CanWallJump && IsPushingAgainstWall)
             {
                 ExecuteJump(JumpType.WallJump);
             }
@@ -721,9 +725,11 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             else
             {
                 dir = new Vector2(_frameInput.Move.x, _frameInput.Move.y).normalized;
-
             }
-            if (dir == Vector2.zero) return;
+            if (dir == Vector2.zero)
+            {
+                dir = Forward;
+            }
 
             _dashVel = dir * Stats.DashVelocity;
             _dashing = true;
@@ -1167,6 +1173,8 @@ public interface IPlayerController
 
     public bool Active { get; }
     public Vector2 Up { get; }
+    public Vector2 Right { get; }
+    public Vector2 Forward { get; }
     public Vector2 Input { get; }
     public Vector2 GroundNormal { get; }
     public Vector2 Velocity { get; }

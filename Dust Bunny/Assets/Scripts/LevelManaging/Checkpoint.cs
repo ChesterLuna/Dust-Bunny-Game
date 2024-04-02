@@ -26,7 +26,7 @@ public class Checkpoint : MonoBehaviour
 
     void Start()
     {
-        _particleSystemObject.SetActive(false);
+        _particleSystemObject?.SetActive(false);
         if (!_useCustomLocation)
         {
             _spawnLocation = transform.position;

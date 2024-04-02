@@ -82,7 +82,6 @@ public class SwifferPlatform : PlatformBase
         }
         else
         { // Patrol
-            Debug.Log("Patrolling");
             // Debug.Log(HasMoved() + " " + _patrolThreshold + " " + Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x) + " " + _currentPatrolPointIndex);
             if (!HasMoved() || _patrolThreshold > Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x))
             {
