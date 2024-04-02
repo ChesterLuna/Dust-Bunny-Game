@@ -13,8 +13,9 @@ public class NextLevelTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && _onTouch)
+        if (other.TryGetComponent(out IPlayerController controller) && _onTouch)
         {
+            GameManager.instance.CheckpointDustLevel = controller.CurrentDust;
             ChangeScene();
         }
     } // end OnTriggerEnter2D

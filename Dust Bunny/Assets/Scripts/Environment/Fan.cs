@@ -58,5 +58,7 @@ public class Fan : MonoBehaviour, ISwitchable
         if (!collision.TryGetComponent(out IPlayerController controller)) return;
         Vector2 force = transform.up * _force;
         controller.AddFrameForce(force, true);
+        controller.ResetAirJumps();
+        controller.ResetDashes();
     } // end OnTriggerStay2D
 } // end class Fan

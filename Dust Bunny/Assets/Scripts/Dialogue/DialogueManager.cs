@@ -6,7 +6,6 @@ using Bunny.Dialogues;
 
 using TMPro;
 using Unity.VisualScripting;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class DialogueManager : MonoBehaviour, IInteractable
@@ -176,7 +175,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         //Find next animator
         if (_iAnim >= _actors.Length)
         {
-            Debug.LogError("There arent enough actors (Animators) set up. Please add some into the dialogue manager or check how many times they are called in the dialogue");
+            Debug.LogWarning("There arent enough actors (Animators) set up. Please add some into the dialogue manager or check how many times they are called in the dialogue");
             return;
         }
         Animator _nextActor = _actors[_iAnim];

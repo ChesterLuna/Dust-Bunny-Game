@@ -23,6 +23,7 @@ public class GameplayOverlay : MonoBehaviour
 
     public void OnUpdateTimerText()
     {
+        if (_timerTextUI == null) return;
         if (_timerTextUI.activeSelf == false) return;
         float numSeconds = GameManager.instance.NumSeconds;
         // Convert seconds to clock format

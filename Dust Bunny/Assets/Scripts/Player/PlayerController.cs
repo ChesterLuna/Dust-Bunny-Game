@@ -96,7 +96,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private void Awake()
     {
         if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
-        if (GameManager.instance.CheckpointDustLevel.HasValue) _currentDust = GameManager.instance.CheckpointDustLevel.Value;
+        if (GameManager.instance.CheckpointDustLevel != -1) _currentDust = GameManager.instance.CheckpointDustLevel;
         SetupCharacter();
 
         PhysicsSimulator.Instance.AddPlayer(this);
@@ -138,7 +138,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             RemoveTransientVelocity();
 
             Vector2 _downVelocity = _rb.velocity;
-            if(_downVelocity.y > 0)
+            if (_downVelocity.y > 0)
                 _downVelocity = -_downVelocity;
             SetVelocity(Vector2.up * _downVelocity);
 
@@ -682,7 +682,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         Jumped?.Invoke(jumpType);
     } // end ExecuteJump
 
-    private void ResetAirJumps()
+    public void ResetAirJumps()
     {
         _totalAirJumpsRemaining = Stats.MaxAirJumps;
         _freeAirJumpsRemaining = Stats.AirJumpBeforeCost;
@@ -700,7 +700,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private int _totalDashesRemaining;
     private int _freeDashesRemaining;
 
-    public bool CanDash(){
+    public bool CanDash()
+    {
         return Stats.AllowDash && _totalDashesRemaining > 0 && (_canDash || _freeDashesRemaining > 0 || _currentDust + Stats.DashCost > 0) && _time > _nextDashTime;
     }
 
@@ -757,7 +758,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         }
     } // end CalculateDash
 
-    private void ResetDashes()
+    public void ResetDashes()
     {
         _canDash = true;
         _totalDashesRemaining = Stats.MaxDashes;
@@ -1090,6 +1091,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         other.TryGetComponent(out IInteractable interactScript);
         if (interactScript != null && interactScript.ShowIndicator)
         {
+            _actionIndicator.transform.localPosition = new Vector3(Stats.ActionIndicatorXOffset, Stats.ActionIndicatorYOffset, 0);
+            _actionIndicator.transform.localScale = new Vector3(1 * Stats.ActionIndicatoryScale, 1 * Stats.ActionIndicatoryScale, 0);
             _actionIndicator.gameObject.SetActive(true);
         }
     } // end OnTriggerStay2D
@@ -1179,6 +1182,8 @@ public interface IPlayerController
     public void LoadState(ControllerState state);
     public void RepositionImmediately(Vector2 position, bool resetVelocity = false);
     public void TogglePlayer(bool on, bool dead = false, bool changeAnimation = true);
+    public void ResetAirJumps();
+    public void ResetDashes();
 
     // Dust
     public void ChangeDust(float scalar, bool hostile);

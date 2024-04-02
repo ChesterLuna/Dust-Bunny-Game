@@ -35,16 +35,19 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Info Menu.unity
     guid: 229d023b3b712ac4a8380da39f0e0767
-  - enabled: 1
-    path: Assets/Scenes/Bedroom.unity
+  - enabled: 0
+    path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/Bedroom.unity
     guid: ad53cdafc5e50671c8053a545b50c54b
-  - enabled: 1
-    path: Assets/Scenes/Underbed-OLD.unity
+  - enabled: 0
+    path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/Underbed-OLD.unity
     guid: 9a48f82a7e09e4846bc659d9f011ccb8
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/Matts Work Shack/TempBedroom.unity
     guid: f9346b5025a95684b9550852d79709a8
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/Burrow-OLD.unity
     guid: 54ba7083dd6fd92b58999044cb284474
+  - enabled: 1
+    path: Assets/Scenes/Credits.unity
+    guid: 4a8be574e85225e2badc8a633d7a4315
   m_configObjects: {}
