@@ -8,6 +8,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main Menu.unity
     guid: 6f681df381a376b47a8a63afa5251718
+  - enabled: 1
+    path: Assets/Scenes/Burrow-NEW.unity
+    guid: 3e99003052c87526f9620ec032d096a9
+  - enabled: 1
+    path: Assets/Scenes/Underbed-NEW.unity
+    guid: 62e581824776c5c4794e62bfd7b71a4e
+  - enabled: 1
+    path: Assets/Scenes/New Bedroom.unity
+    guid: 0f7216f019fe2d535b4485ca4ee767fd
+  - enabled: 1
+    path: Assets/Scenes/Hallway.unity
+    guid: 5c336a5dc71a7dd7bbb7fa6d73567d76
   - enabled: 0
     path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
@@ -35,10 +47,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/Burrow-OLD.unity
     guid: 54ba7083dd6fd92b58999044cb284474
-  - enabled: 1
-    path: Assets/Scenes/New Bedroom.unity
-    guid: 0f7216f019fe2d535b4485ca4ee767fd
-  - enabled: 1
-    path: Assets/Scenes/Hallway.unity
-    guid: 5c336a5dc71a7dd7bbb7fa6d73567d76
   m_configObjects: {}
