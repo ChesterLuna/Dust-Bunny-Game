@@ -36,10 +36,10 @@ EditorBuildSettings:
     path: Assets/Scenes/Info Menu.unity
     guid: 229d023b3b712ac4a8380da39f0e0767
   - enabled: 0
-    path: Assets/Scenes/Bedroom.unity
+    path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/Bedroom.unity
     guid: ad53cdafc5e50671c8053a545b50c54b
   - enabled: 0
-    path: Assets/Scenes/Underbed-OLD.unity
+    path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/Underbed-OLD.unity
     guid: 9a48f82a7e09e4846bc659d9f011ccb8
   - enabled: 0
     path: Assets/Scenes/OLD-OPEN-WITH-CAUTION/Matts Work Shack/TempBedroom.unity
