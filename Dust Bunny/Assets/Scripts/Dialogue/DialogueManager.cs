@@ -95,7 +95,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         if (importantDialogue)
         {
             _player.PlayerState = PlayerStates.Dialogue;
-
+            _player.TogglePlayerDialogue(false,false,false);
         }
 
         // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
@@ -188,7 +188,11 @@ public class DialogueManager : MonoBehaviour, IInteractable
     public void EndDialogue()
     {
         if (importantDialogue)
-            GameObject.FindWithTag("Player").GetComponent<PlayerController>().PlayerState = PlayerStates.Playing;
+        {
+            _player.PlayerState = PlayerStates.Playing;
+            _player.TogglePlayerDialogue(true, false, false);
+
+        }
         playOnTouch = false;
         if (IsBubble)
         {
