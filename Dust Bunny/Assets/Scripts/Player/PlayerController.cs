@@ -135,8 +135,12 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         }
         if (!ActiveDialogue)
         {
-            SetVelocity(Vector2.up * _rb.velocity);
             RemoveTransientVelocity();
+
+            Vector2 _downVelocity = _rb.velocity;
+            if(_downVelocity.y > 0)
+                _downVelocity = -_downVelocity;
+            SetVelocity(Vector2.up * _downVelocity);
 
             SetFrameData();
 
