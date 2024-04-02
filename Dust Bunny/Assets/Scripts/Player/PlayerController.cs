@@ -96,7 +96,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private void Awake()
     {
         if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
-        if (GameManager.instance.CheckpointDustLevel.HasValue) _currentDust = GameManager.instance.CheckpointDustLevel.Value;
+        if (GameManager.instance.CheckpointDustLevel != -1) _currentDust = GameManager.instance.CheckpointDustLevel;
+        Debug.Log((GameManager.instance.CheckpointDustLevel != -1) + " " + _currentDust + " " + GameManager.instance.CheckpointDustLevel);
         SetupCharacter();
 
         PhysicsSimulator.Instance.AddPlayer(this);
@@ -138,7 +139,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             RemoveTransientVelocity();
 
             Vector2 _downVelocity = _rb.velocity;
-            if(_downVelocity.y > 0)
+            if (_downVelocity.y > 0)
                 _downVelocity = -_downVelocity;
             SetVelocity(Vector2.up * _downVelocity);
 
@@ -700,7 +701,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private int _totalDashesRemaining;
     private int _freeDashesRemaining;
 
-    public bool CanDash(){
+    public bool CanDash()
+    {
         return Stats.AllowDash && _totalDashesRemaining > 0 && (_canDash || _freeDashesRemaining > 0 || _currentDust + Stats.DashCost > 0) && _time > _nextDashTime;
     }
 

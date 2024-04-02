@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     public Vector3? CheckpointLocation;
-    public float? CheckpointDustLevel;
+    public float CheckpointDustLevel = -1;
     // called zero
     private void Awake()
     {
