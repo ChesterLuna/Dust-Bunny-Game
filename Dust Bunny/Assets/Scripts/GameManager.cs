@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
     // called second
     void OnSceneLoaded(Scene scene, LoadSceneMode mode) // Moved to player controller
     {
+        if (SceneManager.GetActiveScene().name == "MainMenu") { return; }
         ES3AutoSaveMgr.Current.Load();
         // if (CheckpointLocation.HasValue)
         // {
