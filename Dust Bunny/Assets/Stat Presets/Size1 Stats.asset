@@ -23,7 +23,7 @@ MonoBehaviour:
     Width: 0.61
     StepHeight: 0.05
     RayInset: 0.01
-  CameraOrthographicSize: 8
+  CameraOrthographicSize: 7
   VerticalDeadZoneThreshold: 0.3
   HorizontalDeadZoneThreshold: 0.1
   PositionCorrectionMode: 0
