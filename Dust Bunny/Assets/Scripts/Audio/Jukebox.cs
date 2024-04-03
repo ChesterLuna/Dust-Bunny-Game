@@ -153,8 +153,8 @@ public class Jukebox : MonoBehaviour
             Instantiate(Resources.Load(JUKEBOX_PATH)).GetComponent<Jukebox>().Initalize();
 
             //Also load the audio settings from disk
-            instance._mixer.SetFloat("bgmVolume", RatioToDB(PlayerPrefs.GetFloat("bgmVolume")));
-            instance._mixer.SetFloat("sfxVolume", RatioToDB(PlayerPrefs.GetFloat("sfxVolume")));
+            instance._mixer.SetFloat("bgmVolume", RatioToDB(PlayerPrefs.GetFloat("bgmVolume", 0.7f)));
+            instance._mixer.SetFloat("sfxVolume", RatioToDB(PlayerPrefs.GetFloat("sfxVolume", 0.7f)));
         }
 
         // If this song is also the currently playing song, do nothing
