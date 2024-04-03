@@ -25,7 +25,11 @@ public class DialogueTrigger : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        _dialoguePlayer.Interact();
+        if(_dialoguePlayer.IsStartedDialogue)
+        {
+            Debug.Log("Talk");
+            _dialoguePlayer.InteractDialogue();
+        }
     } // end Interact
 
 }
