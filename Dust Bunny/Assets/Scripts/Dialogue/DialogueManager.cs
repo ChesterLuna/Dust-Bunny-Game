@@ -26,20 +26,19 @@ public class DialogueManager : MonoBehaviour, IInteractable
     */
     [SerializeField] TextAsset AssetText;
     [SerializeField] GameObject textBubble;
-    Collider2D _collider;
-    [SerializeField] float offsetOnTopOfHead = 1.5f;
 
     [SerializeField] TextMeshPro charNameText;
     [SerializeField] TextCrawler dialogueText;
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTouch = false;
     [SerializeField] bool waitToTouchFloor = true;
+    [SerializeField] bool interactable= true;
     public bool ShowIndicator { get; private set; } = false;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
 
     public bool IsBubble = false;
-    bool _isStartedDialogue = false;
+    public bool IsStartedDialogue = false;
     bool _isFinishedDialogue = false;
 
     PlayerSFXController _sfxControlller;
@@ -51,7 +50,6 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     private void Awake()
     {
-        _collider = GetComponent<Collider2D>();
         textBubble = textBubble != null ? textBubble : transform.Find("Text Bubble").gameObject;
         textBubble.SetActive(false);
         GameObject _playerObj = GameObject.FindWithTag("Player");
@@ -74,7 +72,13 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        if (!_isStartedDialogue)
+        if (!interactable) return;
+        InteractDialogue();
+    } // end Interact
+
+    public void InteractDialogue()
+    {
+        if (!IsStartedDialogue)
         {
             StartDialogue();
         }
@@ -86,11 +90,11 @@ public class DialogueManager : MonoBehaviour, IInteractable
         {
             DisplayNextSentence();
         }
-    } // end Interact
+    }
 
     public void StartDialogue()
     {
-        _isStartedDialogue = true;
+        IsStartedDialogue = true;
         _isFinishedDialogue = false;
         if (importantDialogue)
         {
@@ -132,6 +136,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         textBubble.SetActive(true);
         charNameText = textBubble.transform.Find("Bubble Canvas").transform.Find("Background").transform.Find("Character Name").GetComponent<TextMeshPro>();
         dialogueText = textBubble.GetComponent<TextCrawler>().Initalize();
+        Debug.Log(dialogueText);
     }
 
     private void EnableAnimators()
@@ -169,6 +174,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
                 PlayNextAnimation();
             }
         }
+        Debug.Log(dialogueText);
 
         charNameText.text = nextDialogue.getName();
         dialogueText.SetText(nextDialogue.getText());
@@ -215,7 +221,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
             textBubble.SetActive(false);
         }
         _isFinishedDialogue = true;
-        _isStartedDialogue = false;
+        IsStartedDialogue = false;
         ShowIndicator = false;
         DisableAnimators();
     } // end EndDialogue

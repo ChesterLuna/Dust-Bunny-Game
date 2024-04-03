@@ -159,8 +159,10 @@ public class TextCrawler : MonoBehaviour
     {
         for (int i = 0; i < sizes.Count; i++)
         {
+            Debug.Log(textController.fontSize);
             sizes[i] += Time.deltaTime * popinSpeed;
             sizes[i] = Mathf.Min(textController.fontSize, sizes[i]);
+            Debug.Log(sizes[i]);
         }
     }
 
