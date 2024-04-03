@@ -10,7 +10,7 @@ public class UserInput : MonoBehaviour
     // private PlayerInputActions _actions;
     private InputActionAsset _actions;
 
-    private InputAction _move, _jump, _dash, _dashPosition, _interact, _menu;
+    private InputAction _move, _jump, _dash, _dashPosition, _interact, _menu, _anyKey;
     private void Awake()
     {
         if (instance == null)
@@ -51,6 +51,7 @@ public class UserInput : MonoBehaviour
         _dash = _actions["Dash"];
         _interact = _actions["Interact"];
         _menu = _actions["ToggleMenu"];
+        _anyKey = _actions["AnyKey"];
     } // end SetUpInputActions
 
 
@@ -71,7 +72,8 @@ public class UserInput : MonoBehaviour
                 Move = Vector2.zero,
                 DashDirection = Vector2.zero,
                 InteractDown = false,
-                MenuDown = _menu.WasPressedThisFrame()
+                MenuDown = _menu.WasPressedThisFrame(),
+                AnyKey = _anyKey.WasPressedThisFrame()
             };
         }
         else if (playerState == PlayerStates.Dialogue)
@@ -84,7 +86,8 @@ public class UserInput : MonoBehaviour
                 Move = Vector2.zero,
                 DashDirection = Vector2.zero,
                 InteractDown = _interact.WasPressedThisFrame(),
-                MenuDown = _menu.WasPressedThisFrame()
+                MenuDown = _menu.WasPressedThisFrame(),
+                AnyKey = _anyKey.WasPressedThisFrame() && !_interact.WasPerformedThisFrame()
             };
         }
         else
@@ -97,7 +100,8 @@ public class UserInput : MonoBehaviour
                 Move = _move.ReadValue<Vector2>(),
                 DashDirection = _dashPosition.ReadValue<Vector2>(),
                 InteractDown = _interact.WasPressedThisFrame(),
-                MenuDown = _menu.WasPressedThisFrame()
+                MenuDown = _menu.WasPressedThisFrame(),
+                AnyKey = _anyKey.WasPressedThisFrame()
             };
         }
     } // end Gather
@@ -113,4 +117,5 @@ public struct FrameInput
     public Vector2 DashDirection;
     public bool InteractDown;
     public bool MenuDown;
+    public bool AnyKey;
 } // end struct FrameInput

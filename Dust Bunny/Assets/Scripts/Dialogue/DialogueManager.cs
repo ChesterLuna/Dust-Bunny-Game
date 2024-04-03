@@ -45,6 +45,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] Animator[] _actors;
     int _iAnim = 0;
 
+    private float _timeSinceDialogueStarted = 0.0f;
+
     PlayerController _player;
 
 
@@ -75,6 +77,16 @@ public class DialogueManager : MonoBehaviour, IInteractable
         if (!interactable) return;
         InteractDialogue();
     } // end Interact
+
+    public void Update(){
+        if (UserInput.instance.Gather(PlayerStates.Dialogue).AnyKey && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f){
+            InteractDialogue();
+        }
+
+        if (IsStartedDialogue){
+            _timeSinceDialogueStarted += Time.deltaTime;
+        }
+    }
 
     public void InteractDialogue()
     {
