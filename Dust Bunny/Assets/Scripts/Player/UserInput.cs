@@ -26,6 +26,16 @@ public class UserInput : MonoBehaviour
         SetUpInputActions();
     } // end Awake
 
+    void FixedUpdate(){
+        // Refresh the input system
+        InputSystem.Update();
+    }
+
+    void Update(){
+        // Refresh the input system manually, only if TimeScale = 0
+        if (Time.timeScale == 0) InputSystem.Update();
+    }
+
     public void SetMouseForDash(bool value)
     {
         UseMouseForDash = value;
@@ -50,6 +60,7 @@ public class UserInput : MonoBehaviour
 
     public FrameInput Gather(PlayerStates playerState = PlayerStates.Playing)
     {
+        // Check states
         if (playerState == PlayerStates.Paused)
         {
             return new FrameInput

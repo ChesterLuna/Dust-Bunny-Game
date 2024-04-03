@@ -216,6 +216,9 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     private void GatherInput()
     {
+        // Early return if time is frozen (we don't want to buffer inputs)
+        if(Time.timeScale == 0) return;
+
         _frameInput = UserInput.instance.Gather(PlayerState);
 
 

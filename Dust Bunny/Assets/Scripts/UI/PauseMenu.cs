@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
@@ -29,8 +30,10 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (UserInput.instance.Gather().MenuDown)
+        Debug.Log(UserInput.instance.Gather().DashDown);
+        if (UserInput.instance.Gather(PlayerStates.Paused).MenuDown)
         {
+            Debug.Log("escape pressed");
             if (GameIsPaused)
             {
                 Resume();
@@ -119,7 +122,7 @@ public class PauseMenu : MonoBehaviour
         GameIsPaused = true;
         SetMenu(PauseMenuPage.Pause);
         GameManager.instance?.PauseGameTime();
-        UserInput.instance.gameObject.SetActive(false);
+        //UserInput.instance.gameObject.SetActive(false);
     } // end Pause
 
     public void Resume()
@@ -128,7 +131,7 @@ public class PauseMenu : MonoBehaviour
         GameIsPaused = false;
         SetMenu(PauseMenuPage.None);
         GameManager.instance?.StartGameTime();
-        UserInput.instance.gameObject.SetActive(true);
+        //UserInput.instance.gameObject.SetActive(true);
     } // end Resume
 
     public void QuitGame()
