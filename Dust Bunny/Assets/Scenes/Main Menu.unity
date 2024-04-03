@@ -328,7 +328,7 @@ PrefabInstance:
       objectReference: {fileID: 1285742878}
     - target: {fileID: 1848714159410368861, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OpenInfo
+      value: QuitGame
       objectReference: {fileID: 0}
     - target: {fileID: 2413336891047102762, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_Sprite
