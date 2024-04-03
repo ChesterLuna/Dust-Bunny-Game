@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -135,6 +136,12 @@ public class PauseMenu : MonoBehaviour
         UISFXManager.PlaySFX(UISFXManager.SFX.NEGATIVE);
         Debug.Log("Quit Game.");
         Application.Quit();
+    } // end QuitGame
+
+    public void QuitToMenu()
+    {
+        UISFXManager.PlaySFX(UISFXManager.SFX.NEGATIVE);
+        SceneManager.LoadScene("Main Menu");
     } // end QuitGame
 
     public enum PauseMenuPage
