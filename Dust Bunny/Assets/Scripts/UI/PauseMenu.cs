@@ -18,6 +18,8 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] GameObject _gameplayOverlayUI;
     [SerializeField] GameObject _audioSettingsUI;
 
+    private float _timeSinceLastResume = 0.0f;
+
     void Start()
     {
         _pauseMenuUI.SetActive(false);
@@ -31,7 +33,7 @@ public class PauseMenu : MonoBehaviour
     void Update()
     {
         Debug.Log(UserInput.instance.Gather().DashDown);
-        if (UserInput.instance.Gather(PlayerStates.Paused).MenuDown)
+        if (UserInput.instance.Gather(PlayerStates.Paused).MenuDown && _timeSinceLastResume > 0.3f)
         {
             Debug.Log("escape pressed");
             if (GameIsPaused)
@@ -42,6 +44,10 @@ public class PauseMenu : MonoBehaviour
             {
                 Pause();
             }
+        }
+
+        if (!GameIsPaused){
+            _timeSinceLastResume += Time.unscaledDeltaTime;
         }
     } // end Update
 
@@ -131,6 +137,7 @@ public class PauseMenu : MonoBehaviour
         GameIsPaused = false;
         SetMenu(PauseMenuPage.None);
         GameManager.instance?.StartGameTime();
+        _timeSinceLastResume = 0.0f;
         //UserInput.instance.gameObject.SetActive(true);
     } // end Resume
 

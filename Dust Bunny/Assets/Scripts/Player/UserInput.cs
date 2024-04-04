@@ -72,7 +72,7 @@ public class UserInput : MonoBehaviour
                 Move = Vector2.zero,
                 DashDirection = Vector2.zero,
                 InteractDown = false,
-                MenuDown = _menu.WasPressedThisFrame(),
+                MenuDown = _menu.WasReleasedThisFrame(),
                 AnyKey = _anyKey.WasPressedThisFrame()
             };
         }
