@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public event Action<bool, float> GroundedChanged;
     public event Action<bool, Vector2> DashChanged;
     public event Action<bool> WallGrabChanged;
-    public event Action SizeChanged;
+    public event Action<bool> SizeChanged;
     public event Action<float, bool> UsedDust;
     public event Action<Vector2> Repositioned;
     public event Action<bool, bool> ToggledPlayer;
@@ -92,8 +92,14 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
         if (GameManager.instance.CheckpointDustLevel != -1) _currentDust = GameManager.instance.CheckpointDustLevel;
-        SetupCharacter();
-
+        if (SceneManager.GetActiveScene().name == "Burrow-NEW") // Hardcoded to have a nice pan in at the start. Otherwise it is not wanted.
+        {
+            SetupCharacter(tween: true);
+        }
+        else
+        {
+            SetupCharacter();
+        }
         PhysicsSimulator.Instance.AddPlayer(this);
     } // end Awake
 
@@ -175,10 +181,10 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private GeneratedCharacterSize _character;
     private const float GRAVITY_SCALE = 1;
 
-    private void SetupCharacter(ColliderMode mode = ColliderMode.Airborne)
+    private void SetupCharacter(ColliderMode mode = ColliderMode.Airborne, bool tween = false)
     {
         Stats = _allStats[DustLevelIndex(_currentDust)];
-        CameraManager.instance?.SetOrthographicSize(Stats.CameraOrthographicSize);
+        CameraManager.instance?.SetOrthographicSize(Stats.CameraOrthographicSize, tween);
 
         _character = Stats.CharacterSize.GenerateCharacterSize();
         _cachedQueryMode = Physics2D.queriesStartInColliders;
@@ -205,7 +211,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         _airborneCollider.sharedMaterial = _rb.sharedMaterial;
 
         SetColliderMode(mode);
-        SizeChanged?.Invoke();
+        SizeChanged?.Invoke(tween);
     } // end SetupCharacter
 
     #endregion
@@ -217,7 +223,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private void GatherInput()
     {
         // Early return if time is frozen (we don't want to buffer inputs)
-        if(Time.timeScale == 0) return;
+        if (Time.timeScale == 0) return;
 
         _frameInput = UserInput.instance.Gather(PlayerState);
 
@@ -1037,8 +1043,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         if (DustLevelIndex(_currentDust) != DustLevelIndex(_oldDust))
         {
             ColliderMode mode = _airborneCollider.enabled ? ColliderMode.Airborne : ColliderMode.Standard;
-            SetupCharacter(mode);
-            SizeChanged?.Invoke();
+            SetupCharacter(mode, true);
+            SizeChanged?.Invoke(false);
         }
     } // end ChangeDust
     #endregion
@@ -1153,7 +1159,7 @@ public interface IPlayerController
     public event Action<bool, float> GroundedChanged;
     public event Action<bool, Vector2> DashChanged;
     public event Action<bool> WallGrabChanged;
-    public event Action SizeChanged;
+    public event Action<bool> SizeChanged;
     public event Action<float, bool> UsedDust;
     public event Action<Vector2> Repositioned;
     public event Action<bool, bool> ToggledPlayer;
