@@ -243,12 +243,19 @@ public class PlayerAnimator : MonoBehaviour
 
     [SerializeField] Vector2 _sizeFactor = new Vector2(0.69f, 0.61f);
     [SerializeField] private float lerpTime = 1.7f;
-    private void OnSizeChanged()
+    private void OnSizeChanged(bool tween = true)
     {
         _character = _player.Stats.CharacterSize.GenerateCharacterSize();
 
         Vector2 newSize = new Vector2(_character.Width / _sizeFactor.x, _character.Height / _sizeFactor.y);
-        LeanTween.scale(gameObject, newSize, lerpTime);
+        if (tween)
+        {
+            LeanTween.scale(gameObject, newSize, lerpTime);
+        }
+        else
+        {
+            gameObject.transform.localScale = newSize;
+        }
         _defaultSpriteSize = newSize;
     } // end OnSizeChanged
 

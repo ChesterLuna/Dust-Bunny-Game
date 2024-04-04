@@ -174,14 +174,17 @@ public class CameraManager : MonoBehaviour
     } // end SwapCamera
     #endregion
 
-    public void SetOrthographicSize(float newSize, float lerpTime = 1.7f)
+    public void SetOrthographicSize(float newSize, bool tween, float lerpTime = 1.7f)
     {
         if (_currentCamera == null) return;
-        float oldSize = _currentCameraOrthographicSize;
-        LeanTween.value(_currentCamera.gameObject, oldSize, newSize, lerpTime).setOnUpdate((float flt) =>
+        if (tween)
         {
-            _currentCamera.m_Lens.OrthographicSize = flt;
-        });
+            float oldSize = _currentCameraOrthographicSize;
+            LeanTween.value(_currentCamera.gameObject, oldSize, newSize, lerpTime).setOnUpdate((float flt) =>
+            {
+                _currentCamera.m_Lens.OrthographicSize = flt;
+            });
+        }
         _currentCameraOrthographicSize = newSize;
         _currentCamera.m_Lens.OrthographicSize = _currentCameraOrthographicSize;
     } // end SetCurrentCameraOrthographicSize
