@@ -293,7 +293,7 @@ MonoBehaviour:
   _minMoveDistance: 0.01
   _environmentLayer:
     serializedVersion: 2
-    m_Bits: 833
+    m_Bits: 0
   _playerLayer:
     serializedVersion: 2
     m_Bits: 128

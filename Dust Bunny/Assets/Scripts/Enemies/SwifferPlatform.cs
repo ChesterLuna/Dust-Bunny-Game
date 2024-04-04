@@ -8,6 +8,7 @@ public class SwifferPlatform : PlatformBase
     PlayerController _player;
     Vector3 _previousPosition;
     Vector3 _currentPosition;
+    Vector2 _previousMoveDir;
     [SerializeField] float _minMoveDistance = 0.01f;
     [SerializeField] LayerMask _environmentLayer;
     [SerializeField] LayerMask _playerLayer;
@@ -67,37 +68,50 @@ public class SwifferPlatform : PlatformBase
     protected override Vector2 Evaluate(float delta)
     {
         _previousPosition = _currentPosition;
-        _currentPosition = transform.position;
+        _currentPosition = FramePosition;
 
         float targetDirection;
         if (_seekPlayer && CanSeePlayer())
         { // Seek Player
-            Vector2 direction = _player.State.Position - (Vector2)transform.position;
+            Vector2 direction = _player.State.Position - (Vector2)_currentPosition;
             if (Mathf.Abs(direction.x) < _minXDistance)
             {
-                return new Vector2(transform.position.x, transform.position.y);
+                _previousMoveDir = _currentPosition;
+                return _currentPosition;
             }
             else
             {
                 targetDirection = Mathf.Sign(direction.x);
                 transform.localScale = new Vector3(targetDirection * _initialScaleCache.x, _initialScaleCache.y, _initialScaleCache.z);
-                return new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
+                Vector2 newPos = new Vector2(_currentPosition.x + (targetDirection * _moveSpeed), _currentPosition.y);
+                if (newPos == _previousMoveDir)
+                {
+                    _previousMoveDir = newPos;
+                    return _currentPosition;
+                }
+                else
+                {
+                    _previousMoveDir = newPos;
+                    return _previousMoveDir;
+                }
             }
         }
         else
         { // Patrol
             // Debug.Log(HasMoved() + " " + _patrolThreshold + " " + Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x) + " " + _currentPatrolPointIndex);
-            if (!HasMoved() || _patrolThreshold > Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x))
+            if (!HasMoved() || _patrolThreshold > Math.Abs(_currentPosition.x - _patrolPoints[_currentPatrolPointIndex].position.x))
             {
                 IncrementPatrolPoints();
             }
             Transform _currentPatrolPoint = _patrolPoints[_currentPatrolPointIndex];
-            Vector2 direction = _currentPatrolPoint.position - transform.position;
+            Vector2 direction = _currentPatrolPoint.position - _currentPosition;
             targetDirection = Mathf.Sign(direction.x);
             transform.localScale = new Vector3(targetDirection * _initialScaleCache.x, _initialScaleCache.y, _initialScaleCache.z);
-            return new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
+            _previousMoveDir = new Vector2(_currentPosition.x + (targetDirection * _moveSpeed), _currentPosition.y);
+            return _previousMoveDir;
         }
     }
+
     private bool CanSeePlayer()
     {
         float distanceToPlayer = Vector2.Distance(_raycastOriginPoint.position, _player.State.Position);

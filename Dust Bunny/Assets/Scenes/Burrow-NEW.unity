@@ -32707,11 +32707,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2145251542363292553, guid: bf7b47f6d6f3f00478ecb632ae54b54c, type: 3}
       propertyPath: _nextLevelSpawnLocation.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2145251542363292553, guid: bf7b47f6d6f3f00478ecb632ae54b54c, type: 3}
       propertyPath: _nextLevelSpawnLocation.y
-      value: -1.02
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 3380622736166424335, guid: bf7b47f6d6f3f00478ecb632ae54b54c, type: 3}
       propertyPath: m_Name
