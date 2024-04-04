@@ -78,7 +78,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         InteractDialogue();
     } // end Interact
 
-    public void Update(){
+    public void FixedUpdate(){
         if (UserInput.instance.Gather(PlayerStates.Dialogue).AnyKey && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f){
             InteractDialogue();
         }
