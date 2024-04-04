@@ -5691,7 +5691,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5845102696053430368, guid: d32852bdb941f754494f7564e94755a7, type: 3}
       propertyPath: m_text
-      value: Space
+      value: " \x01"
       objectReference: {fileID: 0}
     - target: {fileID: 5845102696053430368, guid: d32852bdb941f754494f7564e94755a7, type: 3}
       propertyPath: m_fontSize
@@ -7451,7 +7451,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5845102696053430368, guid: d32852bdb941f754494f7564e94755a7, type: 3}
       propertyPath: m_text
-      value: E
+      value: "E\x01"
       objectReference: {fileID: 0}
     - target: {fileID: 5845102696053430368, guid: d32852bdb941f754494f7564e94755a7, type: 3}
       propertyPath: m_fontSize
@@ -8438,7 +8438,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5845102696053430368, guid: d32852bdb941f754494f7564e94755a7, type: 3}
       propertyPath: m_text
-      value: W/A/S/D
+      value: "W\x01/A\x01/S\x01/D\x01"
       objectReference: {fileID: 0}
     - target: {fileID: 5845102696053430368, guid: d32852bdb941f754494f7564e94755a7, type: 3}
       propertyPath: m_fontSize
