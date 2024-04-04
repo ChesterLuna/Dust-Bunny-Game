@@ -32,10 +32,8 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(UserInput.instance.Gather().DashDown);
         if (UserInput.instance.Gather(PlayerStates.Paused).MenuDown && _timeSinceLastResume > 0.3f)
         {
-            Debug.Log("escape pressed");
             if (GameIsPaused)
             {
                 Resume();
@@ -46,7 +44,8 @@ public class PauseMenu : MonoBehaviour
             }
         }
 
-        if (!GameIsPaused){
+        if (!GameIsPaused)
+        {
             _timeSinceLastResume += Time.unscaledDeltaTime;
         }
     } // end Update
@@ -128,7 +127,6 @@ public class PauseMenu : MonoBehaviour
         GameIsPaused = true;
         SetMenu(PauseMenuPage.Pause);
         GameManager.instance?.PauseGameTime();
-        //UserInput.instance.gameObject.SetActive(false);
     } // end Pause
 
     public void Resume()
@@ -138,7 +136,6 @@ public class PauseMenu : MonoBehaviour
         SetMenu(PauseMenuPage.None);
         GameManager.instance?.StartGameTime();
         _timeSinceLastResume = 0.0f;
-        //UserInput.instance.gameObject.SetActive(true);
     } // end Resume
 
     public void QuitGame()
