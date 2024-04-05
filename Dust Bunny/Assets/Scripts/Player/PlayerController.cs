@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     #endregion
 
     [SerializeField] GameObject _actionIndicator;
+    public GameObject _hitboxCenter;
     #region Camera
     // Camera
     [Header("Camera")]

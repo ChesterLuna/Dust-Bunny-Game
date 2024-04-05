@@ -45,6 +45,9 @@ public class EnemyMovementOLD : MonoBehaviour
     private int _patrolPointAdder = 1;
     int _currentPatrolPointIndex = 0;
 
+    [SerializeField] private bool hideParticlesWhenOutOfSight;
+    [SerializeField] private ParticleSystem _onSightParticles;
+
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -74,6 +77,18 @@ public class EnemyMovementOLD : MonoBehaviour
 
     void FixedUpdate()
     {
+        //Handle toggling particles
+        if(CanSeePlayer(true)){
+            if (_onSightParticles != null && !_onSightParticles.isPlaying){
+                _onSightParticles.Clear();
+                _onSightParticles.Play();
+            }
+        } else {
+            if (_onSightParticles != null && _onSightParticles.isPlaying && hideParticlesWhenOutOfSight){
+                _onSightParticles.Stop();
+            }
+        }   
+
         if (TurnQueued)
         {
             Print("TurnQueued");
@@ -81,7 +96,7 @@ public class EnemyMovementOLD : MonoBehaviour
             Turn();
             TurnQueued = false;
         }
-        if (_seekPlayer && CanSeePlayer())
+        if (_seekPlayer && CanSeePlayer(false))
         {
             Print("SeekPlayer");
             SeekPlayer();
@@ -99,7 +114,7 @@ public class EnemyMovementOLD : MonoBehaviour
         else
         {
             Print("Fail");
-            Print("Seek: " + _seekPlayer + " CanSeePlayer: " + CanSeePlayer() + " Wander: " + _wander + " CantReachPatrolPoints: " + CantReachPatrolPoints() + " Patrol: " + _patrol);
+            Print("Seek: " + _seekPlayer + " CanSeePlayer: " + CanSeePlayer(false) + " Wander: " + _wander + " CantReachPatrolPoints: " + CantReachPatrolPoints() + " Patrol: " + _patrol);
         }
         _previousPosition = _currentPosition;
         ApplyMovement();
@@ -145,18 +160,21 @@ public class EnemyMovementOLD : MonoBehaviour
     } // end HasMoved
 
 
-    private bool CanSeePlayer()
+    private bool CanSeePlayer(bool ignoreDistanceCheck)
     {
-        float distanceToPlayer = Vector2.Distance(_raycastOriginPoint.position, _player.transform.position);
-        if (distanceToPlayer > _lineOfSightDistance) return false;
+        Vector3 playerPosition = _player.GetComponent<PlayerController>()._hitboxCenter.transform.position;
+        float distanceToPlayer = Vector2.Distance(_raycastOriginPoint.position, playerPosition);
+        if (!ignoreDistanceCheck && distanceToPlayer > _lineOfSightDistance) return false;
 
-        Vector2 directionToPlayer = (_player.transform.position - _raycastOriginPoint.position).normalized;
+        Vector2 directionToPlayer = (playerPosition - _raycastOriginPoint.position).normalized;
         bool tempStart = Physics2D.queriesStartInColliders;
         Physics2D.queriesStartInColliders = false;
-        RaycastHit2D hit = Physics2D.Raycast(_raycastOriginPoint.position, directionToPlayer, _lineOfSightDistance, _playerLayer + _environmentLayer);
+        RaycastHit2D hit = Physics2D.Raycast(_raycastOriginPoint.position, directionToPlayer, _lineOfSightDistance * 20, _playerLayer + _environmentLayer);
         Physics2D.queriesStartInColliders = tempStart;
+        Debug.DrawRay(_raycastOriginPoint.position, directionToPlayer * _lineOfSightDistance * 20);
         if (hit.collider != null && hit.collider.CompareTag("Player"))
         {
+            Debug.DrawLine(hit.point, hit.point + new Vector2(0, 3), Color.red);
             return true;
         }
         return false;
