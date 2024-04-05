@@ -33,7 +33,6 @@ public class PlayerAnimator : MonoBehaviour
 
 
     private IPlayerController _player;
-    private Vector2 _defaultSpriteSize;
     private GeneratedCharacterSize _character;
 
 
@@ -47,8 +46,7 @@ public class PlayerAnimator : MonoBehaviour
     {
         _player = GetComponentInParent<IPlayerController>();
         _character = _player.Stats.CharacterSize.GenerateCharacterSize();
-        _defaultSpriteSize = new Vector2(_sizeFactor.x / _character.Width, _sizeFactor.y / _character.Height);
-        _sprite.size = _defaultSpriteSize;
+        _sprite.size = new Vector2(_character.Width / _sizeFactor.x, _character.Height / _sizeFactor.y);
 
         // Fix for dying during slow mo effect
         Time.timeScale = 1.0f;
@@ -246,7 +244,6 @@ public class PlayerAnimator : MonoBehaviour
     private void OnSizeChanged(bool tween = true)
     {
         _character = _player.Stats.CharacterSize.GenerateCharacterSize();
-
         Vector2 newSize = new Vector2(_character.Width / _sizeFactor.x, _character.Height / _sizeFactor.y);
         if (tween)
         {
@@ -256,7 +253,6 @@ public class PlayerAnimator : MonoBehaviour
         {
             gameObject.transform.localScale = newSize;
         }
-        _defaultSpriteSize = newSize;
     } // end OnSizeChanged
 
 
