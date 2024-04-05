@@ -20,7 +20,7 @@ public class SwifferPlatform : PlatformBase
     [Tooltip("The point from which the enemy will cast a ray to detect the player, if none is provided, the enemy will cast a ray from its own position.")]
     [SerializeField] Transform _raycastOriginPoint;
     [SerializeField] float _lineOfSightDistance = 5f;
-    [SerializeField] float _minXDistance = 0.1f;
+    [SerializeField] float _minXDistance = 0.2f;
 
     [Header("Patrol Settings")]
     [Tooltip("The points the enemy will patrol between, if none are provided, the enemy will wander.")]
