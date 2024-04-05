@@ -30,9 +30,9 @@ MonoBehaviour:
   ActionIndicatorXOffset: 0
   ActionIndicatorYOffset: 4
   ActionIndicatoryScale: 2.5
-  BaseSpeed: 15
+  BaseSpeed: 12.5
   Acceleration: 100
-  Friction: 70
+  Friction: 90
   AirFrictionMultiplier: 0.5
   DirectionCorrectionMultiplier: 3
   MaxWalkableSlope: 46
@@ -63,7 +63,7 @@ MonoBehaviour:
   WallPushPower: {x: 20, y: 18}
   WallClimbSpeed: 0
   WallFallAcceleration: 5
-  WallPopForce: 10
+  WallPopForce: 7
   WallCoyoteTime: 0.3
   WallDetectorRange: 0.15
   AllowLadders: 1

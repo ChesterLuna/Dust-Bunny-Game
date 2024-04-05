@@ -646,6 +646,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         }
         else if (jumpType is JumpType.WallJump)
         {
+            if (Stats.ResetDashOnWallJump) ResetDashes();
             ToggleOnWall(false);
 
             _wallJumpCoyoteUsable = false;
@@ -654,11 +655,11 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             _wallDirectionForJump = _wallDirThisFrame;
             if (_isOnWall || IsPushingAgainstWall)
             {
-                AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallJumpPower);
+                AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallPushPower);
             }
             else
             {
-                AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallPushPower);
+                AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallJumpPower); // This is not used as the player must push into the wall to jump
             }
         }
         else if (jumpType is JumpType.PlatformJumpDrop)
