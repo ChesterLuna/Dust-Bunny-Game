@@ -276,16 +276,19 @@ public class EnemyMovementOLD : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + Vector3.down);
 
         if (Application.isPlaying) return;
-        var previous = (Vector2)transform.position;
-        for (var i = 0; i < _patrolPoints.Length; i++)
+        if (_patrol)
         {
-            var p = (Vector2)_patrolPoints[i].position;
-            Gizmos.DrawWireSphere(p, 0.2f);
-            Gizmos.DrawLine(previous, p);
+            var previous = (Vector2)transform.position;
+            for (var i = 0; i < _patrolPoints.Length; i++)
+            {
+                var p = (Vector2)_patrolPoints[i].position;
+                Gizmos.DrawWireSphere(p, 0.2f);
+                Gizmos.DrawLine(previous, p);
 
-            previous = p;
+                previous = p;
 
-            if (_loopPoints && i == _patrolPoints.Length - 1) Gizmos.DrawLine(p, (Vector2)_patrolPoints[0].position);
+                if (_loopPoints && i == _patrolPoints.Length - 1) Gizmos.DrawLine(p, (Vector2)_patrolPoints[0].position);
+            }
         }
 
         if (_seekPlayer)

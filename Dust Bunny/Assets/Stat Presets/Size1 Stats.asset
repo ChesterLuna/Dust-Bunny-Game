@@ -52,6 +52,7 @@ MonoBehaviour:
   DashDuration: 0.1
   DashCooldown: 0.5
   DashEndHorizontalMultiplier: 0.5
+  ResetDashOnWallJump: 1
   AllowWalls: 1
   ClimbableLayer:
     serializedVersion: 2
@@ -60,10 +61,10 @@ MonoBehaviour:
   WallJumpInputLossReturnTime: 0.5
   RequireInputPush: 1
   WallJumpPower: {x: 20, y: 18}
-  WallPushPower: {x: 20, y: 18}
+  WallPushPower: {x: 15, y: 18}
   WallClimbSpeed: 0
   WallFallAcceleration: 5
-  WallPopForce: 7
+  WallPopForce: 8
   WallCoyoteTime: 0.3
   WallDetectorRange: 0.15
   AllowLadders: 1
