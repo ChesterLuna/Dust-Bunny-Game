@@ -1044,7 +1044,6 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         {
             ColliderMode mode = _airborneCollider.enabled ? ColliderMode.Airborne : ColliderMode.Standard;
             SetupCharacter(mode, true);
-            SizeChanged?.Invoke(false);
         }
     } // end ChangeDust
     #endregion
