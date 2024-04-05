@@ -31,8 +31,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] TextCrawler dialogueText;
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTouch = false;
-    [SerializeField] bool waitToTouchFloor = true;
-    [SerializeField] bool interactable= true;
+    [SerializeField] bool interactable = true;
     public bool ShowIndicator { get; private set; } = false;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
@@ -78,12 +77,15 @@ public class DialogueManager : MonoBehaviour, IInteractable
         InteractDialogue();
     } // end Interact
 
-    public void FixedUpdate(){
-        if (UserInput.instance.Gather(PlayerStates.Dialogue).AnyKey && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f){
+    public void FixedUpdate()
+    {
+        if (UserInput.instance.Gather(PlayerStates.Dialogue).AnyKey && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f)
+        {
             InteractDialogue();
         }
 
-        if (IsStartedDialogue){
+        if (IsStartedDialogue)
+        {
             _timeSinceDialogueStarted += Time.deltaTime;
         }
     }
@@ -129,7 +131,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     IEnumerator WaitUntilGroundedForDialogue()
     {
-        while(!_player.Grounded)
+        while (!_player.Grounded)
         {
             yield return null;
         }
