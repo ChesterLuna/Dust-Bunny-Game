@@ -45,9 +45,9 @@ MonoBehaviour:
   AirJumpBeforeCost: 1
   AirJumpCost: -1
   AllowDash: 1
-  MaxDashes: 1
+  MaxDashes: 2
   DashesBeforeCost: 1
-  DashCost: -1
+  DashCost: -20
   DashVelocity: 30
   DashDuration: 0.1
   DashCooldown: 0.5
