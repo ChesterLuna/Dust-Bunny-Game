@@ -46,7 +46,7 @@ public class InGameInfoMenu : MonoBehaviour
 
     void Awake()
     {
-        _titleUI = GameObject.Find("Info Menu/TitleText").GetComponent<TextMeshProUGUI>();
+        _titleUI = GameObject.Find("InfoCanvas/Title").GetComponent<TextMeshProUGUI>();
         _infoUI = GameObject.Find("Info Menu/InfoText").GetComponent<TextMeshProUGUI>();
         _backbuttonUI = GameObject.Find("Info Menu/Back Button/Text (TMP)").GetComponent<TextMeshProUGUI>();
         _nextbuttonUI = GameObject.Find("Info Menu/Next Button/Text (TMP)").GetComponent<TextMeshProUGUI>();

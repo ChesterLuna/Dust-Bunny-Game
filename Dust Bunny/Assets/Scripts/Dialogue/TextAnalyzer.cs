@@ -53,6 +53,11 @@ public class TextAnalyzer : MonoBehaviour
                     if (int.TryParse(lines[i][1].ToString(), out _numberOfAnimations))
                         nextDialogue.setAnimationsToPlay(_numberOfAnimations);
                 }
+                if (lines[i][0] == '~')
+                {
+                    nextDialogue.SetTimeToPlay(float.Parse(lines[i].Remove(0, 1)));
+                }
+
                 if (lines[i][0] == '#')
                 {
                     if (lines[i].Remove(0, 1) == "")

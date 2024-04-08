@@ -8,12 +8,11 @@ public class CreditsController : MonoBehaviour
     [SerializeField] private Vector3 _nextLevelSpawnLocation;
     [SerializeField] private Animator _transition;
     [SerializeField] private float _transitionTime = 1f;
-    private Animator anim;
+    
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
-        anim.SetTrigger("start");
+        
         
     }
 

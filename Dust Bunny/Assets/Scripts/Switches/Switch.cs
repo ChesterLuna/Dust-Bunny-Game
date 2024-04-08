@@ -16,6 +16,9 @@ public class Switch : MonoBehaviour, IInteractable
     SpriteRenderer _spriteRenderer;
     public bool ShowIndicator { get; private set; } = true;
 
+    private AudioSource _turnOnSFX;
+    private AudioSource _turnOffSFX;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -25,21 +28,24 @@ public class Switch : MonoBehaviour, IInteractable
             _targets.Add(target.GetComponentInChildren<ISwitchable>());
         }
 
+        _turnOnSFX = GetComponents<AudioSource>()[0];
+        _turnOffSFX = GetComponents<AudioSource>()[1];
+
     } // end Awake
 
     void Start()
     {
         if (_isOn)
         {
-            TurnOn();
+            TurnOn(false);
         }
         else
         {
-            TurnOff();
+            TurnOff(false); 
         }
     } // end Start
 
-    void TurnOn()
+    void TurnOn(bool shouldPlaySFX)
     {
         _isOn = true;
         foreach (ISwitchable target in _targets)
@@ -47,9 +53,11 @@ public class Switch : MonoBehaviour, IInteractable
             target.Enable();
         }
         _spriteRenderer.sprite = _onSprite;
+
+        if (shouldPlaySFX) _turnOnSFX.Play();
     }
 
-    void TurnOff()
+    void TurnOff(bool shouldPlaySFX)
     {
         _isOn = false;
         foreach (ISwitchable target in _targets)
@@ -57,6 +65,8 @@ public class Switch : MonoBehaviour, IInteractable
             target.Disable();
         }
         _spriteRenderer.sprite = _offSprite;
+
+        if (shouldPlaySFX) _turnOffSFX.Play();
     } // end TurnOff
 
     public void Interact()
@@ -64,11 +74,11 @@ public class Switch : MonoBehaviour, IInteractable
         _isOn = !_isOn;
         if (_isOn)
         {
-            TurnOn();
+            TurnOn(true);
         }
         else
         {
-            TurnOff();
+            TurnOff(true);
         }
     } // end Interact
 } // end Switch

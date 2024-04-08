@@ -30,9 +30,9 @@ MonoBehaviour:
   ActionIndicatorXOffset: 0
   ActionIndicatorYOffset: 1
   ActionIndicatoryScale: 1
-  BaseSpeed: 15
+  BaseSpeed: 12.5
   Acceleration: 100
-  Friction: 70
+  Friction: 90
   AirFrictionMultiplier: 0.5
   DirectionCorrectionMultiplier: 3
   MaxWalkableSlope: 46
@@ -45,13 +45,14 @@ MonoBehaviour:
   AirJumpBeforeCost: 1
   AirJumpCost: -1
   AllowDash: 1
-  MaxDashes: 1
+  MaxDashes: 2
   DashesBeforeCost: 1
-  DashCost: -1
+  DashCost: -20
   DashVelocity: 30
   DashDuration: 0.1
   DashCooldown: 0.5
   DashEndHorizontalMultiplier: 0.5
+  ResetDashOnWallJump: 1
   AllowWalls: 1
   ClimbableLayer:
     serializedVersion: 2
@@ -60,10 +61,10 @@ MonoBehaviour:
   WallJumpInputLossReturnTime: 0.5
   RequireInputPush: 1
   WallJumpPower: {x: 20, y: 18}
-  WallPushPower: {x: 20, y: 18}
+  WallPushPower: {x: 15, y: 18}
   WallClimbSpeed: 0
   WallFallAcceleration: 5
-  WallPopForce: 10
+  WallPopForce: 8
   WallCoyoteTime: 0.3
   WallDetectorRange: 0.15
   AllowLadders: 1

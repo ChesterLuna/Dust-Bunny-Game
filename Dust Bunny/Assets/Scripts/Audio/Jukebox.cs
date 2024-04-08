@@ -10,9 +10,10 @@ public class Jukebox : MonoBehaviour
 {
     // Static members & types
     public static Jukebox instance = null;
-    public enum Song{BURROW, BEDROOM, BOSS, TITLE, NONE};
+    public enum Song { BURROW, BEDROOM, BOSS, TITLE, NONE };
     [Serializable]
-    public struct SongInfo{
+    public struct SongInfo
+    {
         public Song song;
         public AudioClip introClip;
         public AudioClip loopClip;
@@ -65,17 +66,20 @@ public class Jukebox : MonoBehaviour
         HandleFade();
     }
 
-    public void StartSwapToClip(Song song){
+    public void StartSwapToClip(Song song)
+    {
         bgmSwapBuffer = song;
-        
+
         fadeTimer = 100.0f;
         fadingOut = true;
 
         Debug.Log("Queued to play: " + bgmSwapBuffer);
     }
 
-    public Jukebox Initalize(){
-        if (!initalized){
+    public Jukebox Initalize()
+    {
+        if (!initalized)
+        {
             DontDestroyOnLoad(gameObject);
             instance = this;
             introSource = GetComponents<AudioSource>()[0];
@@ -83,7 +87,8 @@ public class Jukebox : MonoBehaviour
 
             //Assemble the disctionary from the inspector songs
             songClips = new Dictionary<Song, SongInfo>();
-            for(int i = 0; i < exposedSongClips.Length; i++){
+            for (int i = 0; i < exposedSongClips.Length; i++)
+            {
                 songClips.Add(exposedSongClips[i].song, exposedSongClips[i]);
             }
             SongInfo noneSong;
@@ -103,42 +108,48 @@ public class Jukebox : MonoBehaviour
         return this;
     }
 
-    private void HandleFade(){
+    private void HandleFade()
+    {
         // Determine which direction to fade the audio
         // Doing this instead of using unscaled time because this way we still run slower during initial lag on game start (desireable, because otherwise the music reaches fade in immediatly)
         // TBH i don't know why this doesnt divide by zero when paused, but it doesn't and it doesn't work if I add a check for it
         float fadeDistance = fadeSpeed * Time.deltaTime / Time.timeScale;
-        if(fadingOut) fadeDistance *= -1;
+        if (fadingOut) fadeDistance *= -1;
         fadeTimer += fadeDistance;
 
         // Did we cross the zero boundary
-        if(fadeTimer <= 0){
+        if (fadeTimer <= 0)
+        {
             SwapClip();
         }
 
         // Clamp to the range 0 - 100
         fadeTimer = Mathf.Max(Mathf.Min(fadeTimer, 100), 0);
-        
+
 
         introSource.volume = (fadeTimer / 100) * currentSong.volume;
         loopSource.volume = (fadeTimer / 100) * currentSong.volume;
     }
 
-    private void SwapClip(){
+    private void SwapClip()
+    {
         fadingOut = false;
         currentSong = songClips[bgmSwapBuffer];
         AudioClip newIntroClip = currentSong.introClip;
         AudioClip newLoopClip = currentSong.loopClip;
-        if(currentSong.song != Song.NONE){
+        if (currentSong.song != Song.NONE)
+        {
             introSource.Stop();
             introSource.clip = newIntroClip;
 
             loopSource.Stop();
             loopSource.clip = newLoopClip;
-            
+
             loopSource.PlayScheduled(AudioSettings.dspTime + newIntroClip.length);
             introSource.Play();
-        } else {
+        }
+        else
+        {
             introSource.Stop();
             loopSource.Stop();
         }
@@ -147,18 +158,21 @@ public class Jukebox : MonoBehaviour
         Debug.Log("Now Playing: " + name);
     }
 
-    public static void PlaySong(Song song){
+    public static void PlaySong(Song song)
+    {
         // If there is no jukebox, make a new one
-        if(instance == null){
+        if (instance == null)
+        {
             Instantiate(Resources.Load(JUKEBOX_PATH)).GetComponent<Jukebox>().Initalize();
 
             //Also load the audio settings from disk
-            instance._mixer.SetFloat("bgmVolume", RatioToDB(PlayerPrefs.GetFloat("bgmVolume")));
-            instance._mixer.SetFloat("sfxVolume", RatioToDB(PlayerPrefs.GetFloat("sfxVolume")));
+            instance._mixer.SetFloat("bgmVolume", RatioToDB(PlayerPrefs.GetFloat("bgmVolume", 0.7f)));
+            instance._mixer.SetFloat("sfxVolume", RatioToDB(PlayerPrefs.GetFloat("sfxVolume", 0.7f)));
         }
 
         // If this song is also the currently playing song, do nothing
-        if(song == instance.currentSong.song){
+        if (song == instance.currentSong.song)
+        {
             return;
         }
 
@@ -166,11 +180,13 @@ public class Jukebox : MonoBehaviour
     }
 
     //Utility Functions
-    public static float RatioToDB(float ratio){
+    public static float RatioToDB(float ratio)
+    {
         return Mathf.Lerp(dbMin, dbMax, ratio);
     }
 
-    public static float DBToRatio(float db){
+    public static float DBToRatio(float db)
+    {
         return (db - dbMin) / (dbMax - dbMin);
     }
 }

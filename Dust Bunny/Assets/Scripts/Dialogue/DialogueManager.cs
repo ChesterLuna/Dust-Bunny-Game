@@ -5,7 +5,6 @@ using System.Linq;
 using Bunny.Dialogues;
 
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class DialogueManager : MonoBehaviour, IInteractable
@@ -26,32 +25,31 @@ public class DialogueManager : MonoBehaviour, IInteractable
     */
     [SerializeField] TextAsset AssetText;
     [SerializeField] GameObject textBubble;
-    Collider2D _collider;
-    [SerializeField] float offsetOnTopOfHead = 1.5f;
 
     [SerializeField] TextMeshPro charNameText;
     [SerializeField] TextCrawler dialogueText;
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTouch = false;
-    [SerializeField] bool waitToTouchFloor = true;
+    [SerializeField] bool interactable = true;
     public bool ShowIndicator { get; private set; } = false;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
 
     public bool IsBubble = false;
-    bool _isStartedDialogue = false;
+    public bool IsStartedDialogue = false;
     bool _isFinishedDialogue = false;
 
     PlayerSFXController _sfxControlller;
     [SerializeField] Animator[] _actors;
     int _iAnim = 0;
 
+    private float _timeSinceDialogueStarted = 0.0f;
+
     PlayerController _player;
 
 
     private void Awake()
     {
-        _collider = GetComponent<Collider2D>();
         textBubble = textBubble != null ? textBubble : transform.Find("Text Bubble").gameObject;
         textBubble.SetActive(false);
         GameObject _playerObj = GameObject.FindWithTag("Player");
@@ -74,7 +72,26 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        if (!_isStartedDialogue)
+        if (!interactable) return;
+        InteractDialogue();
+    } // end Interact
+
+    public void FixedUpdate()
+    {
+        if (UserInput.instance.Gather(PlayerStates.Dialogue).AnyKey && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f)
+        {
+            InteractDialogue();
+        }
+
+        if (IsStartedDialogue)
+        {
+            _timeSinceDialogueStarted += Time.deltaTime;
+        }
+    }
+
+    public void InteractDialogue()
+    {
+        if (!IsStartedDialogue)
         {
             StartDialogue();
         }
@@ -86,27 +103,45 @@ public class DialogueManager : MonoBehaviour, IInteractable
         {
             DisplayNextSentence();
         }
-    } // end Interact
+    }
 
     public void StartDialogue()
     {
-        _isStartedDialogue = true;
+        IsStartedDialogue = true;
         _isFinishedDialogue = false;
         if (importantDialogue)
         {
-            _player.PlayerState = PlayerStates.Dialogue;
-            _player.TogglePlayerDialogue(false,false,false);
+            _player.EnableDialogue();
+            StartCoroutine("WaitUntilGroundedForDialogue");
+        }
+        else
+        {
+            // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
+            if (IsBubble)
+            {
+                EnableTextBubble();
+            }
+            EnableAnimators();
+
+            DisplayNextSentence();
         }
 
-        // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
+    } // end StartDialogue
+
+    IEnumerator WaitUntilGroundedForDialogue()
+    {
+        while (!_player.Grounded)
+        {
+            yield return null;
+        }
         if (IsBubble)
         {
             EnableTextBubble();
         }
         EnableAnimators();
-
         DisplayNextSentence();
-    } // end StartDialogue
+        yield break;
+    }
 
     private void EnableTextBubble()
     {
@@ -114,6 +149,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         textBubble.SetActive(true);
         charNameText = textBubble.transform.Find("Bubble Canvas").transform.Find("Background").transform.Find("Character Name").GetComponent<TextMeshPro>();
         dialogueText = textBubble.GetComponent<TextCrawler>().Initalize();
+        Debug.Log(dialogueText);
     }
 
     private void EnableAnimators()
@@ -151,6 +187,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
                 PlayNextAnimation();
             }
         }
+        Debug.Log(dialogueText);
 
         charNameText.text = nextDialogue.getName();
         dialogueText.SetText(nextDialogue.getText());
@@ -189,9 +226,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     {
         if (importantDialogue)
         {
-            _player.PlayerState = PlayerStates.Playing;
-            _player.TogglePlayerDialogue(true, false, false);
-
+            _player.DisableDialogue();
         }
         playOnTouch = false;
         if (IsBubble)
@@ -199,7 +234,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
             textBubble.SetActive(false);
         }
         _isFinishedDialogue = true;
-        _isStartedDialogue = false;
+        IsStartedDialogue = false;
         ShowIndicator = false;
         DisableAnimators();
     } // end EndDialogue

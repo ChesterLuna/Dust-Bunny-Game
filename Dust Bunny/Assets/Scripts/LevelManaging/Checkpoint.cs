@@ -15,6 +15,7 @@ public class Checkpoint : MonoBehaviour
     private CheckpointState _state = CheckpointState.closed;
     private Animator _animator;
     private GameObject _particleSystemObject;
+    private AudioSource _sfx;
 
     void Awake()
     {
@@ -22,11 +23,12 @@ public class Checkpoint : MonoBehaviour
         _collider = GetComponent<Collider2D>();
         _animator = GetComponent<Animator>();
         _particleSystemObject = GetComponentInChildren<ParticleSystem>().gameObject;
+        _sfx = GetComponent<AudioSource>();
     }
 
     void Start()
     {
-        _particleSystemObject.SetActive(false);
+        _particleSystemObject?.SetActive(false);
         if (!_useCustomLocation)
         {
             _spawnLocation = transform.position;
@@ -43,6 +45,7 @@ public class Checkpoint : MonoBehaviour
         GameManager.instance.CheckpointLocation = _spawnLocation;
         GameManager.instance.CheckpointDustLevel = controller.CurrentDust;
         ES3AutoSaveMgr.Current.Save();
+        _sfx.Play();
     } // end OnTriggerEnter2D
 
     private void ResetOtherCheckpoints()

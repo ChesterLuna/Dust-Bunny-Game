@@ -11,7 +11,7 @@ public class DustChangeTicker : MonoBehaviour
     [SerializeField] float _maxDustToExchange = 100;
     [Tooltip("The amount of dust to give/take each tick, can be positive or negative")]
     [SerializeField] float _dustTickAmount = 10;
-    [SerializeField] float _amountOfDust = 0;
+    float _amountOfDust = 0;
     IPlayerController _player;
 
     [Tooltip("How often the dust will be given/taken (in seconds).")]

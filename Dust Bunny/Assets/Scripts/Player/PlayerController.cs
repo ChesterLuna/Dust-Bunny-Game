@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     #endregion
 
     [SerializeField] GameObject _actionIndicator;
+    public GameObject _hitboxCenter;
     #region Camera
     // Camera
     [Header("Camera")]
@@ -34,14 +35,14 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public event Action<bool, float> GroundedChanged;
     public event Action<bool, Vector2> DashChanged;
     public event Action<bool> WallGrabChanged;
-    public event Action SizeChanged;
+    public event Action<bool> SizeChanged;
     public event Action<float, bool> UsedDust;
     public event Action<Vector2> Repositioned;
     public event Action<bool, bool> ToggledPlayer;
 
     public bool Active { get; private set; } = true;
-    public bool ActiveDialogue { get; private set; } = true;
     public Vector2 Up { get; private set; }
+    public Vector2 Forward { get; private set; }
     public Vector2 Right { get; private set; }
     public Vector2 Input => _frameInput.Move;
     public Vector2 GroundNormal { get; private set; }
@@ -72,17 +73,12 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         Repositioned?.Invoke(position);
     } // end RepositionImmediately
 
-    public void TogglePlayer(bool on, bool dead = false, bool changeAnimation = true)
+    public void TogglePlayer(bool on, bool dead = false, PlayerStates playerState = PlayerStates.Playing)
     {
+        PlayerState = playerState;
         Active = on;
         _rb.isKinematic = !on;
-        if (changeAnimation) ToggledPlayer?.Invoke(on, dead);
-    } // end TogglePlayer
-    public void TogglePlayerDialogue(bool on, bool dead = false, bool changeAnimation = true)
-    {
-        ActiveDialogue = on;
-        _rb.isKinematic = !on;
-        if (changeAnimation) ToggledPlayer?.Invoke(on, dead);
+        ToggledPlayer?.Invoke(on, dead);
     } // end TogglePlayer
 
     #endregion
@@ -97,8 +93,14 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
         if (GameManager.instance.CheckpointDustLevel != -1) _currentDust = GameManager.instance.CheckpointDustLevel;
-        SetupCharacter();
-
+        if (SceneManager.GetActiveScene().name == "Burrow-NEW") // Hardcoded to have a nice pan in at the start. Otherwise it is not wanted.
+        {
+            SetupCharacter(tween: true);
+        }
+        else
+        {
+            SetupCharacter();
+        }
         PhysicsSimulator.Instance.AddPlayer(this);
     } // end Awake
 
@@ -133,30 +135,6 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             SetVelocity(Vector2.zero);
             return;
         }
-        if (!ActiveDialogue)
-        {
-            RemoveTransientVelocity();
-
-            Vector2 _downVelocity = _rb.velocity;
-            if (_downVelocity.y > 0)
-                _downVelocity = -_downVelocity;
-            SetVelocity(Vector2.up * _downVelocity);
-
-            SetFrameData();
-
-            CalculateCollisions();
-            CalculateDirection();
-
-            CalculateInteract();
-            CleanFrameData();
-            CalculateExternalModifiers();
-
-            TraceGround();
-            // Move();
-
-            return;
-        }
-
         RemoveTransientVelocity();
 
         SetFrameData();
@@ -204,10 +182,10 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private GeneratedCharacterSize _character;
     private const float GRAVITY_SCALE = 1;
 
-    private void SetupCharacter(ColliderMode mode = ColliderMode.Airborne)
+    private void SetupCharacter(ColliderMode mode = ColliderMode.Airborne, bool tween = false)
     {
         Stats = _allStats[DustLevelIndex(_currentDust)];
-        CameraManager.instance?.SetOrthographicSize(Stats.CameraOrthographicSize);
+        CameraManager.instance?.SetOrthographicSize(Stats.CameraOrthographicSize, tween);
 
         _character = Stats.CharacterSize.GenerateCharacterSize();
         _cachedQueryMode = Physics2D.queriesStartInColliders;
@@ -234,7 +212,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         _airborneCollider.sharedMaterial = _rb.sharedMaterial;
 
         SetColliderMode(mode);
-        SizeChanged?.Invoke();
+        SizeChanged?.Invoke(tween);
     } // end SetupCharacter
 
     #endregion
@@ -245,7 +223,10 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     private void GatherInput()
     {
-        _frameInput = UserInput.instance.Gather();
+        // Early return if time is frozen (we don't want to buffer inputs)
+        if (Time.timeScale == 0) return;
+
+        _frameInput = UserInput.instance.Gather(PlayerState);
 
 
         if (_frameInput.JumpDown)
@@ -278,13 +259,16 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         var rot = _rb.rotation * Mathf.Deg2Rad;
         Up = new Vector2(-Mathf.Sin(rot), Mathf.Cos(rot));
-        Vector2 previousRight = Right;
         Right = new Vector2(Up.y, -Up.x);
-        if (previousRight != Right) _cameraFollowObject.CallTurn(); // Update Camera
         _framePosition = _rb.position;
 
         _hasInputThisFrame = _frameInput.Move.x != 0;
-
+        if (_hasInputThisFrame || Forward == Vector2.zero)
+        {
+            Vector2 previousForward = Forward;
+            Forward = Right * Mathf.Sign(_frameInput.Move.x);
+            if (previousForward != Forward && previousForward != Vector2.zero) _cameraFollowObject.CallTurn();
+        }
         Velocity = _rb.velocity;
         _trimmedFrameVelocity = new Vector2(Velocity.x, 0);
     } // end SetFrameData
@@ -330,6 +314,10 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private const int RAY_SIDE_COUNT = 5;
     private RaycastHit2D _groundHit;
     private bool _grounded;
+    public bool Grounded
+    {
+        get { return _grounded; }
+    }
     private float _currentStepDownLength;
     private float GrounderLength => _character.StepHeight + SKIN_WIDTH;
 
@@ -605,7 +593,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         if (_jumpToConsume || HasBufferedJump)
         {
-            if (CanWallJump)
+            if (CanWallJump && IsPushingAgainstWall)
             {
                 ExecuteJump(JumpType.WallJump);
             }
@@ -659,6 +647,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         }
         else if (jumpType is JumpType.WallJump)
         {
+            if (Stats.ResetDashOnWallJump) ResetDashes();
             ToggleOnWall(false);
 
             _wallJumpCoyoteUsable = false;
@@ -667,11 +656,11 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             _wallDirectionForJump = _wallDirThisFrame;
             if (_isOnWall || IsPushingAgainstWall)
             {
-                AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallJumpPower);
+                AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallPushPower);
             }
             else
             {
-                AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallPushPower);
+                AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallJumpPower); // This is not used as the player must push into the wall to jump
             }
         }
         else if (jumpType is JumpType.PlatformJumpDrop)
@@ -721,9 +710,11 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             else
             {
                 dir = new Vector2(_frameInput.Move.x, _frameInput.Move.y).normalized;
-
             }
-            if (dir == Vector2.zero) return;
+            if (dir == Vector2.zero)
+            {
+                dir = Forward;
+            }
 
             _dashVel = dir * Stats.DashVelocity;
             _dashing = true;
@@ -990,6 +981,17 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         };
     } // end SaveCharacterState
 
+    public void EnableDialogue()
+    {
+        SetVelocity(new Vector2(0, Velocity.y));
+        PlayerState = PlayerStates.Dialogue;
+    }
+
+    public void DisableDialogue()
+    {
+        PlayerState = PlayerStates.Playing;
+    }
+
     #region Dust & Size
 
     // Size Changing variables
@@ -1043,8 +1045,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         if (DustLevelIndex(_currentDust) != DustLevelIndex(_oldDust))
         {
             ColliderMode mode = _airborneCollider.enabled ? ColliderMode.Airborne : ColliderMode.Standard;
-            SetupCharacter(mode);
-            SizeChanged?.Invoke();
+            SetupCharacter(mode, true);
         }
     } // end ChangeDust
     #endregion
@@ -1054,8 +1055,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     [SerializeField] private float _deathTransitionTime = 1f;
     public void Die() // TODO, Update
     {
-        TogglePlayer(false, true);
-        PlayerState = PlayerStates.Dead;
+        TogglePlayer(false, true, PlayerStates.Dead);
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
         levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
         GameManager.instance.PauseGameTime();
@@ -1160,13 +1160,15 @@ public interface IPlayerController
     public event Action<bool, float> GroundedChanged;
     public event Action<bool, Vector2> DashChanged;
     public event Action<bool> WallGrabChanged;
-    public event Action SizeChanged;
+    public event Action<bool> SizeChanged;
     public event Action<float, bool> UsedDust;
     public event Action<Vector2> Repositioned;
     public event Action<bool, bool> ToggledPlayer;
 
     public bool Active { get; }
     public Vector2 Up { get; }
+    public Vector2 Right { get; }
+    public Vector2 Forward { get; }
     public Vector2 Input { get; }
     public Vector2 GroundNormal { get; }
     public Vector2 Velocity { get; }
@@ -1181,7 +1183,7 @@ public interface IPlayerController
     // Utility
     public void LoadState(ControllerState state);
     public void RepositionImmediately(Vector2 position, bool resetVelocity = false);
-    public void TogglePlayer(bool on, bool dead = false, bool changeAnimation = true);
+    public void TogglePlayer(bool on, bool dead = false, PlayerStates playerState = PlayerStates.Playing);
     public void ResetAirJumps();
     public void ResetDashes();
 

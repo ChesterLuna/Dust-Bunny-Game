@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CameraFollowObject : MonoBehaviour
@@ -14,7 +15,9 @@ public class CameraFollowObject : MonoBehaviour
 
     private void Awake()
     {
-        _player = _playerTransform.gameObject.GetComponent<PlayerController>();
+        // _player = _playerTransform.gameObject.GetComponent<PlayerController>();
+        _player = _playerTransform.gameObject.GetComponent<PlayerController>() != null ? _playerTransform.gameObject.GetComponent<PlayerController>() : _playerTransform.parent.gameObject.GetComponent<PlayerController>();
+        Debug.Log(_player);
         _isFacingRight = _player.Right == new Vector2(1, 0) ? true : false;
     } // end Awake
 

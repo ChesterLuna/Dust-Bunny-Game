@@ -8,6 +8,7 @@ public class SwifferPlatform : PlatformBase
     PlayerController _player;
     Vector3 _previousPosition;
     Vector3 _currentPosition;
+    Vector2 _previousMoveDir;
     [SerializeField] float _minMoveDistance = 0.01f;
     [SerializeField] LayerMask _environmentLayer;
     [SerializeField] LayerMask _playerLayer;
@@ -19,7 +20,7 @@ public class SwifferPlatform : PlatformBase
     [Tooltip("The point from which the enemy will cast a ray to detect the player, if none is provided, the enemy will cast a ray from its own position.")]
     [SerializeField] Transform _raycastOriginPoint;
     [SerializeField] float _lineOfSightDistance = 5f;
-    [SerializeField] float _minXDistance = 0.1f;
+    [SerializeField] float _minXDistance = 0.2f;
 
     [Header("Patrol Settings")]
     [Tooltip("The points the enemy will patrol between, if none are provided, the enemy will wander.")]
@@ -28,6 +29,8 @@ public class SwifferPlatform : PlatformBase
     [SerializeField] float _patrolThreshold = 0.2f;
     private int _patrolPointAdder = 1;
     int _currentPatrolPointIndex = 0;
+
+    private Vector3 _initialScaleCache;
 
     protected override void Awake()
     {
@@ -44,6 +47,8 @@ public class SwifferPlatform : PlatformBase
                 reachablePoints.Add(true);
             }
         }
+
+        _initialScaleCache = transform.localScale;
     }
 
     public override void OnValidate()
@@ -63,38 +68,50 @@ public class SwifferPlatform : PlatformBase
     protected override Vector2 Evaluate(float delta)
     {
         _previousPosition = _currentPosition;
-        _currentPosition = transform.position;
+        _currentPosition = FramePosition;
 
         float targetDirection;
         if (_seekPlayer && CanSeePlayer())
         { // Seek Player
-            Vector2 direction = _player.State.Position - (Vector2)transform.position;
+            Vector2 direction = _player.State.Position - (Vector2)_currentPosition;
             if (Mathf.Abs(direction.x) < _minXDistance)
             {
-                return new Vector2(transform.position.x, transform.position.y);
+                _previousMoveDir = _currentPosition;
+                return _currentPosition;
             }
             else
             {
                 targetDirection = Mathf.Sign(direction.x);
-                transform.localScale = new Vector3(targetDirection, 1, 1);
-                return new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
+                transform.localScale = new Vector3(targetDirection * _initialScaleCache.x, _initialScaleCache.y, _initialScaleCache.z);
+                Vector2 newPos = new Vector2(_currentPosition.x + (targetDirection * _moveSpeed), _currentPosition.y);
+                if (newPos == _previousMoveDir)
+                {
+                    _previousMoveDir = newPos;
+                    return _currentPosition;
+                }
+                else
+                {
+                    _previousMoveDir = newPos;
+                    return _previousMoveDir;
+                }
             }
         }
         else
         { // Patrol
-            Debug.Log("Patrolling");
             // Debug.Log(HasMoved() + " " + _patrolThreshold + " " + Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x) + " " + _currentPatrolPointIndex);
-            if (!HasMoved() || _patrolThreshold > Math.Abs(transform.position.x - _patrolPoints[_currentPatrolPointIndex].position.x))
+            if (!HasMoved() || _patrolThreshold > Math.Abs(_currentPosition.x - _patrolPoints[_currentPatrolPointIndex].position.x))
             {
                 IncrementPatrolPoints();
             }
             Transform _currentPatrolPoint = _patrolPoints[_currentPatrolPointIndex];
-            Vector2 direction = _currentPatrolPoint.position - transform.position;
+            Vector2 direction = _currentPatrolPoint.position - _currentPosition;
             targetDirection = Mathf.Sign(direction.x);
-            transform.localScale = new Vector3(targetDirection, 1, 1);
-            return new Vector2(transform.position.x + (targetDirection * _moveSpeed), transform.position.y);
+            transform.localScale = new Vector3(targetDirection * _initialScaleCache.x, _initialScaleCache.y, _initialScaleCache.z);
+            _previousMoveDir = new Vector2(_currentPosition.x + (targetDirection * _moveSpeed), _currentPosition.y);
+            return _previousMoveDir;
         }
     }
+
     private bool CanSeePlayer()
     {
         float distanceToPlayer = Vector2.Distance(_raycastOriginPoint.position, _player.State.Position);

@@ -15,6 +15,7 @@ namespace Bunny.Dialogues
         string _playSound = null;
         bool _playAnimation;
         int _animationsToPlay = 1;
+        float _timeToPlay = 0;
 
         public Dialogue(string _theName, string _theText, bool _isBubble = false, bool _isLastDialogue = false)
         {
@@ -60,6 +61,10 @@ namespace Bunny.Dialogues
         {
             _lastDialogue = _newLastDialogue;
         }
+        public void SetTimeToPlay(float _secondsToPlay)
+        {
+            _timeToPlay = _secondsToPlay;
+        }
 
 
         public string getName()
@@ -91,6 +96,10 @@ namespace Bunny.Dialogues
         internal bool IsLastDialogue()
         {
             return _lastDialogue;
+        }
+        public float GetTimeToPlay()
+        {
+            return _timeToPlay;
         }
     }
 }

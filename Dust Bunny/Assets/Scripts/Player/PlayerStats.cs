@@ -57,6 +57,7 @@ public class PlayerStats : ScriptableObject
     public float DashDuration = 0.2f;
     public float DashCooldown = 1.5f;
     public float DashEndHorizontalMultiplier = 0.5f;
+    public bool ResetDashOnWallJump = true;
 
     // Walls
     [Header("Walls"), Space] public bool AllowWalls;

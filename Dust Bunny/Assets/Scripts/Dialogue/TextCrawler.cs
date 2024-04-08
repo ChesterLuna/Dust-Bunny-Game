@@ -146,12 +146,20 @@ public class TextCrawler : MonoBehaviour
 
     public void FinishLine()
     {
-        currentText = text[lineIndex];
-        letterIndex = text[lineIndex].Length;
-        sizes = new List<float>();
-        for (int i = 0; i < letterIndex; i++)
+        if (lineIndex < text.Count && lineIndex >= 0)
         {
-            sizes.Add(textController.fontSize);
+            currentText = text[lineIndex];
+            letterIndex = text[lineIndex].Length;
+            sizes = new List<float>();
+            for (int i = 0; i < letterIndex; i++)
+            {
+                sizes.Add(textController.fontSize);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Tried to finish line that doesn't exist. (Index: " + lineIndex + ")");
+            return;
         }
     }
 
@@ -159,8 +167,10 @@ public class TextCrawler : MonoBehaviour
     {
         for (int i = 0; i < sizes.Count; i++)
         {
+            // Debug.Log(textController.fontSize);
             sizes[i] += Time.deltaTime * popinSpeed;
             sizes[i] = Mathf.Min(textController.fontSize, sizes[i]);
+            // Debug.Log(sizes[i]);
         }
     }
 
