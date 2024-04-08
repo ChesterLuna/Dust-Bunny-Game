@@ -13,7 +13,6 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float _fallPanAmount = 0.25f;
     [SerializeField] private float _fallYPanTime = 0.35f;
     public float _fallSpeedYDampingChangeThreshold = -15f;
-    public float _cameraOrthographicSizeModifier = 0.0f;
     private float _currentCameraOrthographicSize = 8f;
     public bool IsLerpingYDamping { get; private set; }
     public bool LerpedFromPlayerFalling { get; set; }
@@ -46,12 +45,6 @@ public class CameraManager : MonoBehaviour
         // Set the orthographic size of the camera
         _currentCamera.m_Lens.OrthographicSize = _currentCameraOrthographicSize;
     } // end Awake
-
-    void Update()
-    {
-        // Lerp the camera ortho size
-        _currentCamera.m_Lens.OrthographicSize = Mathf.Lerp(_currentCamera.m_Lens.OrthographicSize, _currentCameraOrthographicSize + _cameraOrthographicSizeModifier, 1.7f * Time.deltaTime);
-    }
 
     #region Lerp the Y Damping
     public void LerpYDamping(bool isPlayerFalling)
@@ -175,19 +168,19 @@ public class CameraManager : MonoBehaviour
     } // end SwapCamera
     #endregion
 
-    public void SetOrthographicSize(float newSize, bool tween, float lerpTime = 1.7f)
+    public void SetOrthographicSize(float newSize, bool tween, float lerpTime = 1.7f, bool addValue = false)
     {
         if (_currentCamera == null) return;
-        if (tween)
+
+        if (addValue) newSize += _currentCamera.m_Lens.OrthographicSize;
+        if (newSize < 1)
         {
-            DOTween.To(() => _currentCamera.m_Lens.OrthographicSize, x => _currentCamera.m_Lens.OrthographicSize = x, newSize, lerpTime);
-            // float oldSize = _currentCameraOrthographicSize;
-            // LeanTween.value(_currentCamera.gameObject, oldSize, newSize, lerpTime).setOnUpdate((float flt) =>
-            // {
-            //     _currentCamera.m_Lens.OrthographicSize = flt;
-            // });
+            newSize = 1;
+            Debug.LogWarning("Orthographic size cannot be less than 1");
         }
+
+        float actualLerpTime = tween ? lerpTime : 0.01f;
+        DOTween.To(() => _currentCamera.m_Lens.OrthographicSize, x => _currentCamera.m_Lens.OrthographicSize = x, newSize, actualLerpTime);
         _currentCameraOrthographicSize = newSize;
-        // _currentCamera.m_Lens.OrthographicSize = _currentCameraOrthographicSize;
     } // end SetCurrentCameraOrthographicSize
 } // end class CameraManager
