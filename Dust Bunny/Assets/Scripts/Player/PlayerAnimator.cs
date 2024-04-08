@@ -21,6 +21,7 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField] private ParticleSystem _landParticles;
     [SerializeField] private ParticleSystem _doubleJumpParticles;
     [SerializeField] private ParticleSystem _useDustParticles;
+    [SerializeField] private ParticleSystem _gainDustParticles;
     [SerializeField] private ParticleSystem _dashParticles;
     [SerializeField] private ParticleSystem _dashRingParticles;
     [SerializeField] private ParticleSystem _idleParticles;
@@ -41,6 +42,7 @@ public class PlayerAnimator : MonoBehaviour
     private bool _dashing;
     private bool _jumping;
     private bool _dead;
+    private float _playDustGainedParticlesTimer;
 
 
     private void Awake()
@@ -62,6 +64,7 @@ public class PlayerAnimator : MonoBehaviour
         _player.SizeChanged += OnSizeChanged;
         _player.ToggledPlayer += PlayerOnToggledPlayer;
         _player.UsedDust += OnUsedDust;
+        _player.GainedDust += OnGainedDust;
 
         _moveParticles.Play();
     } // end OnEnable
@@ -75,6 +78,7 @@ public class PlayerAnimator : MonoBehaviour
         _player.SizeChanged -= OnSizeChanged;
         _player.ToggledPlayer -= PlayerOnToggledPlayer;
         _player.UsedDust -= OnUsedDust;
+        _player.GainedDust -= OnGainedDust;
 
         _moveParticles.Stop();
     } // end OnDisable
@@ -102,6 +106,14 @@ public class PlayerAnimator : MonoBehaviour
         else
         {
             _idleParticlesMain.startColor = _particleCannotDashColor;
+        }
+
+        //Handle on dust gain particle stopping
+        if(_playDustGainedParticlesTimer < 0.0f){
+            _playDustGainedParticlesTimer = 0.0f;
+            _gainDustParticles.Stop();
+        } else {
+            _playDustGainedParticlesTimer -= Time.deltaTime;
         }
 
     } // end Update
@@ -273,6 +285,14 @@ public class PlayerAnimator : MonoBehaviour
         }
         _useDustParticles.Play();
     } // end OnUsedDust
+
+    private void OnGainedDust(float gainedAmount){
+
+        _playDustGainedParticlesTimer += Mathf.Min(gainedAmount / 20.0f, 3.0f);
+        if(_gainDustParticles.isStopped){
+            _gainDustParticles.Play();
+        }
+    }
 
     private IEnumerator FreezeGameOnTakeDamage()
     {

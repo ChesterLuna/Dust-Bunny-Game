@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public event Action<bool> WallGrabChanged;
     public event Action<bool> SizeChanged;
     public event Action<float, bool> UsedDust;
+    public event Action<float> GainedDust;
     public event Action<Vector2> Repositioned;
     public event Action<bool, bool> ToggledPlayer;
 
@@ -1028,7 +1029,11 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     public void ChangeDust(float scalar, bool hostile)
     {
-        if (scalar < 0) UsedDust?.Invoke(scalar, hostile);
+        if (scalar < 0){
+            UsedDust?.Invoke(scalar, hostile);
+        } else {
+            GainedDust?.Invoke(scalar);
+        }
 
         float _oldDust = _currentDust;
         _currentDust += scalar;
@@ -1162,6 +1167,7 @@ public interface IPlayerController
     public event Action<bool> WallGrabChanged;
     public event Action<bool> SizeChanged;
     public event Action<float, bool> UsedDust;
+    public event Action<float> GainedDust;
     public event Action<Vector2> Repositioned;
     public event Action<bool, bool> ToggledPlayer;
 
