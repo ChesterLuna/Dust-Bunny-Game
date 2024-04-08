@@ -153,7 +153,6 @@ public class DialogueManager : MonoBehaviour, IInteractable
         textBubble.SetActive(true);
         charNameText = textBubble.transform.Find("Bubble Canvas").transform.Find("Background").transform.Find("Character Name").GetComponent<TextMeshPro>();
         dialogueText = textBubble.GetComponent<TextCrawler>().Initalize();
-        Debug.Log(dialogueText);
     }
 
     private void EnableAnimators()

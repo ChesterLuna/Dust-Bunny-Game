@@ -1,7 +1,7 @@
 ﻿#Spek
 :Where are you going?
 
-!Pip turns to spek
+!Pip turns to spek (0)
 #Pip
 :To find the source!
 
@@ -14,7 +14,7 @@
 #Pip
 :and no one could settle down and a tunnel collapsed and- 
 
-!Spek gets close to pip
+!Spek gets close to pip (1)
 #Spek
 :Woah woah, slow down little bun.
 
@@ -33,25 +33,29 @@
 #Spek
 :You can’t just hop on out there! That’s nobun’s land!
 
-!Pip hops like a stubborn child
+!Pip hops like a stubborn child (2)
 #Pip
 :But we can’t do nothing. Our home is in danger!
 
 #Spek
 :You’re still no more than a mote. It’s too dangerous for you. 
 
-!Spek starts to move out of scene
+!Spek starts to move out of scene (3)
 #Spek
 :*Huff* I’ll go. You stay here with Hodge. 
 
-!2 Pip turns around and spek leaves scene
+!2 Pip turns around and spek leaves scene (4,5)
 #Pip
 :But- but-
 
-!Speks almost exits
 #Spek
 :Don’t fret Pip, I’ll be back in a jiffy.
 
-!Speks completely exits
+!Spek almost exits (6)
+#Pip
+:...
+
+
+!2Change Scene
 #Pip
 :...
