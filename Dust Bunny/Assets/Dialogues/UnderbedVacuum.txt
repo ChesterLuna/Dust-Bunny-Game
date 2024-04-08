@@ -14,6 +14,5 @@ $Rumble
 #Spek
 :Should I take a closer look?
 
-!Debugging
 #Spek
 :Or maybe it’s better to keep my distance…
