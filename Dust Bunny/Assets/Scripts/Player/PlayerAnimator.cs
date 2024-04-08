@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -247,7 +248,8 @@ public class PlayerAnimator : MonoBehaviour
         Vector2 newSize = new Vector2(_character.Width / _sizeFactor.x, _character.Height / _sizeFactor.y);
         if (tween)
         {
-            LeanTween.scale(gameObject, newSize, lerpTime);
+            gameObject.transform.DOScale(newSize, lerpTime);
+            // LeanTween.scale(gameObject, newSize, lerpTime);
         }
         else
         {

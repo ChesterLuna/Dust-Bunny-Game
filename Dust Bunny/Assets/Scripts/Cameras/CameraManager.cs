@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using DG.Tweening;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
@@ -179,13 +180,14 @@ public class CameraManager : MonoBehaviour
         if (_currentCamera == null) return;
         if (tween)
         {
-            float oldSize = _currentCameraOrthographicSize;
-            LeanTween.value(_currentCamera.gameObject, oldSize, newSize, lerpTime).setOnUpdate((float flt) =>
-            {
-                _currentCamera.m_Lens.OrthographicSize = flt;
-            });
+            DOTween.To(() => _currentCamera.m_Lens.OrthographicSize, x => _currentCamera.m_Lens.OrthographicSize = x, newSize, lerpTime);
+            // float oldSize = _currentCameraOrthographicSize;
+            // LeanTween.value(_currentCamera.gameObject, oldSize, newSize, lerpTime).setOnUpdate((float flt) =>
+            // {
+            //     _currentCamera.m_Lens.OrthographicSize = flt;
+            // });
         }
         _currentCameraOrthographicSize = newSize;
-        _currentCamera.m_Lens.OrthographicSize = _currentCameraOrthographicSize;
+        // _currentCamera.m_Lens.OrthographicSize = _currentCameraOrthographicSize;
     } // end SetCurrentCameraOrthographicSize
 } // end class CameraManager

@@ -33,6 +33,7 @@ MonoBehaviour:
     - Assembly-CSharp
     - Assembly-CSharp-firstpass
     - Cinemachine
+    - DOTween.Modules
     - Unity.InputSystem.RebindingUI
     showAdvancedSettings: 0
   addMgrToSceneAutomatically: 0
