@@ -109,10 +109,13 @@ public class PlayerAnimator : MonoBehaviour
         }
 
         //Handle on dust gain particle stopping
-        if(_playDustGainedParticlesTimer < 0.0f){
+        if (_playDustGainedParticlesTimer < 0.0f)
+        {
             _playDustGainedParticlesTimer = 0.0f;
             _gainDustParticles.Stop();
-        } else {
+        }
+        else
+        {
             _playDustGainedParticlesTimer -= Time.deltaTime;
         }
 
@@ -258,15 +261,8 @@ public class PlayerAnimator : MonoBehaviour
     {
         _character = _player.Stats.CharacterSize.GenerateCharacterSize();
         Vector2 newSize = new Vector2(_character.Width / _sizeFactor.x, _character.Height / _sizeFactor.y);
-        if (tween)
-        {
-            gameObject.transform.DOScale(newSize, lerpTime);
-            // LeanTween.scale(gameObject, newSize, lerpTime);
-        }
-        else
-        {
-            gameObject.transform.localScale = newSize;
-        }
+        float actualLerpTime = tween ? lerpTime : 0.01f;
+        gameObject.transform?.DOScale(newSize, actualLerpTime);
     } // end OnSizeChanged
 
 
@@ -286,10 +282,12 @@ public class PlayerAnimator : MonoBehaviour
         _useDustParticles.Play();
     } // end OnUsedDust
 
-    private void OnGainedDust(float gainedAmount){
+    private void OnGainedDust(float gainedAmount)
+    {
 
         _playDustGainedParticlesTimer += Mathf.Min(gainedAmount / 20.0f, 3.0f);
-        if(_gainDustParticles.isStopped){
+        if (_gainDustParticles.isStopped)
+        {
             _gainDustParticles.Play();
         }
     }

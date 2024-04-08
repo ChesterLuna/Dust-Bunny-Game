@@ -55,6 +55,6 @@ AnimationClip:
     functionName: SetCameraOrthoSize
     data: 
     objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
+    floatParameter: -3
     intParameter: 0
     messageOptions: 0

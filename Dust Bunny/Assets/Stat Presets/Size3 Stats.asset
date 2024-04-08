@@ -28,8 +28,8 @@ MonoBehaviour:
   HorizontalDeadZoneThreshold: 0.1
   PositionCorrectionMode: 0
   ActionIndicatorXOffset: 0
-  ActionIndicatorYOffset: 3
-  ActionIndicatoryScale: 2
+  ActionIndicatorYOffset: 0.8
+  ActionIndicatoryScale: 0.6
   BaseSpeed: 12.5
   Acceleration: 100
   Friction: 90
