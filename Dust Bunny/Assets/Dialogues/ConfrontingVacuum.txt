@@ -1,14 +1,12 @@
-!(Spek walks right up to the mouth of the vacuum.)
-
 #Spek
 :Alright, here goes!
 
-!(Spek jumps up, and upon landing creates a pile of dust in front of the vacuum—the size of which scales with their dust level. They step out from behind it and start pushing/headbutting it.)
+>(Spek jumps up, and upon landing creates a pile of dust in front of the vacuum—the size of which scales with their dust level. They step out from behind it and start pushing/headbutting it.)
 
-!(Fade out)
+# 
+: 
 
-!(When the screen fades back in, the dust is gone.)
-
+>Setup
 #Spek
 :Phew, that was a lot of work. I hope it was enough...
 
@@ -17,3 +15,10 @@
 
 #Spek
 :Maybe there's somewhere safe that I can watch with Pip?
+
+>Change scene
+# 
+: 
+
+# 
+: 

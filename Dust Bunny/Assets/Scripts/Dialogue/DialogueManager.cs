@@ -6,6 +6,8 @@ using Bunny.Dialogues;
 
 using TMPro;
 using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
 
 public class DialogueManager : MonoBehaviour, IInteractable
 {
@@ -42,6 +44,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
     PlayerSFXController _sfxControlller;
     [SerializeField] Animator[] _actors;
     int _iAnim = 0;
+    [SerializeField] TimelineAsset[] _cinematics;
+    int _iCine = 0;
 
     private float _timeSinceDialogueStarted = 0.0f;
 
@@ -187,7 +191,9 @@ public class DialogueManager : MonoBehaviour, IInteractable
                 PlayNextAnimation();
             }
         }
-        Debug.Log(dialogueText);
+        if (nextDialogue.isPlayCinematic())
+            PlayNextCinematic();
+
 
         charNameText.text = nextDialogue.getName();
         dialogueText.SetText(nextDialogue.getText());
@@ -220,6 +226,23 @@ public class DialogueManager : MonoBehaviour, IInteractable
         // Play animation fx
         _nextActor.SetTrigger("DialogueTrigger");
         _iAnim++;
+    }
+    public void PlayNextCinematic()
+    {
+        Debug.Log("Play a cinematic");
+
+        //Find next animator
+        if (_iCine >= _cinematics.Length)
+        {
+            Debug.LogWarning("There arent enough timelines (Cinematics) set up. Please add some into the dialogue manager or check how many times they are called in the dialogue");
+            return;
+        }
+        TimelineAsset _nextCine = _cinematics[_iCine];
+
+        // Play Cinematic fx
+        GetComponent<PlayableDirector>().Play(_nextCine);
+
+        _iCine++;
     }
 
     public void EndDialogue()
