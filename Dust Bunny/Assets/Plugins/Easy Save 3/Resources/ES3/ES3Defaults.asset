@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ES3Defaults
   m_EditorClassIdentifier: 
   settings:
-    _location: 0
+    _location: 1
     path: SaveFile.es3
     encryptionType: 0
     compressionType: 0

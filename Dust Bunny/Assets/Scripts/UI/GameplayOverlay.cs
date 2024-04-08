@@ -13,18 +13,27 @@ public class GameplayOverlay : MonoBehaviour
     void Start()
     {
         GameManager.instance.UpdateTimerText += OnUpdateTimerText;
-        _timerTextUI.SetActive(GameManager.instance.ShowTimer);
     } // end Start
 
     void OnEnable()
     {
         _timerTextUI.SetActive(GameManager.instance.ShowTimer);
+        if (GameManager.instance.ShowTimer)
+        {
+            OnUpdateTimerText();
+        }
+        GameManager.instance?.StartGameTime();
     } // end OnEnable
+
+    void OnDisable()
+    {
+        _timerTextUI.SetActive(GameManager.instance.ShowTimer);
+        GameManager.instance?.PauseGameTime();
+    } // end OnDisable
 
     public void OnUpdateTimerText()
     {
         if (_timerTextUI == null) return;
-        if (_timerTextUI.activeSelf == false) return;
         float numSeconds = GameManager.instance.NumSeconds;
         // Convert seconds to clock format
         int minutes = (int)(numSeconds / 60);

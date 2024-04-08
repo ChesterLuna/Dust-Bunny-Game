@@ -10,7 +10,7 @@ public class SettingsMenu : MonoBehaviour
     void OnEnable()
     {
         _displayTimerToggle.isOn = GameManager.instance.ShowTimer;
-        _displayTimerToggle.onValueChanged.AddListener((value) => GameManager.instance.ShowTimer = value);
+        _displayTimerToggle.onValueChanged.AddListener((value) => GameManager.instance.SetShowTimer(value));
     } // end OnEnable
 
     void OnDisable()

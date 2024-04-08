@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class InfoMenu : MonoBehaviour
 {
-    public static bool GameIsPaused = false;
-
     [SerializeField] TextMeshProUGUI _titleUI;
     [SerializeField] TextMeshProUGUI _infoUI;
 

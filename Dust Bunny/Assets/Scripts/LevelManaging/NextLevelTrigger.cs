@@ -23,7 +23,6 @@ public class NextLevelTrigger : MonoBehaviour
     public void ChangeScene()
     {
         GameManager.instance.CheckpointLocation = _nextLevelSpawnLocation;
-
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
         levelLoader.StartLoadLevel(_nextLevelName, _transition, _transitionTime);
     }

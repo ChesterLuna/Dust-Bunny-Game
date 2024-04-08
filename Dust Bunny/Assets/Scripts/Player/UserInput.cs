@@ -26,12 +26,14 @@ public class UserInput : MonoBehaviour
         SetUpInputActions();
     } // end Awake
 
-    void FixedUpdate(){
+    void FixedUpdate()
+    {
         // Refresh the input system
         InputSystem.Update();
     }
 
-    void Update(){
+    void Update()
+    {
         // Refresh the input system manually, only if TimeScale = 0
         if (Time.timeScale == 0) InputSystem.Update();
     }
@@ -72,7 +74,7 @@ public class UserInput : MonoBehaviour
                 Move = Vector2.zero,
                 DashDirection = Vector2.zero,
                 InteractDown = false,
-                MenuDown = _menu.WasReleasedThisFrame(),
+                MenuDown = _menu.WasPressedThisFrame(),
                 AnyKey = _anyKey.WasPressedThisFrame()
             };
         }
