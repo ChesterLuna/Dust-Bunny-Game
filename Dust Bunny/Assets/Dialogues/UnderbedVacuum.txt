@@ -1,18 +1,17 @@
 $Rumble
-!2 Camera
+!2 Camera (0,1)
 #???
 :Rumblerumblerumble...
 
 #Spek
 :Huh.
 
-!Spek returning
+!Spek returning (2)
 #Spek
 :That’s… new.
 
-!As before
+!2As before (3,4)
 #Spek
 :Should I take a closer look?
-
 #Spek
 :Or maybe it’s better to keep my distance…

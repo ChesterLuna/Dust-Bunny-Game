@@ -2,10 +2,11 @@
 :I hate to admit it but… this whole “exploring” thing is growing on me.
 
 $Rattle
-
+!Jump
 #Spek
 :...!
 
+!Stop
 #Spek
 :*Gulp* I just had to put my foot in my mouth, didn’t I?
 
