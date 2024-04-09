@@ -910,6 +910,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c87b2e101505f844b4fb77fac93f402, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GameIsPaused: 0
   _pauseMenuUI: {fileID: 3120031900390355814}
   _infoUI: {fileID: 6926891776528514371}
   _rebindUI: {fileID: 3746897304491815942}
@@ -7385,7 +7386,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5845102696053430368, guid: d32852bdb941f754494f7564e94755a7, type: 3}
       propertyPath: m_text
-      value: Space
+      value: " \x01"
       objectReference: {fileID: 0}
     - target: {fileID: 5845102696053430368, guid: d32852bdb941f754494f7564e94755a7, type: 3}
       propertyPath: m_fontSize
@@ -9703,7 +9704,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5845102696053430368, guid: d32852bdb941f754494f7564e94755a7, type: 3}
       propertyPath: m_text
-      value: E
+      value: "E\x01"
       objectReference: {fileID: 0}
     - target: {fileID: 5845102696053430368, guid: d32852bdb941f754494f7564e94755a7, type: 3}
       propertyPath: m_fontSize
@@ -10690,7 +10691,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5845102696053430368, guid: d32852bdb941f754494f7564e94755a7, type: 3}
       propertyPath: m_text
-      value: W/A/S/D
+      value: "W\x01/A\x01/S\x01/D\x01"
       objectReference: {fileID: 0}
     - target: {fileID: 5845102696053430368, guid: d32852bdb941f754494f7564e94755a7, type: 3}
       propertyPath: m_fontSize

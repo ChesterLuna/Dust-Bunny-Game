@@ -108,6 +108,15 @@ public class UserInput : MonoBehaviour
         }
     } // end Gather
 
+    public InputNames GetInputNames(){
+        return new InputNames{
+            MovementKeys = _move.GetBindingDisplayString(0),
+            JumpKey = _jump.GetBindingDisplayString(0),
+            DashKey = _dash.GetBindingDisplayString(0),
+            InteractKey = _interact.GetBindingDisplayString(0),
+        };
+    }
+
 } // end class PlayerInput
 
 public struct FrameInput
@@ -121,3 +130,11 @@ public struct FrameInput
     public bool MenuDown;
     public bool AnyKey;
 } // end struct FrameInput
+
+public struct InputNames
+{
+    public string MovementKeys;
+    public string JumpKey;
+    public string DashKey;
+    public string InteractKey;
+}
