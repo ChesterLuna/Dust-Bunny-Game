@@ -48,7 +48,7 @@ public class ButtonPromptTutorial : MonoBehaviour
         }
 
         // Move toward the player
-        transform.position = Vector3.Lerp(transform.position, (Vector3)_player.State.Position + Vector3.up * 0.1f * _player.CurrentDust, 5f * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, (Vector3)_player.State.Position + Vector3.up * 0.1f * _player.CurrentDust, 15f * Time.deltaTime);
     }
 
     void OnCorrectInput(){
@@ -66,19 +66,19 @@ public class ButtonPromptTutorial : MonoBehaviour
     private void SetupByType(){
         switch (type){
             case Type.MOVEMENT:
-                _text.text = "Move\n" + UserInput.instance.GetInputNames().MovementKeys;
+                _text.text = "<b>Move</b>\n<i>" + UserInput.instance.GetInputNames().MovementKeys + "</i>";
                 break;
             case Type.DASH:
-                _text.text = "Dash\n" + UserInput.instance.GetInputNames().DashKey;
+                _text.text = "<b>Dash</b>\n<i>" + UserInput.instance.GetInputNames().DashKey + "</i>";
                 break;
             case Type.JUMP:
-                _text.text = "Jump\n" + UserInput.instance.GetInputNames().JumpKey;
+                _text.text = "<b>Jump</b>\n<i>" + UserInput.instance.GetInputNames().JumpKey + "</i>";
                 break;
             case Type.WALLJUMP:
-                _text.text = "Walljump\n" + UserInput.instance.GetInputNames().JumpKey;
+                _text.text = "<b>Walljump</b>\n<i>" + UserInput.instance.GetInputNames().JumpKey + "</i>";
                 break;
             case Type.INTERACT:
-                _text.text = "Interact\n" + UserInput.instance.GetInputNames().InteractKey;
+                _text.text = "<b>Interact</b>\n<i>" + UserInput.instance.GetInputNames().InteractKey + "</i>";
                 break;
         }
     }
