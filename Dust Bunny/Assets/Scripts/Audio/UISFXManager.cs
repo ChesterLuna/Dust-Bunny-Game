@@ -72,8 +72,6 @@ public class UISFXManager : MonoBehaviour
             Instantiate(Resources.Load(UISFX_PATH)).GetComponent<UISFXManager>().Initalize();
         }
 
-        Debug.Log("Playing sfx: " + sfx.ToString());
-
         instance.FindSourceToPlay(sfx);
     }
 }

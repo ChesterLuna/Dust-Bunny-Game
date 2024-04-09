@@ -66,7 +66,6 @@ public class PauseMenu : MonoBehaviour
     public void SetMenu(PauseMenuPage page = PauseMenuPage.Gameplay)
 
     {
-        Debug.Log("Pause menu switching to page " + page.ToString());
         switch (page)
         {
             case PauseMenuPage.Pause:
@@ -170,6 +169,7 @@ public class PauseMenu : MonoBehaviour
 
     public void QuitToMenu()
     {
+        Resume();
         UISFXManager.PlaySFX(UISFXManager.SFX.NEGATIVE);
         SceneManager.LoadScene("Main Menu");
     } // end QuitGame
