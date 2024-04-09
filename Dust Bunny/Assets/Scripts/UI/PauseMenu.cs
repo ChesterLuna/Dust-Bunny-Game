@@ -66,6 +66,7 @@ public class PauseMenu : MonoBehaviour
     public void SetMenu(PauseMenuPage page = PauseMenuPage.Gameplay)
 
     {
+        Debug.Log("Pause menu switching to page " + page.ToString());
         switch (page)
         {
             case PauseMenuPage.Pause:
@@ -148,6 +149,7 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 0f;
         GameIsPaused = true;
         SetMenu(PauseMenuPage.Pause);
+        UISFXManager.PlaySFX(UISFXManager.SFX.POSITIVE);
     } // end Pause
 
     public void Resume()
@@ -156,6 +158,7 @@ public class PauseMenu : MonoBehaviour
         GameIsPaused = false;
         SetMenu(PauseMenuPage.Gameplay);
         _timeSinceLastResume = 0.0f;
+        UISFXManager.PlaySFX(UISFXManager.SFX.NEGATIVE);
     } // end Resume
 
     public void QuitGame()
@@ -170,6 +173,21 @@ public class PauseMenu : MonoBehaviour
         UISFXManager.PlaySFX(UISFXManager.SFX.NEGATIVE);
         SceneManager.LoadScene("Main Menu");
     } // end QuitGame
+
+    public void PlayUIPositive(){
+        if(!GameIsPaused) return;
+        UISFXManager.PlaySFX(UISFXManager.SFX.POSITIVE);
+    }
+
+    public void PlayUINavigate(){
+        if(!GameIsPaused) return;
+        UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
+    }
+
+    public void PlayUINegative(){
+        if(!GameIsPaused) return;
+        UISFXManager.PlaySFX(UISFXManager.SFX.NEGATIVE);
+    }
 
     public enum PauseMenuPage
     {
