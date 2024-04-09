@@ -4,11 +4,15 @@
 !(Spek paces back and forth.)
 
 #Spek
-:I need to stop it from eating, but it doesn't have much trouble with big things.
+:I need to stop it from eating, but how?
 
 !Spek stops
+
 #Spek
-:But when it was eating up that dust earlier, I could've sworn it got louder.
+:Now that I think about it...
+
+#Spek
+:I could've sworn it got louder after eating all that dust earlier.
 
 #Spek
 :Almost like it took more work.
