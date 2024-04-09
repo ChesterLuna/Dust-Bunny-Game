@@ -48,7 +48,7 @@ public class ButtonPromptTutorial : MonoBehaviour
         }
 
         // Move toward the player
-        transform.position = Vector3.Lerp(transform.position, (Vector3)_player.State.Position + Vector3.up * 0.1f * _player.CurrentDust, 5f * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, (Vector3)_player.State.Position + Vector3.up * 0.1f * _player.CurrentDust, 15f * Time.deltaTime);
     }
 
     void OnCorrectInput(){

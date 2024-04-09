@@ -6,6 +6,7 @@ using Bunny.Dialogues;
 
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
@@ -39,6 +40,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public bool IsBubble = false;
     public bool IsStartedDialogue = false;
+    public UnityEvent onFinishedDialogue;
     bool _isFinishedDialogue = false;
 
     PlayerSFXController _sfxControlller;
@@ -259,6 +261,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         IsStartedDialogue = false;
         ShowIndicator = false;
         DisableAnimators();
+        onFinishedDialogue.Invoke();
     } // end EndDialogue
 
     private void OnTriggerEnter2D(Collider2D other)
