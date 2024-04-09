@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            ShowTimer = PlayerPrefs.GetInt("ShowTimer", 1) == 1;
+            ShowTimer = PlayerPrefs.GetInt("ShowTimer", 0) == 1;
             DontDestroyOnLoad(instance);
         }
         else
