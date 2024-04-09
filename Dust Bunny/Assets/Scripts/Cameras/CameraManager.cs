@@ -46,6 +46,11 @@ public class CameraManager : MonoBehaviour
         _currentCamera.m_Lens.OrthographicSize = _currentCameraOrthographicSize;
     } // end Awake
 
+    private void Update()
+    {
+        UpdateShake();
+    } // end UpdateShake
+
     #region Lerp the Y Damping
     public void LerpYDamping(bool isPlayerFalling)
     {
@@ -183,4 +188,47 @@ public class CameraManager : MonoBehaviour
         DOTween.To(() => _currentCamera.m_Lens.OrthographicSize, x => _currentCamera.m_Lens.OrthographicSize = x, newSize, actualLerpTime);
         _currentCameraOrthographicSize = newSize;
     } // end SetCurrentCameraOrthographicSize
+
+    #region Shake
+    [SerializeField] private float _defaultShakeIntensity = 1f;
+    [SerializeField] private float _defaultshakeTime = 0.2f;
+    private CinemachineBasicMultiChannelPerlin _perlin;
+
+    private float _shakeTimer = 0;
+    public void ShakeCamera(float shakeIntensity = -1, float shakeTime = -1, CinemachineBasicMultiChannelPerlin perlin = null)
+    {
+        if (_shakeTimer != 0)
+        {
+            Debug.Log("ShakeTimer is not 0, another shake is already in progress, overriding the current shake.");
+            StopShake();
+        }
+
+        if (shakeIntensity == -1) shakeIntensity = _defaultShakeIntensity;
+        if (shakeTime == -1) shakeTime = _defaultshakeTime;
+        if (perlin == null) _perlin = _currentCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        _perlin.m_AmplitudeGain = shakeIntensity;
+        _shakeTimer = shakeTime;
+    } // end ShakeCamera
+
+    public void StopShake(CinemachineBasicMultiChannelPerlin perlin = null)
+    {
+        if (perlin == null) _perlin = _currentCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+
+        _perlin.m_AmplitudeGain = 0;
+        _shakeTimer = 0;
+    } // end StopShake
+
+    private void UpdateShake()
+    {
+        if (_shakeTimer > 0)
+        {
+            Debug.Log("ShakeTimer is greater than 0, shaking the camera.");
+            _shakeTimer -= Time.deltaTime;
+            if (_shakeTimer <= 0)
+            {
+                StopShake();
+            }
+        }
+    } // end UpdateShake
+    #endregion
 } // end class CameraManager

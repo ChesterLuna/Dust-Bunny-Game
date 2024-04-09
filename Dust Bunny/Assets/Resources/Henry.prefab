@@ -124,7 +124,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxDustToExchange: -1
   _dustTickAmount: -10
-  _amountOfDust: 0
   _dustTickRate: 1
   _cooldownTime: 0
   _small: {fileID: 0}
@@ -209,6 +208,7 @@ GameObject:
   - component: {fileID: 5102651715001027023}
   - component: {fileID: 3560059930243376710}
   - component: {fileID: 4990895516505125521}
+  - component: {fileID: 1031941414639638933}
   m_Layer: 10
   m_Name: Henry Itself
   m_TagString: Untagged
@@ -388,6 +388,27 @@ MonoBehaviour:
   hideParticlesWhenOutOfSight: 0
   _onSightParticles: {fileID: 4096998301583011793}
   PrintDebug: 0
+--- !u!95 &1031941414639638933
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6974799498457637762}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2a57d6de132228e4c8af2cfb3da1be6d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &7142083837151755738
 GameObject:
   m_ObjectHideFlags: 0

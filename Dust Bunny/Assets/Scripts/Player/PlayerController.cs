@@ -594,7 +594,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         if (_jumpToConsume || HasBufferedJump)
         {
-            if (CanWallJump && IsPushingAgainstWall)
+            if (CanWallJump)
             {
                 ExecuteJump(JumpType.WallJump);
             }
@@ -1029,9 +1029,12 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     public void ChangeDust(float scalar, bool hostile)
     {
-        if (scalar < 0){
+        if (scalar < 0)
+        {
             UsedDust?.Invoke(scalar, hostile);
-        } else {
+        }
+        else
+        {
             GainedDust?.Invoke(scalar);
         }
 
