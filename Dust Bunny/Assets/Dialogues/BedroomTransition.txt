@@ -1,20 +1,23 @@
 #Spek
-:…
+:...
 
 #Spek
-:Wow. I don't know what I was expecting, but this…
+:Wow. I don't know what I was expecting, but this...
 
 #Spek
 :It's so big.
 
 #Spek
-:*Shiver* I'm glad I sent Pip back. It'd be too dangerous for them here, especially with the earthshaker roaming about.
+:*Shiver* I'm glad I sent Pip back. It'd be too dangerous for them here.
+
+#Spek
+:Specially with the earthshaker roaming about.
 
 #Spek
 :Maybe I've chomped off more than I can chew with this. Should I head back, too?
 
 #Spek
-:No, the others are counting on me to put a stop to the tremors… 
+:No, the others are counting on me to put a stop to the tremors...
 
 #Spek
 :I can't squeak out now!

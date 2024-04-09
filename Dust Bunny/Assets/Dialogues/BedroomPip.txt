@@ -1,0 +1,71 @@
+#Spek
+:Who's there!?
+
+$Rattle
+#Vent
+:Rattle… Rattle… Clank!
+
+
+!(Pip drops from the vent.)
+
+#Spek
+:Pip!? What are you doing here? It's dangerous!
+
+!(Make sure Pip is there)
+#Pip
+:O-Oh! Hi, Spek! I was just leaving, don't worry about me-
+
+#Spek
+:Pipsqueak!
+
+#Pip
+:...
+
+#Spek
+:I told you it was dangerous! We don't know when the earthshaker will show up again. 
+
+#Spek
+:So you can't be all the way out here!
+
+#Pip
+:Sorry… I just wanted to help.
+
+#Spek
+:*Sigh* …
+
+#Spek
+:Alright, but just tell me first. How'd you even get out here?
+
+#Pip
+:I can fit into the gaps here 'cause I'm so small.
+
+#Pip
+:They were a bit confusing to explore but you know I'm good at that.
+
+#Pip
+:So eventually I found a way to the Outside.
+
+#Pip
+:I promise they're safe! Nothing else can get into them anyways.
+
+#Pip
+:If you really want me to go back I can, but…
+
+#Pip
+:I just want to help.
+
+#Spek
+:Okay, okay. But you need to stay hidden, alright? Don't come out without checking first.
+
+#Pip
+:You got it!
+
+
+!(Pip jumps up and down a few times, then jumps back into the vent.) MOVE TEXT BOX AND ADD NEXT DIALOGUE AT THE END
+# 
+: 
+$Rattle
+!Make sure Pip left MOVE TEXT BOX AND ADD NEXT DIALOGUE AT THE END
+# 
+: 
+
