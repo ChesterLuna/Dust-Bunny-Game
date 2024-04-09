@@ -24,6 +24,13 @@ public class NextLevelTrigger : MonoBehaviour
     {
         GameManager.instance.CheckpointLocation = _nextLevelSpawnLocation;
         ES3AutoSaveMgr.Current.Save();
+
+        if (_nextLevelName == "Good Ending")
+        {
+            GameManager.instance.StopGameTime();
+            GameManager.instance.CheckpointDustLevel = -1;
+        }
+
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
         levelLoader.StartLoadLevel(_nextLevelName, _transition, _transitionTime);
     }

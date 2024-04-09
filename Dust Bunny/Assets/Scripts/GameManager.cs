@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            ShowTimer = PlayerPrefs.GetInt("ShowTimer", 1) == 1;
+            ShowTimer = PlayerPrefs.GetInt("ShowTimer", 0) == 1;
             DontDestroyOnLoad(instance);
         }
         else
@@ -79,6 +79,8 @@ public class GameManager : MonoBehaviour
     public void StartGameTime()
     {
         UpdateTimerText?.Invoke();
+        if (SceneManager.GetActiveScene().name == "Good Ending") return;
+
         if (_scoreTimerRunning == "Stopped")
         {
             _scoreTimerRunning = "Running";

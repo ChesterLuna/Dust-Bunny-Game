@@ -49,7 +49,7 @@ public class PlayerAnimator : MonoBehaviour
     {
         _player = GetComponentInParent<IPlayerController>();
         _character = _player.Stats.CharacterSize.GenerateCharacterSize();
-        _sprite.size = new Vector2(_character.Width / _sizeFactor.x, _character.Height / _sizeFactor.y);
+        OnSizeChanged(false);
 
         // Fix for dying during slow mo effect
         Time.timeScale = 1.0f;
