@@ -79,6 +79,8 @@ public class GameManager : MonoBehaviour
     public void StartGameTime()
     {
         UpdateTimerText?.Invoke();
+        if (SceneManager.GetActiveScene().name == "Good Ending") return;
+
         if (_scoreTimerRunning == "Stopped")
         {
             _scoreTimerRunning = "Running";
