@@ -210,6 +210,23 @@ public class CameraManager : MonoBehaviour
         _shakeTimer = shakeTime;
     } // end ShakeCamera
 
+    public void ShakeCameraDialogue(float shakeIntensity = -1)
+    {
+        float shakeTime = -1;
+        CinemachineBasicMultiChannelPerlin perlin = null;
+        if (_shakeTimer != 0)
+        {
+            Debug.Log("ShakeTimer is not 0, another shake is already in progress, overriding the current shake.");
+            StopShake();
+        }
+
+        if (shakeIntensity == -1) shakeIntensity = _defaultShakeIntensity;
+        if (shakeTime == -1) shakeTime = _defaultshakeTime;
+        if (perlin == null) _perlin = _currentCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        _perlin.m_AmplitudeGain = shakeIntensity;
+        _shakeTimer = shakeTime;
+    } // end ShakeCameraDialogue
+
     public void StopShake(CinemachineBasicMultiChannelPerlin perlin = null)
     {
         if (perlin == null) _perlin = _currentCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
