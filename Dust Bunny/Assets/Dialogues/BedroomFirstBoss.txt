@@ -23,12 +23,17 @@ TBI$LoudRumble
 #???
 :Whirr…!? Brr…Brrr…!
 
->(The vacuum sprite rotates forward slightly (as if hunched over), then rolls backward, off screen, and disappears.) (4)
+>(The vacuum sprite rotates forward slightly (as if hunched over), then rolls backward, off screen, and disappears.) next dialogue (4)
+#
+:
+>Pan back nextDialogues (5)
+#
+:
 
+>Make sure Camera is back (6)
 #Spek
 :…That was terrifying.
 
->Make sure vacuum disappears (5)
 #Spek
 :But… It almost looked like it was struggling to eat up all that dust…
 
