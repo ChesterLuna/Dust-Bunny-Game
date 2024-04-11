@@ -19,7 +19,7 @@ public class PersistentGUID : MonoBehaviour
     {
         if (Application.platform != RuntimePlatform.WindowsEditor)
         {
-            guid = "";
+            guid = Guid.NewGuid().ToString();
             PrefabUtility.RecordPrefabInstancePropertyModifications(this);
         }
     }
