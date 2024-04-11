@@ -113,6 +113,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void StartDialogue()
     {
+        if(_isFinishedDialogue == true) return;
         IsStartedDialogue = true;
         _isFinishedDialogue = false;
         if (importantDialogue)
