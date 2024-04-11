@@ -10,7 +10,7 @@ $Rumble
 #Spek
 :That’s… new.
 
-!2As before (3,4)
+!As before (3,4)
 #Spek
 :Should I take a closer look?
 #Spek
