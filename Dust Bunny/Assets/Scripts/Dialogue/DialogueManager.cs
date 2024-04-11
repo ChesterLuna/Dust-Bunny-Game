@@ -41,7 +41,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     public bool IsBubble = false;
     public bool IsStartedDialogue = false;
     public UnityEvent onFinishedDialogue;
-    bool _isFinishedDialogue = false;
+    bool _isFinishedDialogue;
 
     PlayerSFXController _sfxControlller;
     [SerializeField] Animator[] _actors;
@@ -60,7 +60,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         textBubble.SetActive(false);
         GameObject _playerObj = GameObject.FindWithTag("Player");
         if (_playerObj != null) _player = _playerObj.GetComponent<PlayerController>();
-
+        _isFinishedDialogue = ES3.Load(GetComponent<PersistentGUID>().guid, false);
     } // end Awake
 
     private void Start()
@@ -113,7 +113,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void StartDialogue()
     {
-        if(_isFinishedDialogue == true) return;
+        if (_isFinishedDialogue == true) return;
         IsStartedDialogue = true;
         _isFinishedDialogue = false;
         if (importantDialogue)
@@ -259,6 +259,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
             textBubble.SetActive(false);
         }
         _isFinishedDialogue = true;
+        ES3.Save(GetComponent<PersistentGUID>().guid, _isFinishedDialogue);
         IsStartedDialogue = false;
         ShowIndicator = false;
         DisableAnimators();
