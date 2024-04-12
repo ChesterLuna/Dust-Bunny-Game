@@ -12,11 +12,15 @@ public class Fan : MonoBehaviour, ISwitchable
     [SerializeField] SpriteRenderer _fanSprite;
     Collider2D _fanCollider;
     Animator _animator;
+    ParticleSystem _particles;
 
     void Awake()
     {
         _fanCollider = GetComponent<Collider2D>();
         _animator = GetComponentInChildren<Animator>();
+        _particles = GetComponentInChildren<ParticleSystem>();
+        _particles.transform.localScale = new Vector3(_particles.transform.localScale.x, _particles.transform.localScale.y, _particles.transform.localScale.z * transform.localScale.y);
+        _particles.Play();
     } // end Awake
 
     void Start()
@@ -32,6 +36,7 @@ public class Fan : MonoBehaviour, ISwitchable
         _fanCollider.enabled = false;
         _fanSprite.enabled = false;
         _animator.speed = 0;
+        _particles.Stop();
     } // end Disable
 
     public void Enable()
@@ -39,6 +44,7 @@ public class Fan : MonoBehaviour, ISwitchable
         _fanCollider.enabled = true;
         _fanSprite.enabled = true;
         _animator.speed = 1;
+        _particles.Play();
     } // end Enable
 
     public void Toggle()
