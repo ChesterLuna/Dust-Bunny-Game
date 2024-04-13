@@ -17,19 +17,22 @@ public class InfoMenu : MonoBehaviour
     int currentPage = 0;
     string[] infoText = new string[]
     {
-        "In this game, you control a dust bunny named Spek.\n\nUse WASD or arrow keys to move, SPACE to jump, and E to interact. SHIFT triggers a dash, aimed in the direction of the mouse cursor.",
-        "Dust clouds are scattered throughout the map. Contact with a cloud will cause Spek to grow, decreasing their movement speed but increasing jump height.\n\nCertain hazards can take away dust and cause Spek to shrink, increasing movement speed but decreasing jump height. Be careful! Losing dust when Spek is too small is a fatal mistake!",
-        "Spek may encounter various other objects on their journey, such as:\n-Levers, which affect the state of the map when interacted with.\n-Velcro, which is especially dangerous to any dust bunny who has the misfortune of touching it.\n-Fans, which will push Spek in the direction of their air currents.\n-Vacuums and Swiffers remove dust if Spek gets too close. Some of these hazards move around! But they might just miss a spot when their back is turned..."
+        "In this game, you control a dust bunny named Spek.\n\nUse WASD or arrow keys to move, SPACE to jump, and E to interact. LMB triggers a dash, aimed in the direction of the mouse cursor. (You can rebind these controls in Settings.)\n\nJumping off of walls resets your dash and allows you to climb up vertical surfaces.",
+        "Dust clouds are scattered throughout the map. Contact with a cloud will cause Spek to grow, decreasing their movement speed but increasing jump height.\n\nCertain hazards can take away dust and cause Spek to shrink, increasing movement speed but decreasing jump height. \n\nBe careful! Losing dust when Spek is too small is a fatal mistake!",
+        "There are many dangers that Spek will need to avoid.\n\nVacuums and Swiffers remove dust if Spek gets too close. Some of these particular hazards move around! But they might just miss a spot when their back is turned...\n\nVelcro is especially dangerous to any dust bunny who has the misfortune of touching it.\n",
+        "Spek may encounter various other objects on their journey, such as:\n\no Levers. Affect the state of the map when interacted with.\n\no Fans. Will push Spek in the direction of their air currents when turned on.\n\no Vents. Act as checkpoints that allow Spek to go back to safety when things get too dangerous."
     };
     string[] infoTitles = new string[]
     {
         "CONTROLS",
         "DUST",
-        "HAZARDS AND OBJECTS"
+        "HAZARDS",
+        "OTHER OBJECTS"
         };
 
     string[] nextButtonText = new string[]
     {
+        "Next",
         "Next",
         "Next",
         "Main Menu"
@@ -38,6 +41,7 @@ public class InfoMenu : MonoBehaviour
     string[] backButtonText = new string[]
     {
         "Main Menu",
+        "Back",
         "Back",
         "Back"
     };
