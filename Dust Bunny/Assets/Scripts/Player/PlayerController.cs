@@ -683,6 +683,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     private bool _dashToConsume;
     private bool _canDash;
+    private bool _stopDashing;
     private Vector2 _dashVel;
     private bool _dashing;
     private float _startedDashing;
@@ -736,9 +737,10 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
         if (_dashing)
         {
-            if (_time > _startedDashing + Stats.DashDuration)
+            if (_time > _startedDashing + Stats.DashDuration || _stopDashing)
             {
                 _dashing = false;
+                _stopDashing = false;
                 DashChanged?.Invoke(false, Vector2.zero);
 
                 SetVelocity(new Vector2(Velocity.x * Stats.DashEndHorizontalMultiplier, Velocity.y));
@@ -984,12 +986,14 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     public void EnableDialogue()
     {
+        _stopDashing = true;
         SetVelocity(new Vector2(0, Velocity.y));
         PlayerState = PlayerStates.Dialogue;
     }
 
     public void DisableDialogue()
     {
+        _stopDashing = false;
         PlayerState = PlayerStates.Playing;
     }
 
