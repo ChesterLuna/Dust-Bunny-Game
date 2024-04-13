@@ -140,12 +140,27 @@ public class PlayerAnimator : MonoBehaviour
     } // end Update
 
     private void HandleDashArrow(){
-        //Get the mouse position
-        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPosition.z = 0;
+        float cameraZoom = Camera.main.orthographicSize;
+
+        //Get the dash target from mouse position or keyboard input, based on UseMouseForDash
+        Vector3 dashTargetWorldPosition;
+        if(UserInput.instance.UseMouseForDash) {
+            dashTargetWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            dashTargetWorldPosition.z = 0;
+        } else {
+            Vector2 moveInput = dashTargetWorldPosition = UserInput.instance.Gather().Move;
+            if(moveInput.sqrMagnitude > 0.001f){
+                dashTargetWorldPosition = transform.position + (Vector3)(moveInput * cameraZoom * 0.9f);
+            } else {
+                float mod = 1;
+                if(_sprite.flipX) mod = -1;
+                dashTargetWorldPosition = transform.position + new Vector3(cameraZoom * 0.9f * mod, 0, 0);
+                Debug.Log(transform.forward * cameraZoom * 0.9f * mod);
+            }
+        }
 
         // deep math i do not understand
-        Vector3 perpendicular = Vector3.Cross(transform.position - mouseWorldPosition, Vector3.forward);
+        Vector3 perpendicular = Vector3.Cross(transform.position - dashTargetWorldPosition, Vector3.forward);
 		_arrowPivot.transform.rotation = Quaternion.LookRotation(Vector3.forward, perpendicular);
 
         // move the circles to the correct location
@@ -157,8 +172,7 @@ public class PlayerAnimator : MonoBehaviour
         if(transform.localScale.x > 0 && transform.localScale.y > 0){
             _arrowParent.transform.localScale = new Vector3(1/transform.localScale.x, 1/transform.localScale.y, 1); // we do NOT want the arrow to respect player size: we want to handle that ourselves based on mouse pos instead
         }
-        float distance = Vector3.Distance(mouseWorldPosition, transform.position);
-        float cameraZoom = Camera.main.orthographicSize;
+        float distance = Vector3.Distance(dashTargetWorldPosition, transform.position);
         float length = Mathf.Max(Mathf.Min(distance / (4.0f + 0.1f * cameraZoom), 2 * cameraZoom), 0.01f * cameraZoom);
         _arrowPivot.transform.localScale = new Vector3(length, _arrowPivot.transform.localScale.y, _arrowPivot.transform.localScale.z);
 
