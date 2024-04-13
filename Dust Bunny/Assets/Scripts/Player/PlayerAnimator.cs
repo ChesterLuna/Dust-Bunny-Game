@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
 
@@ -36,6 +37,13 @@ public class PlayerAnimator : MonoBehaviour
 
     private IPlayerController _player;
     private GeneratedCharacterSize _character;
+    private GameObject _arrowParent;
+    private GameObject _arrowPivot;
+    private GameObject _arrowBGSprite;
+    private GameObject _arrowCirclesParent;
+    private GameObject _arrowLocationsParent;
+    private SpriteRenderer[] _arrowVisuals;
+    private float _arrowVisibility = 0.0f;
 
 
     // Animation Variables
@@ -50,6 +58,13 @@ public class PlayerAnimator : MonoBehaviour
         _player = GetComponentInParent<IPlayerController>();
         _character = _player.Stats.CharacterSize.GenerateCharacterSize();
         OnSizeChanged(false);
+
+        _arrowParent = transform.GetChild(0).Find("Arrow").gameObject;
+        _arrowPivot = _arrowParent.transform.Find("Pivot Point").gameObject;
+        _arrowBGSprite = _arrowPivot.transform.Find("Sprite").gameObject;
+        _arrowCirclesParent = _arrowParent.transform.Find("Circles").gameObject;
+        _arrowLocationsParent = _arrowPivot.transform.Find("Circle locations").gameObject;
+        _arrowVisuals = _arrowParent.GetComponentsInChildren<SpriteRenderer>();
 
         // Fix for dying during slow mo effect
         Time.timeScale = 1.0f;
@@ -119,7 +134,48 @@ public class PlayerAnimator : MonoBehaviour
             _playDustGainedParticlesTimer -= Time.deltaTime;
         }
 
+        HandleDashArrow();
+
+
     } // end Update
+
+    private void HandleDashArrow(){
+        //Get the mouse position
+        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPosition.z = 0;
+
+        // deep math i do not understand
+        Vector3 perpendicular = Vector3.Cross(transform.position - mouseWorldPosition, Vector3.forward);
+		_arrowPivot.transform.rotation = Quaternion.LookRotation(Vector3.forward, perpendicular);
+
+        // move the circles to the correct location
+        for(int i = 0; i < _arrowCirclesParent.transform.childCount; i++){
+            _arrowCirclesParent.transform.GetChild(i).position = _arrowLocationsParent.transform.GetChild(i).position;
+        }
+
+        // handle arrow length
+        if(transform.localScale.x > 0 && transform.localScale.y > 0){
+            _arrowParent.transform.localScale = new Vector3(1/transform.localScale.x, 1/transform.localScale.y, 1); // we do NOT want the arrow to respect player size: we want to handle that ourselves based on mouse pos instead
+        }
+        float distance = Vector3.Distance(mouseWorldPosition, transform.position);
+        float cameraZoom = Camera.main.orthographicSize;
+        float length = Mathf.Max(Mathf.Min(distance / (4.0f + 0.1f * cameraZoom), 2 * cameraZoom), 0.01f * cameraZoom);
+        _arrowPivot.transform.localScale = new Vector3(length, _arrowPivot.transform.localScale.y, _arrowPivot.transform.localScale.z);
+
+        // handle opacity
+        if(UserInput.instance.Gather().DashHeld){
+            _arrowVisibility = Mathf.Lerp(_arrowVisibility, 0.8f, Time.deltaTime * 3);
+        } else {
+            _arrowVisibility = Mathf.Lerp(_arrowVisibility, 0f, Time.deltaTime * 10);
+        }
+
+        // set opacity of all graphics
+        for(int i = 0; i < _arrowVisuals.Length; i++){
+            _arrowVisuals[i].color = new Color( _arrowVisuals[i].color.r,  _arrowVisuals[i].color.g,  _arrowVisuals[i].color.b, _arrowVisibility);
+        }
+        _arrowBGSprite.GetComponent<SpriteRenderer>().material.SetFloat("Visibility", _arrowVisibility);
+    }
+
     #region Walls & Ladders
 
     [Header("Walls & Ladders")]

@@ -70,6 +70,7 @@ public class UserInput : MonoBehaviour
             {
                 JumpDown = false,
                 JumpHeld = false,
+                DashHeld = false,
                 DashDown = false,
                 Move = Vector2.zero,
                 DashDirection = Vector2.zero,
@@ -84,6 +85,7 @@ public class UserInput : MonoBehaviour
             {
                 JumpDown = false,
                 JumpHeld = false,
+                DashHeld = false,
                 DashDown = false,
                 Move = Vector2.zero,
                 DashDirection = Vector2.zero,
@@ -98,7 +100,8 @@ public class UserInput : MonoBehaviour
             {
                 JumpDown = _jump.WasPressedThisFrame(),
                 JumpHeld = _jump.IsPressed(),
-                DashDown = _dash.WasPressedThisFrame(),
+                DashHeld = _dash.IsPressed(),
+                DashDown = _dash.WasReleasedThisFrame(),
                 Move = _move.ReadValue<Vector2>(),
                 DashDirection = _dashPosition.ReadValue<Vector2>(),
                 InteractDown = _interact.WasPressedThisFrame(),
@@ -125,6 +128,7 @@ public struct FrameInput
     public bool JumpDown;
     public bool JumpHeld;
     public bool DashDown;
+    public bool DashHeld;
     public Vector2 DashDirection;
     public bool InteractDown;
     public bool MenuDown;

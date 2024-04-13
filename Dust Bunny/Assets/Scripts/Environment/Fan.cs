@@ -19,8 +19,10 @@ public class Fan : MonoBehaviour, ISwitchable
         _fanCollider = GetComponent<Collider2D>();
         _animator = GetComponentInChildren<Animator>();
         _particles = GetComponentInChildren<ParticleSystem>();
-        _particles.transform.localScale = new Vector3(_particles.transform.localScale.x, _particles.transform.localScale.y, _particles.transform.localScale.z * transform.localScale.y);
-        _particles.Play();
+        if (_particles != null){
+            _particles.transform.localScale = new Vector3(_particles.transform.localScale.x, _particles.transform.localScale.y, _particles.transform.localScale.z * transform.localScale.y);
+            _particles.Play();
+        }
     } // end Awake
 
     void Start()
