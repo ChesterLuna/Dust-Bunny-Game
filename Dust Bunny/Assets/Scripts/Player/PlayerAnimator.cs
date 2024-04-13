@@ -173,7 +173,7 @@ public class PlayerAnimator : MonoBehaviour
             _arrowParent.transform.localScale = new Vector3(1/transform.localScale.x, 1/transform.localScale.y, 1); // we do NOT want the arrow to respect player size: we want to handle that ourselves based on mouse pos instead
         }
         float distance = Vector3.Distance(dashTargetWorldPosition, transform.position);
-        float length = Mathf.Max(Mathf.Min(distance / (4.0f + 0.1f * cameraZoom), 2 * cameraZoom), 0.01f * cameraZoom);
+        float length = Mathf.Max(Mathf.Min(distance / (4.0f + 0.1f * cameraZoom), 2 * cameraZoom), 0.05f * cameraZoom);
         _arrowPivot.transform.localScale = new Vector3(length, _arrowPivot.transform.localScale.y, _arrowPivot.transform.localScale.z);
 
         // handle opacity
