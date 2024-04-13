@@ -177,7 +177,7 @@ public class PlayerAnimator : MonoBehaviour
         _arrowPivot.transform.localScale = new Vector3(length, _arrowPivot.transform.localScale.y, _arrowPivot.transform.localScale.z);
 
         // handle opacity
-        if(UserInput.instance.Gather().DashHeld){
+        if(UserInput.instance.Gather(_player.PlayerState).DashHeld){
             _arrowVisibility = Mathf.Lerp(_arrowVisibility, 0.8f, Time.deltaTime * 3);
         } else {
             _arrowVisibility = Mathf.Lerp(_arrowVisibility, 0f, Time.deltaTime * 10);
