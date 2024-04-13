@@ -360,6 +360,7 @@ public class PlayerAnimator : MonoBehaviour
         {
             _gainDustParticles.Play();
         }
+        _sfx.PlaySFX(PlayerSFXController.SFX.Dust_Collect_Full);
     }
 
     private IEnumerator FreezeGameOnTakeDamage()
