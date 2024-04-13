@@ -151,16 +151,16 @@ public class PlayerAnimator : MonoBehaviour
             Vector2 moveInput = dashTargetWorldPosition = UserInput.instance.Gather().Move;
             float dashLengthMod = 1 + (.8f * _player.Stats.DashDuration * _player.Stats.DashVelocity * transform.localScale.x);
             if(moveInput.sqrMagnitude > 0.001f){
-                dashTargetWorldPosition = transform.position + (Vector3)(moveInput * dashLengthMod);
+                dashTargetWorldPosition = _arrowPivot.transform.position + (Vector3)(moveInput * dashLengthMod);
             } else {
                 float mod = 1;
                 if(_sprite.flipX) mod = -1;
-                dashTargetWorldPosition = transform.position + new Vector3(mod * dashLengthMod, 0, 0);
+                dashTargetWorldPosition = _arrowPivot.transform.position + new Vector3(mod * dashLengthMod, 0, 0);
             }
         }
 
         // deep math i do not understand
-        Vector3 perpendicular = Vector3.Cross(transform.position - dashTargetWorldPosition, Vector3.forward);
+        Vector3 perpendicular = Vector3.Cross(_arrowPivot.transform.position - dashTargetWorldPosition, Vector3.forward);
 		_arrowPivot.transform.rotation = Quaternion.LookRotation(Vector3.forward, perpendicular);
 
         // move the circles to the correct location
