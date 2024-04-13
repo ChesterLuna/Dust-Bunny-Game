@@ -149,13 +149,13 @@ public class PlayerAnimator : MonoBehaviour
             dashTargetWorldPosition.z = 0;
         } else {
             Vector2 moveInput = dashTargetWorldPosition = UserInput.instance.Gather().Move;
+            float dashLengthMod = 1 + (.8f * _player.Stats.DashDuration * _player.Stats.DashVelocity * transform.localScale.x);
             if(moveInput.sqrMagnitude > 0.001f){
-                dashTargetWorldPosition = transform.position + (Vector3)(moveInput * cameraZoom * 0.9f);
+                dashTargetWorldPosition = transform.position + (Vector3)(moveInput * dashLengthMod);
             } else {
                 float mod = 1;
                 if(_sprite.flipX) mod = -1;
-                dashTargetWorldPosition = transform.position + new Vector3(cameraZoom * 0.9f * mod, 0, 0);
-                Debug.Log(transform.forward * cameraZoom * 0.9f * mod);
+                dashTargetWorldPosition = transform.position + new Vector3(mod * dashLengthMod, 0, 0);
             }
         }
 
