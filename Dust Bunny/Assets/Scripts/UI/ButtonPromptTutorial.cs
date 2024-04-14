@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ButtonPromptTutorial : MonoBehaviour
 {
@@ -11,12 +12,14 @@ public class ButtonPromptTutorial : MonoBehaviour
 
     private TextMeshPro _text;
     private Animator _anim;
+    private Canvas _bgSprite;
     private IPlayerController _player;
     // Start is called before the first frame update
     void Start()
     {
         _text = GetComponentInChildren<TextMeshPro>();
         _anim = GetComponent<Animator>();
+        _bgSprite = GetComponentInChildren<Canvas>();
         SetupByType();
     }
 
@@ -79,6 +82,9 @@ public class ButtonPromptTutorial : MonoBehaviour
                 break;
             case Type.INTERACT:
                 _text.text = "<b>Interact</b>\n<i>" + UserInput.instance.GetInputNames().InteractKey + "</i>";
+                //dumb fix for the arrow being layered above the dialogue
+                _bgSprite.sortingOrder = 20;
+                _text.sortingOrder = 21;
                 break;
         }
     }
