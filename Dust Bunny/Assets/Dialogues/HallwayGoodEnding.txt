@@ -1,14 +1,22 @@
 >(Spek and Pip are standing on some sort of ledge in the corridor, waiting — see corresponding image, possible ledge location indicated in pink)
 #???
-:Creak...Rumble...
+:Whirr! Creak...Rumble...
 
+$Whirring
 #Pip
-:(Gasp) It's waking up!
+:W-What's happening?
 
-SOUND TO BE IMPLEMENTED
+#Spek
+:It woke up while I was feeding it.
+
+#Spek
+:*Sigh* Hopefully it'll still work, but I'm not sure.
+
+$Whirring
 #???
 :Whirr....
-SOUND TO BE IMPLEMENTED
+
+$Loud Whirring
 #???
 :WHIRRRRRR....!!
 

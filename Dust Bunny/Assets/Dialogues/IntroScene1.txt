@@ -12,7 +12,6 @@ $Rumble
 #???
 :Rumble...
 
-$Rumble
 !Spek jumps 3
 #Spek
 :There it is again!

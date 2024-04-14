@@ -35,7 +35,7 @@ $Rattle
 :We'll be able to find it if we just wait nearby!
 
 #Spek
-:(Huff) I see… You did great, Pip. That's great news.
+:*Huff* I see… You did great, Pip. That's great news.
 
 #Spek
 :Now all we need to worry about is how exactly to stop it.
