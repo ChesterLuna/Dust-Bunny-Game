@@ -28,8 +28,8 @@ MonoBehaviour:
   HorizontalDeadZoneThreshold: 0.1
   PositionCorrectionMode: 0
   ActionIndicatorXOffset: 0
-  ActionIndicatorYOffset: 3
-  ActionIndicatoryScale: 2
+  ActionIndicatorYOffset: 1.14
+  ActionIndicatoryScale: 0.84
   BaseSpeed: 12.5
   Acceleration: 100
   Friction: 90
@@ -39,7 +39,7 @@ MonoBehaviour:
   ExtraConstantGravity: 40
   BufferedJumpTime: 0.15
   CoyoteTime: 0.15
-  JumpPower: 20
+  JumpPower: 23
   EndJumpEarlyExtraForceMultiplier: 3
   MaxAirJumps: 0
   AirJumpBeforeCost: 1
@@ -60,8 +60,8 @@ MonoBehaviour:
   WallJumpTotalInputLossTime: 0.2
   WallJumpInputLossReturnTime: 0.5
   RequireInputPush: 1
-  WallJumpPower: {x: 20, y: 18}
-  WallPushPower: {x: 15, y: 18}
+  WallJumpPower: {x: 15, y: 18}
+  WallPushPower: {x: 10, y: 18}
   WallClimbSpeed: 0
   WallFallAcceleration: 5
   WallPopForce: 8

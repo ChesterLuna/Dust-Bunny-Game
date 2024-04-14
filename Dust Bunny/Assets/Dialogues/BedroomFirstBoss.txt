@@ -1,0 +1,41 @@
+$Rumble
+#???
+:Rumble…Thud! Whirrrrrrr…
+
+>Shaking (0)
+$Rumble
+#Spek
+:Ahh! That must be the earthshaker!
+
+>(The camera pans forward to reveal the front of the vacuum in the velcro pit.) (1)
+# 
+: 
+
+> Make sure the camera is panned (2)
+#Spek
+:*Squeak* How could something so impossibly large exist!?
+
+#Spek
+:It really could annihilate the whole Burrow without even noticing!
+
+>(The screen shakes again, and several dust balls fall in front of the vacuum, then roll behind the wheel as if sucked in.) (3)
+TBI$LoudRumble
+#???
+:Whirr…!? Brr…Brrr…!
+
+>(The vacuum sprite rotates forward slightly (as if hunched over), then rolls backward, off screen, and disappears.) next dialogue (4)
+# 
+: 
+>Pan back nextDialogues (5)
+# 
+: 
+
+>Make sure Camera is back (6)
+#Spek
+:…That was terrifying.
+
+#Spek
+:But… It almost looked like it was struggling to eat up all that dust…
+
+#Spek
+:Is that… Is that its weakness?

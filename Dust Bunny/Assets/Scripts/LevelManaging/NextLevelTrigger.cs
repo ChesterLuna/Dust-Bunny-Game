@@ -13,16 +13,23 @@ public class NextLevelTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.TryGetComponent(out IPlayerController controller) && _onTouch)
+        if (other.TryGetComponent(out IPlayerController controller))
         {
             GameManager.instance.CheckpointDustLevel = controller.CurrentDust;
-            ChangeScene();
+            if (_onTouch) ChangeScene();
         }
     } // end OnTriggerEnter2D
 
     public void ChangeScene()
     {
         GameManager.instance.CheckpointLocation = _nextLevelSpawnLocation;
+        ES3AutoSaveMgr.Current.Save();
+        GameObject.FindWithTag("Player").GetComponent<PlayerController>()._lastAnimationState = 0;
+        if (_nextLevelName == "Good Ending")
+        {
+            GameManager.instance.StopGameTime();
+            GameManager.instance.CheckpointDustLevel = -1;
+        }
 
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
         levelLoader.StartLoadLevel(_nextLevelName, _transition, _transitionTime);

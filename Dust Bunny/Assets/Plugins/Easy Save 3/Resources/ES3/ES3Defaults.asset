@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ES3Defaults
   m_EditorClassIdentifier: 
   settings:
-    _location: 0
+    _location: 1
     path: SaveFile.es3
     encryptionType: 0
     compressionType: 0
@@ -33,6 +33,7 @@ MonoBehaviour:
     - Assembly-CSharp
     - Assembly-CSharp-firstpass
     - Cinemachine
+    - DOTween.Modules
     - Unity.InputSystem.RebindingUI
     showAdvancedSettings: 0
   addMgrToSceneAutomatically: 0
@@ -45,5 +46,5 @@ MonoBehaviour:
   updateReferencesWhenSceneIsOpened: 1
   referenceFolders: []
   logDebugInfo: 0
-  logWarnings: 1
+  logWarnings: 0
   logErrors: 1

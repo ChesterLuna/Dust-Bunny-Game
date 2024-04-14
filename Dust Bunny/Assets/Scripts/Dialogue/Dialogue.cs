@@ -13,8 +13,12 @@ namespace Bunny.Dialogues
         bool _bubble;
         bool _lastDialogue;
         string _playSound = null;
+        // Unity Animations
         bool _playAnimation;
         int _animationsToPlay = 1;
+        // Timeline Animations
+        bool _playCinematic;
+
         float _timeToPlay = 0;
 
         public Dialogue(string _theName, string _theText, bool _isBubble = false, bool _isLastDialogue = false)
@@ -57,6 +61,10 @@ namespace Bunny.Dialogues
         {
             _animationsToPlay = _AnimQuantity;
         }
+        public void setPlayCinematic(bool _newCinematic)
+        {
+            _playCinematic = _newCinematic;
+        }
         public void setLastDialogue(bool _newLastDialogue)
         {
             _lastDialogue = _newLastDialogue;
@@ -87,6 +95,10 @@ namespace Bunny.Dialogues
         public bool isPlayAnimation()
         {
             return _playAnimation;
+        }
+        public bool isPlayCinematic()
+        {
+            return _playCinematic;
         }
         public int getAnimationsToPlay()
         {

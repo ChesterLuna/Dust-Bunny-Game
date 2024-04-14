@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using DG.Tweening;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
@@ -12,7 +13,6 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float _fallPanAmount = 0.25f;
     [SerializeField] private float _fallYPanTime = 0.35f;
     public float _fallSpeedYDampingChangeThreshold = -15f;
-    public float _cameraOrthographicSizeModifier = 0.0f;
     private float _currentCameraOrthographicSize = 8f;
     public bool IsLerpingYDamping { get; private set; }
     public bool LerpedFromPlayerFalling { get; set; }
@@ -46,11 +46,10 @@ public class CameraManager : MonoBehaviour
         _currentCamera.m_Lens.OrthographicSize = _currentCameraOrthographicSize;
     } // end Awake
 
-    void Update()
+    private void Update()
     {
-        // Lerp the camera ortho size
-        _currentCamera.m_Lens.OrthographicSize = Mathf.Lerp(_currentCamera.m_Lens.OrthographicSize, _currentCameraOrthographicSize + _cameraOrthographicSizeModifier, 1.7f * Time.deltaTime);
-    }
+        UpdateShake();
+    } // end UpdateShake
 
     #region Lerp the Y Damping
     public void LerpYDamping(bool isPlayerFalling)
@@ -174,18 +173,79 @@ public class CameraManager : MonoBehaviour
     } // end SwapCamera
     #endregion
 
-    public void SetOrthographicSize(float newSize, bool tween, float lerpTime = 1.7f)
+    public void SetOrthographicSize(float newSize, bool tween, float lerpTime = 1.7f, bool addValue = false)
     {
         if (_currentCamera == null) return;
-        if (tween)
+
+        if (addValue) newSize += _currentCamera.m_Lens.OrthographicSize;
+        if (newSize < 1)
         {
-            float oldSize = _currentCameraOrthographicSize;
-            LeanTween.value(_currentCamera.gameObject, oldSize, newSize, lerpTime).setOnUpdate((float flt) =>
-            {
-                _currentCamera.m_Lens.OrthographicSize = flt;
-            });
+            newSize = 1;
+            Debug.LogWarning("Orthographic size cannot be less than 1");
         }
+
+        float actualLerpTime = tween ? lerpTime : 0.01f;
+        DOTween.To(() => _currentCamera.m_Lens.OrthographicSize, x => _currentCamera.m_Lens.OrthographicSize = x, newSize, actualLerpTime);
         _currentCameraOrthographicSize = newSize;
-        _currentCamera.m_Lens.OrthographicSize = _currentCameraOrthographicSize;
     } // end SetCurrentCameraOrthographicSize
+
+    #region Shake
+    [SerializeField] private float _defaultShakeIntensity = 1f;
+    [SerializeField] private float _defaultshakeTime = 0.2f;
+    private CinemachineBasicMultiChannelPerlin _perlin;
+
+    private float _shakeTimer = 0;
+    public void ShakeCamera(float shakeIntensity = -1, float shakeTime = -1, CinemachineBasicMultiChannelPerlin perlin = null)
+    {
+        if (_shakeTimer != 0)
+        {
+            Debug.Log("ShakeTimer is not 0, another shake is already in progress, overriding the current shake.");
+            StopShake();
+        }
+
+        if (shakeIntensity == -1) shakeIntensity = _defaultShakeIntensity;
+        if (shakeTime == -1) shakeTime = _defaultshakeTime;
+        if (perlin == null) _perlin = _currentCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        _perlin.m_AmplitudeGain = shakeIntensity;
+        _shakeTimer = shakeTime;
+    } // end ShakeCamera
+
+    public void ShakeCameraDialogue(float shakeIntensity = -1)
+    {
+        float shakeTime = -1;
+        CinemachineBasicMultiChannelPerlin perlin = null;
+        if (_shakeTimer != 0)
+        {
+            Debug.Log("ShakeTimer is not 0, another shake is already in progress, overriding the current shake.");
+            StopShake();
+        }
+
+        if (shakeIntensity == -1) shakeIntensity = _defaultShakeIntensity;
+        if (shakeTime == -1) shakeTime = _defaultshakeTime;
+        if (perlin == null) _perlin = _currentCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        _perlin.m_AmplitudeGain = shakeIntensity;
+        _shakeTimer = shakeTime;
+    } // end ShakeCameraDialogue
+
+    public void StopShake(CinemachineBasicMultiChannelPerlin perlin = null)
+    {
+        if (perlin == null) _perlin = _currentCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+
+        _perlin.m_AmplitudeGain = 0;
+        _shakeTimer = 0;
+    } // end StopShake
+
+    private void UpdateShake()
+    {
+        if (_shakeTimer > 0)
+        {
+            Debug.Log("ShakeTimer is greater than 0, shaking the camera.");
+            _shakeTimer -= Time.deltaTime;
+            if (_shakeTimer <= 0)
+            {
+                StopShake();
+            }
+        }
+    } // end UpdateShake
+    #endregion
 } // end class CameraManager

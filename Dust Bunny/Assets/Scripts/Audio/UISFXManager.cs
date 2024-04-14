@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Diagnostics;
 using Unity.VisualScripting;
 
 public class UISFXManager : MonoBehaviour
@@ -14,7 +13,7 @@ public class UISFXManager : MonoBehaviour
         public SFX sfx;
         public AudioClip clip;
     }
-    private const string UISFX_PATH = "UI SFX Manager";
+    private const string UISFX_PATH = "UI/UI SFX Manager";
 
     public static UISFXManager instance;
 

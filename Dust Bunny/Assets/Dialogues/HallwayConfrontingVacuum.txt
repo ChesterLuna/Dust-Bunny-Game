@@ -1,0 +1,24 @@
+#Spek
+:Alright, here goes!
+
+>(Spek jumps up, and upon landing creates a pile of dust in front of the vacuum—the size of which scales with their dust level. They step out from behind it and start pushing/headbutting it.)
+
+# 
+: 
+
+>Setup
+#Spek
+:Phew, that was a lot of work. I hope it was enough...
+
+#Spek
+:I gotta get out of here before it wakes up.
+
+#Spek
+:Maybe there's somewhere safe that I can watch with Pip?
+
+>Change scene
+# 
+: 
+
+# 
+: 

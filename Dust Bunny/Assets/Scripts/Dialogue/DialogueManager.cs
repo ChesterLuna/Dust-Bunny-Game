@@ -6,6 +6,9 @@ using Bunny.Dialogues;
 
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
 
 public class DialogueManager : MonoBehaviour, IInteractable
 {
@@ -31,22 +34,27 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTouch = false;
     [SerializeField] bool interactable = true;
+    [SerializeField] float _timeToPlay = 0;
+
     public bool ShowIndicator { get; private set; } = false;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
 
     public bool IsBubble = false;
     public bool IsStartedDialogue = false;
-    bool _isFinishedDialogue = false;
+    public UnityEvent onFinishedDialogue;
+    bool _isFinishedDialogue;
 
+    [Header("Animations")]
     PlayerSFXController _sfxControlller;
     [SerializeField] Animator[] _actors;
     int _iAnim = 0;
+    [SerializeField] TimelineAsset[] _cinematics;
+    int _iCine = 0;
 
     private float _timeSinceDialogueStarted = 0.0f;
 
     PlayerController _player;
-
 
     private void Awake()
     {
@@ -54,7 +62,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         textBubble.SetActive(false);
         GameObject _playerObj = GameObject.FindWithTag("Player");
         if (_playerObj != null) _player = _playerObj.GetComponent<PlayerController>();
-
+        _isFinishedDialogue = ES3.Load(GetComponent<PersistentGUID>().guid, false);
     } // end Awake
 
     private void Start()
@@ -75,6 +83,10 @@ public class DialogueManager : MonoBehaviour, IInteractable
         if (!interactable) return;
         InteractDialogue();
     } // end Interact
+
+    public bool IsFinishedDialogue(){
+        return _isFinishedDialogue;
+    }
 
     public void FixedUpdate()
     {
@@ -107,6 +119,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void StartDialogue()
     {
+        if (_isFinishedDialogue == true) return;
         IsStartedDialogue = true;
         _isFinishedDialogue = false;
         if (importantDialogue)
@@ -116,14 +129,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         }
         else
         {
-            // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
-            if (IsBubble)
-            {
-                EnableTextBubble();
-            }
-            EnableAnimators();
-
-            DisplayNextSentence();
+            SetUpDialogueSystem();
         }
 
     } // end StartDialogue
@@ -134,13 +140,18 @@ public class DialogueManager : MonoBehaviour, IInteractable
         {
             yield return null;
         }
+        Invoke("SetUpDialogueSystem", _timeToPlay);
+        yield break;
+    }
+
+    void SetUpDialogueSystem()
+    {
         if (IsBubble)
         {
             EnableTextBubble();
         }
         EnableAnimators();
         DisplayNextSentence();
-        yield break;
     }
 
     private void EnableTextBubble()
@@ -149,7 +160,6 @@ public class DialogueManager : MonoBehaviour, IInteractable
         textBubble.SetActive(true);
         charNameText = textBubble.transform.Find("Bubble Canvas").transform.Find("Background").transform.Find("Character Name").GetComponent<TextMeshPro>();
         dialogueText = textBubble.GetComponent<TextCrawler>().Initalize();
-        Debug.Log(dialogueText);
     }
 
     private void EnableAnimators()
@@ -187,7 +197,9 @@ public class DialogueManager : MonoBehaviour, IInteractable
                 PlayNextAnimation();
             }
         }
-        Debug.Log(dialogueText);
+        if (nextDialogue.isPlayCinematic())
+            PlayNextCinematic();
+
 
         charNameText.text = nextDialogue.getName();
         dialogueText.SetText(nextDialogue.getText());
@@ -218,8 +230,30 @@ public class DialogueManager : MonoBehaviour, IInteractable
         Animator _nextActor = _actors[_iAnim];
 
         // Play animation fx
+        if(_nextActor.gameObject == _player.gameObject)
+        {
+            _player._lastAnimationState++;
+            _nextActor.SetInteger("PlayerAnimationTrigger", _player._lastAnimationState);
+        }
         _nextActor.SetTrigger("DialogueTrigger");
         _iAnim++;
+    }
+    public void PlayNextCinematic()
+    {
+        Debug.Log("Play a cinematic");
+
+        //Find next animator
+        if (_iCine >= _cinematics.Length)
+        {
+            Debug.LogWarning("There arent enough timelines (Cinematics) set up. Please add some into the dialogue manager or check how many times they are called in the dialogue");
+            return;
+        }
+        TimelineAsset _nextCine = _cinematics[_iCine];
+
+        // Play Cinematic fx
+        GetComponent<PlayableDirector>().Play(_nextCine);
+
+        _iCine++;
     }
 
     public void EndDialogue()
@@ -234,9 +268,12 @@ public class DialogueManager : MonoBehaviour, IInteractable
             textBubble.SetActive(false);
         }
         _isFinishedDialogue = true;
+        ES3.Save(GetComponent<PersistentGUID>().guid, _isFinishedDialogue);
+        ES3.Save("_lastAnimationState", _player._lastAnimationState);
         IsStartedDialogue = false;
         ShowIndicator = false;
         DisableAnimators();
+        onFinishedDialogue.Invoke();
     } // end EndDialogue
 
     private void OnTriggerEnter2D(Collider2D other)

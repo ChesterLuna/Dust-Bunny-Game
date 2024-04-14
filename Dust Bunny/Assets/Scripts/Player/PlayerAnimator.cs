@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
 
@@ -20,6 +22,7 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField] private ParticleSystem _landParticles;
     [SerializeField] private ParticleSystem _doubleJumpParticles;
     [SerializeField] private ParticleSystem _useDustParticles;
+    [SerializeField] private ParticleSystem _gainDustParticles;
     [SerializeField] private ParticleSystem _dashParticles;
     [SerializeField] private ParticleSystem _dashRingParticles;
     [SerializeField] private ParticleSystem _idleParticles;
@@ -34,19 +37,34 @@ public class PlayerAnimator : MonoBehaviour
 
     private IPlayerController _player;
     private GeneratedCharacterSize _character;
+    private GameObject _arrowParent;
+    private GameObject _arrowPivot;
+    private GameObject _arrowBGSprite;
+    private GameObject _arrowCirclesParent;
+    private GameObject _arrowLocationsParent;
+    private SpriteRenderer[] _arrowVisuals;
+    private float _arrowVisibility = 0.0f;
 
 
     // Animation Variables
     private bool _dashing;
     private bool _jumping;
     private bool _dead;
+    private float _playDustGainedParticlesTimer;
 
 
     private void Awake()
     {
         _player = GetComponentInParent<IPlayerController>();
         _character = _player.Stats.CharacterSize.GenerateCharacterSize();
-        _sprite.size = new Vector2(_character.Width / _sizeFactor.x, _character.Height / _sizeFactor.y);
+        OnSizeChanged(false);
+
+        _arrowParent = transform.GetChild(0).Find("Arrow").gameObject;
+        _arrowPivot = _arrowParent.transform.Find("Pivot Point").gameObject;
+        _arrowBGSprite = _arrowPivot.transform.Find("Sprite").gameObject;
+        _arrowCirclesParent = _arrowParent.transform.Find("Circles").gameObject;
+        _arrowLocationsParent = _arrowPivot.transform.Find("Circle locations").gameObject;
+        _arrowVisuals = _arrowParent.GetComponentsInChildren<SpriteRenderer>();
 
         // Fix for dying during slow mo effect
         Time.timeScale = 1.0f;
@@ -61,6 +79,7 @@ public class PlayerAnimator : MonoBehaviour
         _player.SizeChanged += OnSizeChanged;
         _player.ToggledPlayer += PlayerOnToggledPlayer;
         _player.UsedDust += OnUsedDust;
+        _player.GainedDust += OnGainedDust;
 
         _moveParticles.Play();
     } // end OnEnable
@@ -74,6 +93,7 @@ public class PlayerAnimator : MonoBehaviour
         _player.SizeChanged -= OnSizeChanged;
         _player.ToggledPlayer -= PlayerOnToggledPlayer;
         _player.UsedDust -= OnUsedDust;
+        _player.GainedDust -= OnGainedDust;
 
         _moveParticles.Stop();
     } // end OnDisable
@@ -103,7 +123,73 @@ public class PlayerAnimator : MonoBehaviour
             _idleParticlesMain.startColor = _particleCannotDashColor;
         }
 
+        //Handle on dust gain particle stopping
+        if (_playDustGainedParticlesTimer < 0.0f)
+        {
+            _playDustGainedParticlesTimer = 0.0f;
+            _gainDustParticles.Stop();
+        }
+        else
+        {
+            _playDustGainedParticlesTimer -= Time.deltaTime;
+        }
+
+        HandleDashArrow();
+
+
     } // end Update
+
+    private void HandleDashArrow(){
+        float cameraZoom = Camera.main.orthographicSize;
+
+        //Get the dash target from mouse position or keyboard input, based on UseMouseForDash
+        Vector3 dashTargetWorldPosition;
+        if(UserInput.instance.UseMouseForDash) {
+            dashTargetWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            dashTargetWorldPosition.z = 0;
+        } else {
+            Vector2 moveInput = dashTargetWorldPosition = UserInput.instance.Gather().Move;
+            float dashLengthMod = 1 + (.8f * _player.Stats.DashDuration * _player.Stats.DashVelocity * transform.localScale.x);
+            if(moveInput.sqrMagnitude > 0.001f){
+                dashTargetWorldPosition = _arrowPivot.transform.position + (Vector3)(moveInput * dashLengthMod);
+            } else {
+                float mod = 1;
+                if(_sprite.flipX) mod = -1;
+                dashTargetWorldPosition = _arrowPivot.transform.position + new Vector3(mod * dashLengthMod, 0, 0);
+            }
+        }
+
+        // deep math i do not understand
+        Vector3 perpendicular = Vector3.Cross(_arrowPivot.transform.position - dashTargetWorldPosition, Vector3.forward);
+		_arrowPivot.transform.rotation = Quaternion.LookRotation(Vector3.forward, perpendicular);
+
+        // move the circles to the correct location
+        for(int i = 0; i < _arrowCirclesParent.transform.childCount; i++){
+            _arrowCirclesParent.transform.GetChild(i).position = _arrowLocationsParent.transform.GetChild(i).position;
+        }
+
+        // handle arrow length
+        if(transform.localScale.x > 0 && transform.localScale.y > 0){
+            _arrowParent.transform.localScale = new Vector3(1/transform.localScale.x, 1/transform.localScale.y, 1); // we do NOT want the arrow to respect player size: we want to handle that ourselves based on mouse pos instead
+        }
+        float distance = Vector3.Distance(dashTargetWorldPosition, transform.position);
+        float length = Mathf.Max(Mathf.Min(distance / (4.0f + 0.1f * cameraZoom), 2 * cameraZoom), 0.05f * cameraZoom);
+        _arrowPivot.transform.localScale = new Vector3(length, _arrowPivot.transform.localScale.y, _arrowPivot.transform.localScale.z);
+
+        // handle opacity
+        if(UserInput.instance.Gather(_player.PlayerState).DashHeld){
+            _arrowVisibility = Mathf.Lerp(_arrowVisibility, 0.8f, Time.deltaTime * 3);
+        } else {
+            _arrowVisibility = Mathf.Lerp(_arrowVisibility, 0f, Time.deltaTime * 10);
+        }
+
+        // set opacity of all graphics
+        for(int i = 0; i < _arrowVisuals.Length; i++){
+            _arrowVisuals[i].color = new Color( _arrowVisuals[i].color.r,  _arrowVisuals[i].color.g,  _arrowVisuals[i].color.b, _arrowVisibility);
+        }
+        _arrowBGSprite.GetComponent<SpriteRenderer>().material.SetFloat("Visibility", _arrowVisibility);
+    }
+
     #region Walls & Ladders
 
     [Header("Walls & Ladders")]
@@ -245,14 +331,8 @@ public class PlayerAnimator : MonoBehaviour
     {
         _character = _player.Stats.CharacterSize.GenerateCharacterSize();
         Vector2 newSize = new Vector2(_character.Width / _sizeFactor.x, _character.Height / _sizeFactor.y);
-        if (tween)
-        {
-            LeanTween.scale(gameObject, newSize, lerpTime);
-        }
-        else
-        {
-            gameObject.transform.localScale = newSize;
-        }
+        float actualLerpTime = tween ? lerpTime : 0.01f;
+        gameObject.transform?.DOScale(newSize, actualLerpTime);
     } // end OnSizeChanged
 
 
@@ -271,6 +351,17 @@ public class PlayerAnimator : MonoBehaviour
         }
         _useDustParticles.Play();
     } // end OnUsedDust
+
+    private void OnGainedDust(float gainedAmount)
+    {
+
+        _playDustGainedParticlesTimer += Mathf.Min(gainedAmount / 20.0f, 3.0f);
+        if (_gainDustParticles.isStopped)
+        {
+            _gainDustParticles.Play();
+        }
+        _sfx.PlaySFX(PlayerSFXController.SFX.Dust_Collect_Full);
+    }
 
     private IEnumerator FreezeGameOnTakeDamage()
     {

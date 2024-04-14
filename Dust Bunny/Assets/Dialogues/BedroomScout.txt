@@ -1,0 +1,55 @@
+$Rattle
+#Vent
+:Rattle…Rattle!
+
+#Spek
+:Pip? Are you there?
+
+!(Pip jumps out of the vent.) Move Text out and add next dialogue at the end
+# 
+: 
+
+!(Pip is there, text is back)
+#Pip
+:Spek! I scouted ahead a little past the door. I think I found something interesting!
+
+#Spek
+:What is it?
+
+#Pip
+:Well, you see… There was this great, black rope.
+
+#Pip
+:When the earthshaker came to life earlier, I noticed that it had a rope attached to its back.
+
+#Pip
+:And there's another rope here behind the door!
+
+#Pip
+:It was attached to the wall, and I think if I'm right about this...
+
+#Pip
+:The earthshaker will eventually have to come back to that spot!
+
+#Pip
+:We'll be able to find it if we just wait nearby!
+
+#Spek
+:*Huff* I see… You did great, Pip. That's great news.
+
+#Spek
+:Now all we need to worry about is how exactly to stop it.
+
+#Pip
+:How do we stop it?
+
+#Spek
+:I don't know, but I think I have an idea.
+
+!(Pip jumps up and down a few times, then jumps back into the vent.) MOVE TEXT BOX AND ADD NEXT DIALOGUE AT THE END
+# 
+: 
+$Rattle
+!Make sure Pip left MOVE TEXT BOX AND ADD NEXT DIALOGUE AT THE END
+# 
+: 

@@ -1,0 +1,73 @@
+>(Spek and Pip are standing on some sort of ledge in the corridor, waiting — see corresponding image, possible ledge location indicated in pink)
+#???
+:Whirr! Creak...Rumble...
+
+$Whirring
+#Pip
+:W-What's happening?
+
+#Spek
+:It woke up while I was feeding it.
+
+#Spek
+:*Sigh* Hopefully it'll still work, but I'm not sure.
+
+$Whirring
+#???
+:Whirr....
+
+$Loud Whirring
+#???
+:WHIRRRRRR....!!
+
+(Seemingly unable to contend with the dust, the vacuum goes quiet.)
+
+!(Pip jumps.)
+
+#Spek
+:Shh!
+
+>(They both step closer to the end of the ledge, to get a better look.)
+!Pip Stays
+
+#???
+:(Clunk) ...
+
+>After State
+#Spek
+:...
+
+#Pip
+:...
+
+#Spek
+:I think it worked.
+
+#Spek
+:(Huff) I think it really worked!
+
+!2(Pip starts jumping up and down.)
+(Spek jumps up and down several times as well.)
+
+#Pip
+:We did it!
+
+!2(Both stop.)
+
+#Spek
+:Okay, okay, we can celebrate more later.
+
+
+#Spek
+:Let's get back to the Burrow, okay?
+
+#Pip
+:Okay!
+
+>Leaving Scene
+# 
+:
+
+>Leaving Scene make sure
+# 
+: 

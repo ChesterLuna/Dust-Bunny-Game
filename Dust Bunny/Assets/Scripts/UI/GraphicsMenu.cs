@@ -16,6 +16,8 @@ public class GraphicsMenu : MonoBehaviour
     [SerializeField] private TMPro.TMP_Dropdown _FPSDropdown;
     [SerializeField] private List<string> _FPSOptions = new List<string> { "30", "60", "120", "144", "240", "Unlimited" };
 
+    private bool setup = false;
+
     void Start()
     {
         SetupResolutionDropdown();
@@ -23,6 +25,7 @@ public class GraphicsMenu : MonoBehaviour
         SetupFPSDropDown();
         _fullscreenToggle.isOn = Screen.fullScreen;
         _vSyncToggle.isOn = QualitySettings.vSyncCount > 0;
+        setup = true;
     } // end Start
 
     #region FPS
@@ -70,6 +73,7 @@ public class GraphicsMenu : MonoBehaviour
             fps = int.Parse(_FPSOptions[fpsIndex]);
         }
         Application.targetFrameRate = fps;
+        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetFPS
 
     #endregion
@@ -103,6 +107,7 @@ public class GraphicsMenu : MonoBehaviour
     {
         Resolution resolution = _resolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetResolution
     #endregion
 
@@ -125,17 +130,20 @@ public class GraphicsMenu : MonoBehaviour
     public void SetQuality(int qualityIndex)
     {
         QualitySettings.SetQualityLevel(qualityIndex);
+        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetQuality
     #endregion
 
     public void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;
+        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetFullscreen
 
     public void SetVSync(bool isVSync)
     {
         QualitySettings.vSyncCount = isVSync ? 1 : 0;
+        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetVSync
 
 } // end Class GraphicsMenu

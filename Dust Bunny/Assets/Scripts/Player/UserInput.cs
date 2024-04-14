@@ -26,12 +26,14 @@ public class UserInput : MonoBehaviour
         SetUpInputActions();
     } // end Awake
 
-    void FixedUpdate(){
+    void FixedUpdate()
+    {
         // Refresh the input system
         InputSystem.Update();
     }
 
-    void Update(){
+    void Update()
+    {
         // Refresh the input system manually, only if TimeScale = 0
         if (Time.timeScale == 0) InputSystem.Update();
     }
@@ -68,11 +70,12 @@ public class UserInput : MonoBehaviour
             {
                 JumpDown = false,
                 JumpHeld = false,
+                DashHeld = false,
                 DashDown = false,
                 Move = Vector2.zero,
                 DashDirection = Vector2.zero,
                 InteractDown = false,
-                MenuDown = _menu.WasReleasedThisFrame(),
+                MenuDown = _menu.WasPressedThisFrame(),
                 AnyKey = _anyKey.WasPressedThisFrame()
             };
         }
@@ -82,6 +85,7 @@ public class UserInput : MonoBehaviour
             {
                 JumpDown = false,
                 JumpHeld = false,
+                DashHeld = false,
                 DashDown = false,
                 Move = Vector2.zero,
                 DashDirection = Vector2.zero,
@@ -96,7 +100,8 @@ public class UserInput : MonoBehaviour
             {
                 JumpDown = _jump.WasPressedThisFrame(),
                 JumpHeld = _jump.IsPressed(),
-                DashDown = _dash.WasPressedThisFrame(),
+                DashHeld = _dash.IsPressed(),
+                DashDown = _dash.WasReleasedThisFrame(),
                 Move = _move.ReadValue<Vector2>(),
                 DashDirection = _dashPosition.ReadValue<Vector2>(),
                 InteractDown = _interact.WasPressedThisFrame(),
@@ -106,6 +111,15 @@ public class UserInput : MonoBehaviour
         }
     } // end Gather
 
+    public InputNames GetInputNames(){
+        return new InputNames{
+            MovementKeys = _move.GetBindingDisplayString(0),
+            JumpKey = _jump.GetBindingDisplayString(0),
+            DashKey = _dash.GetBindingDisplayString(0),
+            InteractKey = _interact.GetBindingDisplayString(0),
+        };
+    }
+
 } // end class PlayerInput
 
 public struct FrameInput
@@ -114,8 +128,17 @@ public struct FrameInput
     public bool JumpDown;
     public bool JumpHeld;
     public bool DashDown;
+    public bool DashHeld;
     public Vector2 DashDirection;
     public bool InteractDown;
     public bool MenuDown;
     public bool AnyKey;
 } // end struct FrameInput
+
+public struct InputNames
+{
+    public string MovementKeys;
+    public string JumpKey;
+    public string DashKey;
+    public string InteractKey;
+}

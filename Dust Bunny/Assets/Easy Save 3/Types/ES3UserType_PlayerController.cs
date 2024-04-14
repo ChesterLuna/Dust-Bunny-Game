@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ES3Types
 {
 	[UnityEngine.Scripting.Preserve]
-	[ES3PropertiesAttribute("_currentDust")]
+	[ES3PropertiesAttribute()]
 	public class ES3UserType_PlayerController : ES3ComponentType
 	{
 		public static ES3Type Instance = null;
@@ -16,7 +16,6 @@ namespace ES3Types
 		{
 			var instance = (PlayerController)obj;
 			
-			writer.WritePrivateField("_currentDust", instance);
 		}
 
 		protected override void ReadComponent<T>(ES3Reader reader, object obj)
@@ -27,9 +26,6 @@ namespace ES3Types
 				switch(propertyName)
 				{
 					
-					case "_currentDust":
-					instance = (PlayerController)reader.SetPrivateField("_currentDust", reader.Read<System.Single>(), instance);
-					break;
 					default:
 						reader.Skip();
 						break;

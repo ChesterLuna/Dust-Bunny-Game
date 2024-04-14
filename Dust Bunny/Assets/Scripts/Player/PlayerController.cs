@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public event Action<bool> WallGrabChanged;
     public event Action<bool> SizeChanged;
     public event Action<float, bool> UsedDust;
+    public event Action<float> GainedDust;
     public event Action<Vector2> Repositioned;
     public event Action<bool, bool> ToggledPlayer;
 
@@ -102,6 +103,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             SetupCharacter();
         }
         PhysicsSimulator.Instance.AddPlayer(this);
+        _lastAnimationState = ES3.Load("_lastAnimationState", 0);
     } // end Awake
 
     private void Start()
@@ -593,7 +595,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         if (_jumpToConsume || HasBufferedJump)
         {
-            if (CanWallJump && IsPushingAgainstWall)
+            if (CanWallJump)
             {
                 ExecuteJump(JumpType.WallJump);
             }
@@ -682,6 +684,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     private bool _dashToConsume;
     private bool _canDash;
+    private bool _stopDashing;
     private Vector2 _dashVel;
     private bool _dashing;
     private float _startedDashing;
@@ -735,9 +738,10 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
         if (_dashing)
         {
-            if (_time > _startedDashing + Stats.DashDuration)
+            if (_time > _startedDashing + Stats.DashDuration || _stopDashing)
             {
                 _dashing = false;
+                _stopDashing = false;
                 DashChanged?.Invoke(false, Vector2.zero);
 
                 SetVelocity(new Vector2(Velocity.x * Stats.DashEndHorizontalMultiplier, Velocity.y));
@@ -981,14 +985,18 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         };
     } // end SaveCharacterState
 
+    [SerializeField] public int _lastAnimationState = 0;
+
     public void EnableDialogue()
     {
+        _stopDashing = true;
         SetVelocity(new Vector2(0, Velocity.y));
         PlayerState = PlayerStates.Dialogue;
     }
 
     public void DisableDialogue()
     {
+        _stopDashing = false;
         PlayerState = PlayerStates.Playing;
     }
 
@@ -1028,7 +1036,14 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
 
     public void ChangeDust(float scalar, bool hostile)
     {
-        if (scalar < 0) UsedDust?.Invoke(scalar, hostile);
+        if (scalar < 0)
+        {
+            UsedDust?.Invoke(scalar, hostile);
+        }
+        else
+        {
+            GainedDust?.Invoke(scalar);
+        }
 
         float _oldDust = _currentDust;
         _currentDust += scalar;
@@ -1162,6 +1177,7 @@ public interface IPlayerController
     public event Action<bool> WallGrabChanged;
     public event Action<bool> SizeChanged;
     public event Action<float, bool> UsedDust;
+    public event Action<float> GainedDust;
     public event Action<Vector2> Repositioned;
     public event Action<bool, bool> ToggledPlayer;
 
