@@ -30,7 +30,7 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (UserInput.instance.Gather(PlayerStates.Paused).MenuDown && _timeSinceLastResume > 0.3f)
+        if (UserInput.instance.Gather().MenuDown && _timeSinceLastResume > 0.3f)
         {
             if (GameIsPaused)
             {
@@ -174,18 +174,21 @@ public class PauseMenu : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     } // end QuitGame
 
-    public void PlayUIPositive(){
-        if(!GameIsPaused) return;
+    public void PlayUIPositive()
+    {
+        if (!GameIsPaused) return;
         UISFXManager.PlaySFX(UISFXManager.SFX.POSITIVE);
     }
 
-    public void PlayUINavigate(){
-        if(!GameIsPaused) return;
+    public void PlayUINavigate()
+    {
+        if (!GameIsPaused) return;
         UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     }
 
-    public void PlayUINegative(){
-        if(!GameIsPaused) return;
+    public void PlayUINegative()
+    {
+        if (!GameIsPaused) return;
         UISFXManager.PlaySFX(UISFXManager.SFX.NEGATIVE);
     }
 

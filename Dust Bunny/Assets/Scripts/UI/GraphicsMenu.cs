@@ -14,67 +14,77 @@ public class GraphicsMenu : MonoBehaviour
     [SerializeField] private Toggle _fullscreenToggle;
     [SerializeField] private Toggle _vSyncToggle;
     [SerializeField] private TMPro.TMP_Dropdown _FPSDropdown;
-    [SerializeField] private List<string> _FPSOptions = new List<string> { "30", "60", "120", "144", "240", "Unlimited" };
+    [SerializeField] private List<int> _FPSOptions = new List<int> { 30, 60, 120, 144, 240, -1 };
 
-    private bool setup = false;
+    private bool _setup = false;
 
     void Start()
     {
+        Debug.Log("Target1 " + Application.targetFrameRate);
+
+        Debug.Log(PlayerPrefs.GetInt("ScreenWidth") + " " + PlayerPrefs.GetInt("ScreenHeight") + " " + PlayerPrefs.GetInt("FPS") + " " + PlayerPrefs.GetInt("vSync") + " " + PlayerPrefs.GetInt("Quality") + " " + PlayerPrefs.GetInt("FullScreen"));
+        Debug.Log(PlayerPrefs.GetInt("ScreenWidth", Screen.currentResolution.width) + " " + PlayerPrefs.GetInt("ScreenHeight", Screen.currentResolution.height) + " " + PlayerPrefs.GetInt("FPS", Application.targetFrameRate) + " " + PlayerPrefs.GetInt("vSync", QualitySettings.vSyncCount) + " " + PlayerPrefs.GetInt("Quality", QualitySettings.GetQualityLevel()) + " " + PlayerPrefs.GetInt("FullScreen", Screen.fullScreen ? 1 : 0));
+        // Load the values from the player prefs only if they exist, esle use the defaults
+        Screen.fullScreen = PlayerPrefs.GetInt("FullScreen", Screen.fullScreen ? 1 : 0) == 1;
+        Screen.SetResolution(PlayerPrefs.GetInt("ScreenWidth", Screen.currentResolution.width), PlayerPrefs.GetInt("ScreenHeight", Screen.currentResolution.height), Screen.fullScreen);
+        Application.targetFrameRate = PlayerPrefs.GetInt("FPS", Application.targetFrameRate);
+        QualitySettings.vSyncCount = PlayerPrefs.GetInt("vSync", QualitySettings.vSyncCount);
+        QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("Quality", QualitySettings.GetQualityLevel()));
+        Debug.Log("Target2 " + Application.targetFrameRate);
+
+        // Setup Dropdowns
         SetupResolutionDropdown();
         SetupQualityDropdown();
         SetupFPSDropDown();
+
+        // Setup Toggles
         _fullscreenToggle.isOn = Screen.fullScreen;
         _vSyncToggle.isOn = QualitySettings.vSyncCount > 0;
-        setup = true;
+
+
+        _setup = true;
     } // end Start
 
     #region FPS
     private void SetupFPSDropDown()
     {
         _FPSDropdown.ClearOptions();
-        _FPSDropdown.AddOptions(_FPSOptions);
-        int currentFPS = Application.targetFrameRate;
-        Debug.Log("Current FPS: " + currentFPS);
-        int closestFPSIndex = 0;
-        int smallestDifference = int.MaxValue;
-
-        for (int i = 0; i < _FPSOptions.Count; i++)
+        List<string> options = new List<string>();
+        foreach (int fps in _FPSOptions)
         {
-            int fpsOption;
-            if (_FPSOptions[i] == "Unlimited")
+            if (fps == -1)
             {
-                fpsOption = int.MaxValue;
+                options.Add("Unlimited");
             }
             else
             {
-                fpsOption = int.Parse(_FPSOptions[i]);
+                options.Add(fps.ToString());
             }
-            int difference = Math.Abs(currentFPS - (fpsOption - 1));
-            if (difference < smallestDifference)
+        }
+        _FPSDropdown.AddOptions(options);
+        int index = 0;
+        Debug.Log("Target " + Application.targetFrameRate);
+        for (int i = 0; i < _FPSOptions.Count; i++)
+        {
+            if (_FPSOptions[i] == Application.targetFrameRate)
             {
-                smallestDifference = difference;
-                closestFPSIndex = i;
+                index = i;
+                break;
             }
         }
 
-        _FPSDropdown.value = closestFPSIndex;
-        SetFPS(closestFPSIndex);
+        Debug.Log(index);
+        _FPSDropdown.value = index;
+        SetFPS(index);
         _FPSDropdown.RefreshShownValue();
     } // end SetupFPSDropDown
 
     public void SetFPS(int fpsIndex)
     {
-        int fps;
-        if (_FPSOptions[fpsIndex] == "Unlimited")
-        {
-            fps = int.MaxValue;
-        }
-        else
-        {
-            fps = int.Parse(_FPSOptions[fpsIndex]);
-        }
+        int fps = _FPSOptions[fpsIndex];
         Application.targetFrameRate = fps;
-        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
+        PlayerPrefs.SetInt("FPS", Application.targetFrameRate);
+        if (_setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetFPS
 
     #endregion
@@ -91,7 +101,7 @@ public class GraphicsMenu : MonoBehaviour
         int currentResolutionIndex = 0;
         for (int i = 0; i < _resolutions.Length; i++)
         {
-            string option = _resolutions[i].width + " x " + _resolutions[i].height;
+            string option = _resolutions[i].width + " x " + _resolutions[i].height + " @ " + _resolutions[i].refreshRateRatio + "Hz";
             options.Add(option);
             if (_resolutions[i].width == Screen.currentResolution.width &&
                 _resolutions[i].height == Screen.currentResolution.height)
@@ -108,7 +118,11 @@ public class GraphicsMenu : MonoBehaviour
     {
         Resolution resolution = _resolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
-        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
+        // Save the resolution to the player prefs
+        PlayerPrefs.SetInt("ScreenWidth", resolution.width);
+        PlayerPrefs.SetInt("ScreenHeight", resolution.height);
+
+        if (_setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetResolution
     #endregion
 
@@ -131,20 +145,29 @@ public class GraphicsMenu : MonoBehaviour
     public void SetQuality(int qualityIndex)
     {
         QualitySettings.SetQualityLevel(qualityIndex);
-        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
+        // Save the quality to the player prefs
+        PlayerPrefs.SetInt("Quality", QualitySettings.GetQualityLevel());
+
+        if (_setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetQuality
     #endregion
 
     public void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;
-        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
+        // Save the fullscreen to the player prefs
+        PlayerPrefs.SetInt("FullScreen", Screen.fullScreen ? 1 : 0);
+
+        if (_setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetFullscreen
 
     public void SetVSync(bool isVSync)
     {
         QualitySettings.vSyncCount = isVSync ? 1 : 0;
-        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
+        // Save the vSync to the player prefs
+        PlayerPrefs.SetInt("vSync", QualitySettings.vSyncCount);
+
+        if (_setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetVSync
 
 } // end Class GraphicsMenu

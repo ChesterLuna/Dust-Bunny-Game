@@ -80,8 +80,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        if (!interactable) return;
-        InteractDialogue();
+        // if (!interactable) return;
+        // InteractDialogue();
     } // end Interact
 
     public bool IsFinishedDialogue()
@@ -91,7 +91,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void FixedUpdate()
     {
-        if (UserInput.instance.Gather(PlayerStates.Dialogue).InteractDown && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f)
+        if (UserInput.instance.Gather().InteractDown && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f)
         {
             InteractDialogue();
         }

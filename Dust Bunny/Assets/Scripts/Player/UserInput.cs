@@ -61,10 +61,10 @@ public class UserInput : MonoBehaviour
 
     private void OnDisable() => _actions.Disable();
 
-    public FrameInput Gather(PlayerStates playerState = PlayerStates.Playing)
+    public FrameInput Gather()
     {
         // Check states
-        if (playerState == PlayerStates.Paused)
+        if (GameManager.instance.CurrentGameState == GameplayState.Paused || GameManager.instance.CurrentGameState == GameplayState.MainMeu)
         {
             return new FrameInput
             {
@@ -79,7 +79,7 @@ public class UserInput : MonoBehaviour
                 AnyKey = _anyKey.WasPressedThisFrame()
             };
         }
-        else if (playerState == PlayerStates.Dialogue)
+        else if (GameManager.instance.CurrentGameState == GameplayState.Dialogue)
         {
             return new FrameInput
             {
@@ -111,14 +111,16 @@ public class UserInput : MonoBehaviour
         }
     } // end Gather
 
-    public InputNames GetInputNames(){
-        return new InputNames{
+    public InputNames GetInputNames()
+    {
+        return new InputNames
+        {
             MovementKeys = _move.GetBindingDisplayString(0),
             JumpKey = _jump.GetBindingDisplayString(0),
             DashKey = _dash.GetBindingDisplayString(0),
             InteractKey = _interact.GetBindingDisplayString(0),
         };
-    }
+    } // end GetInputNames
 
 } // end class PlayerInput
 
@@ -141,4 +143,4 @@ public struct InputNames
     public string JumpKey;
     public string DashKey;
     public string InteractKey;
-}
+} // end struct InputNames

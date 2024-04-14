@@ -50,7 +50,6 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public Vector2 Velocity { get; private set; }
     public int WallDirection { get; private set; }
     public bool ClimbingLadder { get; private set; }
-    public PlayerStates PlayerState { get; set; } = PlayerStates.Playing;
 
     public void AddFrameForce(Vector2 force, bool resetVelocity = false)
     {
@@ -74,9 +73,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         Repositioned?.Invoke(position);
     } // end RepositionImmediately
 
-    public void TogglePlayer(bool on, bool dead = false, PlayerStates playerState = PlayerStates.Playing)
+    public void TogglePlayer(bool on, bool dead = false)
     {
-        PlayerState = playerState;
         Active = on;
         _rb.isKinematic = !on;
         ToggledPlayer?.Invoke(on, dead);
@@ -228,7 +226,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         // Early return if time is frozen (we don't want to buffer inputs)
         if (Time.timeScale == 0) return;
 
-        _frameInput = UserInput.instance.Gather(PlayerState);
+        _frameInput = UserInput.instance.Gather();
 
 
         if (_frameInput.JumpDown)
@@ -991,13 +989,13 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
         _stopDashing = true;
         SetVelocity(new Vector2(0, Velocity.y));
-        PlayerState = PlayerStates.Dialogue;
+        GameManager.instance.CurrentGameState = GameplayState.Dialogue;
     }
 
     public void DisableDialogue()
     {
         _stopDashing = false;
-        PlayerState = PlayerStates.Playing;
+        GameManager.instance.CurrentGameState = GameplayState.Playing;
     }
 
     #region Dust & Size
@@ -1070,7 +1068,9 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     [SerializeField] private float _deathTransitionTime = 1f;
     public void Die() // TODO, Update
     {
-        TogglePlayer(false, true, PlayerStates.Dead);
+        TogglePlayer(false, true);
+        GameManager.instance.CurrentGameState = GameplayState.Dead;
+
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
         levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
         GameManager.instance.PauseGameTime();
@@ -1191,7 +1191,6 @@ public interface IPlayerController
     public int WallDirection { get; }
     public bool ClimbingLadder { get; }
     public float CurrentDust { get; }
-    public PlayerStates PlayerState { get; set; }
 
     // External force
     public void AddFrameForce(Vector2 force, bool resetVelocity = false);
@@ -1199,7 +1198,7 @@ public interface IPlayerController
     // Utility
     public void LoadState(ControllerState state);
     public void RepositionImmediately(Vector2 position, bool resetVelocity = false);
-    public void TogglePlayer(bool on, bool dead = false, PlayerStates playerState = PlayerStates.Playing);
+    public void TogglePlayer(bool on, bool dead = false);
     public void ResetAirJumps();
     public void ResetDashes();
 
@@ -1210,14 +1209,6 @@ public interface IPlayerController
     public void Die();
     public bool CanDash();
 } // end interface IPlayerController
-
-public enum PlayerStates
-{
-    Playing,
-    Paused,
-    Dialogue,
-    Dead
-} // end enum PlayerStates
 
 public interface ISpeedModifier
 {

@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    [SerializeField] public GameplayState CurrentGameState = GameplayState.MainMeu;
     [SerializeField] public Vector3? CheckpointLocation;
     public float CheckpointDustLevel = -1;
 
@@ -42,7 +43,7 @@ public class GameManager : MonoBehaviour
     } // end OnDisable
 
     // called second
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode) // Moved to player controller
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (SceneManager.GetActiveScene().name == "Main Menu")
         {
@@ -64,8 +65,10 @@ public class GameManager : MonoBehaviour
     // called third
     private void Start()
     {
-        StartGameTime();
+
     } // end Awake
+
+
 
     #region Timer
     // Score Timer
@@ -147,3 +150,12 @@ public class GameManager : MonoBehaviour
     } // end SetMouseForDash
     #endregion Timer
 } // end class GameManager
+
+public enum GameplayState
+{
+    MainMeu,
+    Paused,
+    Playing,
+    Dialogue,
+    Dead
+} // end enum GameplayState
