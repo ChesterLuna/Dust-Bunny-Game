@@ -34,6 +34,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTouch = false;
     [SerializeField] bool interactable = true;
+    [SerializeField] float _timeToPlay = 0;
+
     public bool ShowIndicator { get; private set; } = false;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
@@ -43,6 +45,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     public UnityEvent onFinishedDialogue;
     bool _isFinishedDialogue;
 
+    [Header("Animations")]
     PlayerSFXController _sfxControlller;
     [SerializeField] Animator[] _actors;
     int _iAnim = 0;
@@ -52,7 +55,6 @@ public class DialogueManager : MonoBehaviour, IInteractable
     private float _timeSinceDialogueStarted = 0.0f;
 
     PlayerController _player;
-
 
     private void Awake()
     {
@@ -127,14 +129,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         }
         else
         {
-            // If the Dialogue is supposed to be text bubble dialogue, create a text bubble and use their text boxes
-            if (IsBubble)
-            {
-                EnableTextBubble();
-            }
-            EnableAnimators();
-
-            DisplayNextSentence();
+            SetUpDialogueSystem();
         }
 
     } // end StartDialogue
@@ -145,13 +140,18 @@ public class DialogueManager : MonoBehaviour, IInteractable
         {
             yield return null;
         }
+        Invoke("SetUpDialogueSystem", _timeToPlay);
+        yield break;
+    }
+
+    void SetUpDialogueSystem()
+    {
         if (IsBubble)
         {
             EnableTextBubble();
         }
         EnableAnimators();
         DisplayNextSentence();
-        yield break;
     }
 
     private void EnableTextBubble()
