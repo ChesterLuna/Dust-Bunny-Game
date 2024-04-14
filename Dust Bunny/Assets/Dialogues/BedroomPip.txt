@@ -1,3 +1,9 @@
+$Rattle
+!Next dialogue
+# 
+: 
+
+!Move Dialogue Box
 #Spek
 :Who's there!?
 
