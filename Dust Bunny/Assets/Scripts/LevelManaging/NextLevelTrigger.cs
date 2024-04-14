@@ -24,7 +24,7 @@ public class NextLevelTrigger : MonoBehaviour
     {
         GameManager.instance.CheckpointLocation = _nextLevelSpawnLocation;
         ES3AutoSaveMgr.Current.Save();
-
+        GameObject.FindWithTag("Player").GetComponent<PlayerController>()._lastAnimationState = 0;
         if (_nextLevelName == "Good Ending")
         {
             GameManager.instance.StopGameTime();

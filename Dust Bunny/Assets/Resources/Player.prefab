@@ -46285,6 +46285,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a82cc284db0349f42b6bd07381cdfafe, type: 2}
   <Stats>k__BackingField: {fileID: 11400000, guid: 894dfe33661263b42a8e1490d64c0424, type: 2}
   _drawGizmos: 1
+  _lastAnimationState: 0
   _currentDust: 10
   _maxDust: 100
   _dustLevels:

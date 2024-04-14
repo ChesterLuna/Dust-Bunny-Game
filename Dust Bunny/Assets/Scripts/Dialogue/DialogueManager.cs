@@ -230,6 +230,11 @@ public class DialogueManager : MonoBehaviour, IInteractable
         Animator _nextActor = _actors[_iAnim];
 
         // Play animation fx
+        if(_nextActor.gameObject == _player.gameObject)
+        {
+            _player._lastAnimationState++;
+            _nextActor.SetInteger("PlayerAnimationTrigger", _player._lastAnimationState);
+        }
         _nextActor.SetTrigger("DialogueTrigger");
         _iAnim++;
     }
@@ -264,6 +269,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         }
         _isFinishedDialogue = true;
         ES3.Save(GetComponent<PersistentGUID>().guid, _isFinishedDialogue);
+        ES3.Save("_lastAnimationState", _player._lastAnimationState);
         IsStartedDialogue = false;
         ShowIndicator = false;
         DisableAnimators();

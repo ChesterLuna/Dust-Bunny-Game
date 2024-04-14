@@ -103,6 +103,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             SetupCharacter();
         }
         PhysicsSimulator.Instance.AddPlayer(this);
+        _lastAnimationState = ES3.Load("_lastAnimationState", 0);
     } // end Awake
 
     private void Start()
@@ -983,6 +984,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             Grounded = _grounded
         };
     } // end SaveCharacterState
+
+    [SerializeField] public int _lastAnimationState = 0;
 
     public void EnableDialogue()
     {
