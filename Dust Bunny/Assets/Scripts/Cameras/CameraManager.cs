@@ -239,7 +239,6 @@ public class CameraManager : MonoBehaviour
     {
         if (_shakeTimer > 0)
         {
-            Debug.Log("ShakeTimer is greater than 0, shaking the camera.");
             _shakeTimer -= Time.deltaTime;
             if (_shakeTimer <= 0)
             {

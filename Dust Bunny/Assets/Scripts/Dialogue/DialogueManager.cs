@@ -84,13 +84,14 @@ public class DialogueManager : MonoBehaviour, IInteractable
         InteractDialogue();
     } // end Interact
 
-    public bool IsFinishedDialogue(){
+    public bool IsFinishedDialogue()
+    {
         return _isFinishedDialogue;
     }
 
     public void FixedUpdate()
     {
-        if (UserInput.instance.Gather(PlayerStates.Dialogue).AnyKey && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f)
+        if (UserInput.instance.Gather(PlayerStates.Dialogue).InteractDown && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f)
         {
             InteractDialogue();
         }
@@ -230,7 +231,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         Animator _nextActor = _actors[_iAnim];
 
         // Play animation fx
-        if(_nextActor.gameObject == _player.gameObject)
+        if (_nextActor.gameObject == _player.gameObject)
         {
             _player._lastAnimationState++;
             _nextActor.SetInteger("PlayerAnimationTrigger", _player._lastAnimationState);

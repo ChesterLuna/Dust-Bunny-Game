@@ -34,6 +34,7 @@ public class GraphicsMenu : MonoBehaviour
         _FPSDropdown.ClearOptions();
         _FPSDropdown.AddOptions(_FPSOptions);
         int currentFPS = Application.targetFrameRate;
+        Debug.Log("Current FPS: " + currentFPS);
         int closestFPSIndex = 0;
         int smallestDifference = int.MaxValue;
 
