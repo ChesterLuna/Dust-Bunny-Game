@@ -5763,13 +5763,7 @@ MonoBehaviour:
   _fullscreenToggle: {fileID: 4971098746424644054}
   _vSyncToggle: {fileID: 2423109463519856006}
   _FPSDropdown: {fileID: 4445054284942625997}
-  _FPSOptions:
-  - 30
-  - 60
-  - 120
-  - 144
-  - 240
-  - Unlimited
+  _FPSOptions: 1e0000003c0000007800000090000000f0000000ffffffff
 --- !u!1 &7474099012177322391
 GameObject:
   m_ObjectHideFlags: 0
@@ -8319,7 +8313,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7050621590786413959, guid: bad99a6f066b4f74882b17cf5860224e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7050621590786413959, guid: bad99a6f066b4f74882b17cf5860224e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName

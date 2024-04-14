@@ -14,7 +14,8 @@ public class GraphicsMenu : MonoBehaviour
     [SerializeField] private Toggle _fullscreenToggle;
     [SerializeField] private Toggle _vSyncToggle;
     [SerializeField] private TMPro.TMP_Dropdown _FPSDropdown;
-    [SerializeField] private List<string> _FPSOptions = new List<string> { "30", "60", "120", "144", "240", "Unlimited" };
+    [SerializeField] private List<int> _FPSOptions = new List<int> { 30, 60, 120, 144, 240, -1 };
+
 
     private bool setup = false;
 
@@ -32,48 +33,32 @@ public class GraphicsMenu : MonoBehaviour
     private void SetupFPSDropDown()
     {
         _FPSDropdown.ClearOptions();
-        _FPSDropdown.AddOptions(_FPSOptions);
-        int currentFPS = Application.targetFrameRate;
-        Debug.Log("Current FPS: " + currentFPS);
-        int closestFPSIndex = 0;
-        int smallestDifference = int.MaxValue;
-
+        int index = 0;
+        List<string> options = new List<string>();
         for (int i = 0; i < _FPSOptions.Count; i++)
         {
-            int fpsOption;
-            if (_FPSOptions[i] == "Unlimited")
+            if (_FPSOptions[i] == Application.targetFrameRate)
             {
-                fpsOption = int.MaxValue;
+                index = i;
+            }
+            if (_FPSOptions[i] == -1)
+            {
+                options.Add("Unlimited");
             }
             else
             {
-                fpsOption = int.Parse(_FPSOptions[i]);
-            }
-            int difference = Math.Abs(currentFPS - (fpsOption - 1));
-            if (difference < smallestDifference)
-            {
-                smallestDifference = difference;
-                closestFPSIndex = i;
+                options.Add(_FPSOptions[i].ToString());
             }
         }
-
-        _FPSDropdown.value = closestFPSIndex;
-        SetFPS(closestFPSIndex);
+        _FPSDropdown.AddOptions(options);
+        _FPSDropdown.value = index;
+        SetFPS(index);
         _FPSDropdown.RefreshShownValue();
     } // end SetupFPSDropDown
 
     public void SetFPS(int fpsIndex)
     {
-        int fps;
-        if (_FPSOptions[fpsIndex] == "Unlimited")
-        {
-            fps = int.MaxValue;
-        }
-        else
-        {
-            fps = int.Parse(_FPSOptions[fpsIndex]);
-        }
-        Application.targetFrameRate = fps;
+        Application.targetFrameRate = _FPSOptions[fpsIndex];
         if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetFPS
 
