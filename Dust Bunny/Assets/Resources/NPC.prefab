@@ -1233,7 +1233,7 @@ MonoBehaviour:
   AssetText: {fileID: 4900000, guid: 77ad402d4b4c89f46a836939ed2509bd, type: 3}
   textBubble: {fileID: 1051611623896033177}
   charNameText: {fileID: 4128155760980027981}
-  dialogueText: {fileID: 7613802093151445824}
+  dialogueText: {fileID: 4074891787513432083}
   importantDialogue: 0
   playOnTouch: 0
   interactable: 1

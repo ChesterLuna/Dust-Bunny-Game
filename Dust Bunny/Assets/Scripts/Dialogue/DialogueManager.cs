@@ -30,7 +30,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] GameObject textBubble;
 
     [SerializeField] TextMeshPro charNameText;
-    [SerializeField] TextCrawler dialogueText;
+    [SerializeField] TextMeshPro dialogueText;
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTouch = false;
     [SerializeField] bool interactable = true;
@@ -111,10 +111,10 @@ public class DialogueManager : MonoBehaviour, IInteractable
         {
             StartDialogue();
         }
-        else if (!dialogueText.IsFinishedLine())
-        {
-            dialogueText.FinishLine();
-        }
+        // else if (!dialogueText.IsFinishedLine())
+        // {
+        //     dialogueText.FinishLine();
+        // }
         else
         {
             DisplayNextSentence();
@@ -163,7 +163,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
         // _textBubble = Instantiate(textBubble, new Vector3(transform.position.x, transform.position.y + _collider.bounds.size.y + offsetOnTopOfHead), transform.rotation);
         textBubble.SetActive(true);
         charNameText = textBubble.transform.Find("Bubble Canvas").transform.Find("Background").transform.Find("Character Name").GetComponent<TextMeshPro>();
-        dialogueText = textBubble.GetComponent<TextCrawler>().Initalize();
+        dialogueText = textBubble.transform.Find("Bubble Canvas").transform.Find("Background").transform.Find("Bubble Text").GetComponent<TextMeshPro>();
+        Debug.Log(dialogueText);
     }
 
     private void EnableAnimators()
@@ -206,8 +207,11 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
 
         charNameText.text = nextDialogue.getName();
-        dialogueText.SetText(nextDialogue.getText());
-        dialogueText.Advance();
+        dialogueText.text = nextDialogue.getText();
+        Debug.Log(nextDialogue.getText());
+        Debug.Log(dialogueText.text);
+        // dialogueText.SetText(nextDialogue.getText());
+        // dialogueText.Advance();
     } // end DisplayNextSentence
 
 
