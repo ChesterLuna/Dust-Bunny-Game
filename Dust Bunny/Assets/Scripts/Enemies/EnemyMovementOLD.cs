@@ -47,10 +47,12 @@ public class EnemyMovementOLD : MonoBehaviour
 
     [SerializeField] private bool hideParticlesWhenOutOfSight;
     [SerializeField] private ParticleSystem _onSightParticles;
+    private AudioSource sfx;
 
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        sfx = GetComponentInChildren<AudioSource>();
         if (_raycastOriginPoint == null)
         {
             _raycastOriginPoint = transform;
@@ -82,10 +84,12 @@ public class EnemyMovementOLD : MonoBehaviour
             if (_onSightParticles != null && !_onSightParticles.isPlaying){
                 _onSightParticles.Clear();
                 _onSightParticles.Play();
+                sfx.Play();
             }
         } else {
             if (_onSightParticles != null && _onSightParticles.isPlaying && hideParticlesWhenOutOfSight){
                 _onSightParticles.Stop();
+                sfx.Stop();
             }
         }   
 
