@@ -16,7 +16,7 @@ $Whirring
 #???
 :Whirr....
 
-$Loud Whirring
+$Loud_Whirring
 #???
 :WHIRRRRRR....!!
 

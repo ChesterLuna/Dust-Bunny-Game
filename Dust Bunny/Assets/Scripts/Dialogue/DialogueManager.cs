@@ -36,6 +36,9 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] bool interactable = true;
     [SerializeField] float _timeToPlay = 0;
 
+    [SerializeField] float minDust = -1;
+    [SerializeField] float maxDust = 1000;
+
     public bool ShowIndicator { get; private set; } = false;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
@@ -120,7 +123,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void StartDialogue()
     {
-        if (_isFinishedDialogue == true) return;
+        if (_isFinishedDialogue == true || !IsEnoughDust()) return;
         IsStartedDialogue = true;
         _isFinishedDialogue = false;
         if (importantDialogue)
@@ -277,6 +280,11 @@ public class DialogueManager : MonoBehaviour, IInteractable
         DisableAnimators();
         onFinishedDialogue.Invoke();
     } // end EndDialogue
+
+    public bool IsEnoughDust()
+    {
+        return minDust <= _player.CurrentDust && _player.CurrentDust < maxDust;
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
