@@ -1,5 +1,5 @@
 $Rumble
-!2 Camera (0,1)
+! Camera (0,1)
 #???
 :Rumblerumblerumble...
 
@@ -10,7 +10,7 @@ $Rumble
 #Spek
 :That’s… new.
 
-!As before (3,4)
+As before (3,4)
 #Spek
 :Should I take a closer look?
 #Spek
