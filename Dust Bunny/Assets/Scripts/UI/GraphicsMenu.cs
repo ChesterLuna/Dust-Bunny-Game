@@ -16,17 +16,34 @@ public class GraphicsMenu : MonoBehaviour
     [SerializeField] private TMPro.TMP_Dropdown _FPSDropdown;
     [SerializeField] private List<int> _FPSOptions = new List<int> { 30, 60, 120, 144, 240, -1 };
 
-
-    private bool setup = false;
+    private bool _setup = false;
 
     void Start()
     {
+        // Load the values from the player prefs only if they exist, esle use the defaults
+        Screen.fullScreen = PlayerPrefs.GetInt("FullScreen", Screen.fullScreen ? 1 : 0) == 1;
+        uint refreshRateNumerator = uint.Parse(PlayerPrefs.GetString("RefreshRateNumerator", Screen.currentResolution.refreshRateRatio.numerator.ToString()));
+        uint refreshRateDenominator = uint.Parse(PlayerPrefs.GetString("RefreshRateDenominator", Screen.currentResolution.refreshRateRatio.denominator.ToString()));
+
+        Screen.SetResolution(PlayerPrefs.GetInt("ScreenWidth", Screen.currentResolution.width), PlayerPrefs.GetInt("ScreenHeight", Screen.currentResolution.height), Screen.fullScreenMode, new RefreshRate
+        {
+            numerator = refreshRateNumerator,
+            denominator = refreshRateDenominator
+        });
+        Application.targetFrameRate = PlayerPrefs.GetInt("FPS", Application.targetFrameRate);
+        QualitySettings.vSyncCount = PlayerPrefs.GetInt("vSync", QualitySettings.vSyncCount);
+        QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("Quality", QualitySettings.GetQualityLevel()));
+
+        // Setup Dropdowns
         SetupResolutionDropdown();
         SetupQualityDropdown();
         SetupFPSDropDown();
+
+        // Setup Toggles
         _fullscreenToggle.isOn = Screen.fullScreen;
         _vSyncToggle.isOn = QualitySettings.vSyncCount > 0;
-        setup = true;
+
+        _setup = true;
     } // end Start
 
     #region FPS
@@ -52,14 +69,15 @@ public class GraphicsMenu : MonoBehaviour
         }
         _FPSDropdown.AddOptions(options);
         _FPSDropdown.value = index;
-        SetFPS(index);
         _FPSDropdown.RefreshShownValue();
     } // end SetupFPSDropDown
 
     public void SetFPS(int fpsIndex)
     {
-        Application.targetFrameRate = _FPSOptions[fpsIndex];
-        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
+        int fps = _FPSOptions[fpsIndex];
+        Application.targetFrameRate = fps;
+        PlayerPrefs.SetInt("FPS", Application.targetFrameRate);
+        if (_setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetFPS
 
     #endregion
@@ -74,16 +92,32 @@ public class GraphicsMenu : MonoBehaviour
         List<string> options = new List<string>();
 
         int currentResolutionIndex = 0;
+        List<int> possibleStartingOptions = new List<int>();
+
         for (int i = 0; i < _resolutions.Length; i++)
         {
-            string option = _resolutions[i].width + " x " + _resolutions[i].height;
+            string ratio = String.Format("{0:0.00}", (double)_resolutions[i].refreshRateRatio.numerator / _resolutions[i].refreshRateRatio.denominator);
+            string option = _resolutions[i].width + " x " + _resolutions[i].height + " @ " + ratio + "Hz";
             options.Add(option);
             if (_resolutions[i].width == Screen.currentResolution.width &&
                 _resolutions[i].height == Screen.currentResolution.height)
             {
+                possibleStartingOptions.Add(i);
                 currentResolutionIndex = i;
             }
         }
+
+        // See if we can fine tine even more by checking the refresh rate (if not just use the last currentResolutionIndex)
+        foreach (int i in possibleStartingOptions)
+        {
+            if (_resolutions[i].refreshRateRatio.numerator == Screen.currentResolution.refreshRateRatio.numerator &&
+                _resolutions[i].refreshRateRatio.denominator == Screen.currentResolution.refreshRateRatio.denominator)
+            {
+                currentResolutionIndex = i;
+                break;
+            }
+        }
+
         _resolutionDropdown.AddOptions(options);
         _resolutionDropdown.value = currentResolutionIndex;
         _resolutionDropdown.RefreshShownValue();
@@ -93,7 +127,13 @@ public class GraphicsMenu : MonoBehaviour
     {
         Resolution resolution = _resolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
-        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
+        // Save the resolution to the player prefs
+        PlayerPrefs.SetInt("ScreenWidth", resolution.width);
+        PlayerPrefs.SetInt("ScreenHeight", resolution.height);
+        PlayerPrefs.SetString("RefreshRateNumerator", resolution.refreshRateRatio.numerator.ToString());
+        PlayerPrefs.SetString("RefreshRateDenominator", resolution.refreshRateRatio.denominator.ToString());
+
+        if (_setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetResolution
     #endregion
 
@@ -116,20 +156,29 @@ public class GraphicsMenu : MonoBehaviour
     public void SetQuality(int qualityIndex)
     {
         QualitySettings.SetQualityLevel(qualityIndex);
-        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
+        // Save the quality to the player prefs
+        PlayerPrefs.SetInt("Quality", QualitySettings.GetQualityLevel());
+
+        if (_setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetQuality
     #endregion
 
     public void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;
-        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
+        // Save the fullscreen to the player prefs
+        PlayerPrefs.SetInt("FullScreen", Screen.fullScreen ? 1 : 0);
+
+        if (_setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetFullscreen
 
     public void SetVSync(bool isVSync)
     {
         QualitySettings.vSyncCount = isVSync ? 1 : 0;
-        if (setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
+        // Save the vSync to the player prefs
+        PlayerPrefs.SetInt("vSync", QualitySettings.vSyncCount);
+
+        if (_setup) UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end SetVSync
 
 } // end Class GraphicsMenu

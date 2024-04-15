@@ -64,7 +64,6 @@ public class GameManager : MonoBehaviour
     // called third
     private void Start()
     {
-        StartGameTime();
     } // end Awake
 
     #region Timer
