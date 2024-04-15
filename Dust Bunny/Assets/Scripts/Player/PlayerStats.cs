@@ -5,6 +5,7 @@ using ES3Types;
 using UnityEditor;
 #endif
 using UnityEngine;
+using UnityEngine.Rendering;
 
 
 [CreateAssetMenu]
@@ -29,6 +30,10 @@ public class PlayerStats : ScriptableObject
     [Header("Action Indicator"), Space] public float ActionIndicatorXOffset = 0f;
     public float ActionIndicatorYOffset = 1f;
     public float ActionIndicatoryScale = 1f;
+
+    // Dust
+    [Header("Dust"), Space] public float FreezeOnDamageDuration = 0.023f;
+    public float IFrameDuration = 0.25f;
 
     // Movement
     [Header("Movement"), Space] public float BaseSpeed = 9;

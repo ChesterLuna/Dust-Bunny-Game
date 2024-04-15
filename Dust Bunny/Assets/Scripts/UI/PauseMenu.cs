@@ -12,6 +12,8 @@ public class PauseMenu : MonoBehaviour
     public bool GameIsPaused = false;
 
     [SerializeField] GameObject _pauseMenuUI;
+    [SerializeField] GameObject _promptQuitGameUI;
+    [SerializeField] GameObject _promptQuitMenuUI;
     [SerializeField] GameObject _infoUI;
     [SerializeField] GameObject _rebindUI;
     [SerializeField] GameObject _settingsUI;
@@ -70,6 +72,8 @@ public class PauseMenu : MonoBehaviour
         {
             case PauseMenuPage.Pause:
                 _pauseMenuUI.SetActive(true);
+                _promptQuitGameUI.SetActive(false);
+                _promptQuitMenuUI.SetActive(false);
                 _infoUI.SetActive(false);
                 _rebindUI.SetActive(false);
                 _settingsUI.SetActive(false);
@@ -79,6 +83,8 @@ public class PauseMenu : MonoBehaviour
                 break;
             case PauseMenuPage.Info:
                 _pauseMenuUI.SetActive(false);
+                _promptQuitGameUI.SetActive(false);
+                _promptQuitMenuUI.SetActive(false);
                 _infoUI.SetActive(true);
                 _rebindUI.SetActive(false);
                 _settingsUI.SetActive(false);
@@ -88,6 +94,8 @@ public class PauseMenu : MonoBehaviour
                 break;
             case PauseMenuPage.Rebind:
                 _pauseMenuUI.SetActive(false);
+                _promptQuitGameUI.SetActive(false);
+                _promptQuitMenuUI.SetActive(false);
                 _infoUI.SetActive(false);
                 _rebindUI.SetActive(true);
                 _settingsUI.SetActive(false);
@@ -97,6 +105,8 @@ public class PauseMenu : MonoBehaviour
                 break;
             case PauseMenuPage.Settings:
                 _pauseMenuUI.SetActive(false);
+                _promptQuitGameUI.SetActive(false);
+                _promptQuitMenuUI.SetActive(false);
                 _infoUI.SetActive(false);
                 _rebindUI.SetActive(false);
                 _settingsUI.SetActive(true);
@@ -106,6 +116,8 @@ public class PauseMenu : MonoBehaviour
                 break;
             case PauseMenuPage.Gameplay:
                 _pauseMenuUI.SetActive(false);
+                _promptQuitGameUI.SetActive(false);
+                _promptQuitMenuUI.SetActive(false);
                 _infoUI.SetActive(false);
                 _rebindUI.SetActive(false);
                 _settingsUI.SetActive(false);
@@ -115,6 +127,8 @@ public class PauseMenu : MonoBehaviour
                 break;
             case PauseMenuPage.Audio:
                 _pauseMenuUI.SetActive(false);
+                _promptQuitGameUI.SetActive(false);
+                _promptQuitMenuUI.SetActive(false);
                 _infoUI.SetActive(false);
                 _rebindUI.SetActive(false);
                 _settingsUI.SetActive(false);
@@ -124,6 +138,8 @@ public class PauseMenu : MonoBehaviour
                 break;
             case PauseMenuPage.Graphics:
                 _pauseMenuUI.SetActive(false);
+                _promptQuitGameUI.SetActive(false);
+                _promptQuitMenuUI.SetActive(false);
                 _infoUI.SetActive(false);
                 _rebindUI.SetActive(false);
                 _settingsUI.SetActive(false);
@@ -133,6 +149,30 @@ public class PauseMenu : MonoBehaviour
                 break;
             case PauseMenuPage.TrueNone:
                 _pauseMenuUI.SetActive(false);
+                _promptQuitGameUI.SetActive(false);
+                _promptQuitMenuUI.SetActive(false);
+                _infoUI.SetActive(false);
+                _rebindUI.SetActive(false);
+                _settingsUI.SetActive(false);
+                _gameplayOverlayUI.SetActive(false);
+                _audioSettingsUI.SetActive(false);
+                _graphicsSettingsUI.SetActive(false);
+                break;
+            case PauseMenuPage.PromptQuitGame:
+                _pauseMenuUI.SetActive(false);
+                _promptQuitGameUI.SetActive(true);
+                _promptQuitMenuUI.SetActive(false);
+                _infoUI.SetActive(false);
+                _rebindUI.SetActive(false);
+                _settingsUI.SetActive(false);
+                _gameplayOverlayUI.SetActive(false);
+                _audioSettingsUI.SetActive(false);
+                _graphicsSettingsUI.SetActive(false);
+                break;
+            case PauseMenuPage.PromptQuitMenu:
+                _pauseMenuUI.SetActive(false);
+                _promptQuitGameUI.SetActive(false);
+                _promptQuitMenuUI.SetActive(true);
                 _infoUI.SetActive(false);
                 _rebindUI.SetActive(false);
                 _settingsUI.SetActive(false);
@@ -162,30 +202,30 @@ public class PauseMenu : MonoBehaviour
 
     public void QuitGame()
     {
-        UISFXManager.PlaySFX(UISFXManager.SFX.NEGATIVE);
         Debug.Log("Quit Game.");
         Application.Quit();
     } // end QuitGame
 
     public void QuitToMenu()
     {
-        Resume();
-        UISFXManager.PlaySFX(UISFXManager.SFX.NEGATIVE);
         SceneManager.LoadScene("Main Menu");
     } // end QuitGame
 
-    public void PlayUIPositive(){
-        if(!GameIsPaused) return;
+    public void PlayUIPositive()
+    {
+        if (!GameIsPaused) return;
         UISFXManager.PlaySFX(UISFXManager.SFX.POSITIVE);
     }
 
-    public void PlayUINavigate(){
-        if(!GameIsPaused) return;
+    public void PlayUINavigate()
+    {
+        if (!GameIsPaused) return;
         UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     }
 
-    public void PlayUINegative(){
-        if(!GameIsPaused) return;
+    public void PlayUINegative()
+    {
+        if (!GameIsPaused) return;
         UISFXManager.PlaySFX(UISFXManager.SFX.NEGATIVE);
     }
 
@@ -198,6 +238,8 @@ public class PauseMenu : MonoBehaviour
         Gameplay, // 4
         Audio, // 5
         Graphics, // 6
-        TrueNone // 7
+        TrueNone, // 7
+        PromptQuitGame, // 8
+        PromptQuitMenu // 9
     } // end enum PauseMenuPage
 } // end PauseMenu

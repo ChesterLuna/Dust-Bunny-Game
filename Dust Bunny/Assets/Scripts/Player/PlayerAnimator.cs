@@ -139,53 +139,66 @@ public class PlayerAnimator : MonoBehaviour
 
     } // end Update
 
-    private void HandleDashArrow(){
+    private void HandleDashArrow()
+    {
         float cameraZoom = Camera.main.orthographicSize;
 
         //Get the dash target from mouse position or keyboard input, based on UseMouseForDash
         Vector3 dashTargetWorldPosition;
-        if(UserInput.instance.UseMouseForDash) {
+        if (UserInput.instance.UseMouseForDash)
+        {
             dashTargetWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             dashTargetWorldPosition.z = 0;
-        } else {
+        }
+        else
+        {
             Vector2 moveInput = dashTargetWorldPosition = UserInput.instance.Gather().Move;
             float dashLengthMod = 1 + (.8f * _player.Stats.DashDuration * _player.Stats.DashVelocity * transform.localScale.x);
-            if(moveInput.sqrMagnitude > 0.001f){
+            if (moveInput.sqrMagnitude > 0.001f)
+            {
                 dashTargetWorldPosition = _arrowPivot.transform.position + (Vector3)(moveInput * dashLengthMod);
-            } else {
+            }
+            else
+            {
                 float mod = 1;
-                if(_sprite.flipX) mod = -1;
+                if (_sprite.flipX) mod = -1;
                 dashTargetWorldPosition = _arrowPivot.transform.position + new Vector3(mod * dashLengthMod, 0, 0);
             }
         }
 
         // deep math i do not understand
         Vector3 perpendicular = Vector3.Cross(_arrowPivot.transform.position - dashTargetWorldPosition, Vector3.forward);
-		_arrowPivot.transform.rotation = Quaternion.LookRotation(Vector3.forward, perpendicular);
+        _arrowPivot.transform.rotation = Quaternion.LookRotation(Vector3.forward, perpendicular);
 
         // move the circles to the correct location
-        for(int i = 0; i < _arrowCirclesParent.transform.childCount; i++){
+        for (int i = 0; i < _arrowCirclesParent.transform.childCount; i++)
+        {
             _arrowCirclesParent.transform.GetChild(i).position = _arrowLocationsParent.transform.GetChild(i).position;
         }
 
         // handle arrow length
-        if(transform.localScale.x > 0 && transform.localScale.y > 0){
-            _arrowParent.transform.localScale = new Vector3(1/transform.localScale.x, 1/transform.localScale.y, 1); // we do NOT want the arrow to respect player size: we want to handle that ourselves based on mouse pos instead
+        if (transform.localScale.x > 0 && transform.localScale.y > 0)
+        {
+            _arrowParent.transform.localScale = new Vector3(1 / transform.localScale.x, 1 / transform.localScale.y, 1); // we do NOT want the arrow to respect player size: we want to handle that ourselves based on mouse pos instead
         }
         float distance = Vector3.Distance(dashTargetWorldPosition, transform.position);
         float length = Mathf.Max(Mathf.Min(distance / (4.0f + 0.1f * cameraZoom), 2 * cameraZoom), 0.05f * cameraZoom);
         _arrowPivot.transform.localScale = new Vector3(length, _arrowPivot.transform.localScale.y, _arrowPivot.transform.localScale.z);
 
         // handle opacity
-        if(UserInput.instance.Gather(_player.PlayerState).DashHeld){
+        if (UserInput.instance.Gather(_player.PlayerState).DashHeld)
+        {
             _arrowVisibility = Mathf.Lerp(_arrowVisibility, 0.8f, Time.deltaTime * 3);
-        } else {
+        }
+        else
+        {
             _arrowVisibility = Mathf.Lerp(_arrowVisibility, 0f, Time.deltaTime * 10);
         }
 
         // set opacity of all graphics
-        for(int i = 0; i < _arrowVisuals.Length; i++){
-            _arrowVisuals[i].color = new Color( _arrowVisuals[i].color.r,  _arrowVisuals[i].color.g,  _arrowVisuals[i].color.b, _arrowVisibility);
+        for (int i = 0; i < _arrowVisuals.Length; i++)
+        {
+            _arrowVisuals[i].color = new Color(_arrowVisuals[i].color.r, _arrowVisuals[i].color.g, _arrowVisuals[i].color.b, _arrowVisibility);
         }
         _arrowBGSprite.GetComponent<SpriteRenderer>().material.SetFloat("Visibility", _arrowVisibility);
     }
@@ -347,7 +360,6 @@ public class PlayerAnimator : MonoBehaviour
         if (hostile)
         {
             _sfx.PlaySFX(PlayerSFXController.SFX.Took_Damage);
-            StartCoroutine(FreezeGameOnTakeDamage());
         }
         _useDustParticles.Play();
     } // end OnUsedDust
@@ -361,16 +373,6 @@ public class PlayerAnimator : MonoBehaviour
             _gainDustParticles.Play();
         }
         _sfx.PlaySFX(PlayerSFXController.SFX.Dust_Collect_Full);
-    }
-
-    private IEnumerator FreezeGameOnTakeDamage()
-    {
-        // Slow down the game effect, maybe undesirable
-        Time.timeScale = 0.1f;
-        yield return new WaitForSeconds(0.023f);
-        Time.timeScale = 1;
-
-        yield return null;
     }
     #endregion
 

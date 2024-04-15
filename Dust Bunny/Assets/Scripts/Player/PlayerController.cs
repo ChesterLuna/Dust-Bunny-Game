@@ -1017,6 +1017,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     // Dust Changing variables
     [Header("Dust Values")]
     [SerializeField] private float _currentDust = 100f;
+    private bool _dustLossInvulnerable = false;
     [HideInInspector] public float CurrentDust => _currentDust;
     [SerializeField] private float _maxDust = 100f;
     [SerializeField] private float[] _dustLevels = new float[5] { 0f, 20f, 40f, 60f, 80f };
@@ -1039,6 +1040,18 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         if (scalar < 0)
         {
             UsedDust?.Invoke(scalar, hostile);
+            if (hostile)
+            {
+                if (!_dustLossInvulnerable)
+                {
+                    if (Stats.IFrameDuration > 0) StartCoroutine(LazyHandleIframes());
+                    if (Stats.FreezeOnDamageDuration > 0) StartCoroutine(FreezeGameOnTakeDamage());
+                }
+                else
+                {
+                    return;
+                }
+            }
         }
         else
         {
@@ -1063,6 +1076,23 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             SetupCharacter(mode, true);
         }
     } // end ChangeDust
+
+    private IEnumerator FreezeGameOnTakeDamage() // TODO This should be in either update or fixed update
+    {
+        // Slow down the game effect, maybe undesirable
+        Time.timeScale = 0.1f;
+        yield return new WaitForSeconds(Stats.FreezeOnDamageDuration);
+        Time.timeScale = 1;
+        yield break;
+    }
+
+    private IEnumerator LazyHandleIframes() // TODO This should be in either update or fixed update
+    {
+        _dustLossInvulnerable = true;
+        yield return new WaitForSeconds(Stats.IFrameDuration);
+        _dustLossInvulnerable = false;
+        yield break;
+    }
     #endregion
 
     [Header("Death")]
