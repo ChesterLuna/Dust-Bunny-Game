@@ -37,4 +37,17 @@ public class PersistentGUID : MonoBehaviour
         }
     }
 #endif
+
+    // Used to keep all things related to this guid in one save file
+    #region Save and Load
+    public void SaveBoolValue(string variableName, bool value)
+    {
+        ES3.Save(guid + "_" + variableName, value + "/" + guid);
+    }
+
+    public bool LoadBoolValue(string variableName, bool defaultValue = false)
+    {
+        return ES3.Load(guid + "_" + variableName, defaultValue);
+    }
+    #endregion
 }

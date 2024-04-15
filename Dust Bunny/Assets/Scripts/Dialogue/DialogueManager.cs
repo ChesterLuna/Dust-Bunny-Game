@@ -62,7 +62,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         textBubble.SetActive(false);
         GameObject _playerObj = GameObject.FindWithTag("Player");
         if (_playerObj != null) _player = _playerObj.GetComponent<PlayerController>();
-        _isFinishedDialogue = ES3.Load(GetComponent<PersistentGUID>().guid, false);
+        _isFinishedDialogue = GetComponent<PersistentGUID>().LoadBoolValue("isFinishedDialogue");
     } // end Awake
 
     private void Start()
@@ -269,8 +269,9 @@ public class DialogueManager : MonoBehaviour, IInteractable
             textBubble.SetActive(false);
         }
         _isFinishedDialogue = true;
-        ES3.Save(GetComponent<PersistentGUID>().guid, _isFinishedDialogue);
-        ES3.Save("_lastAnimationState", _player._lastAnimationState);
+        GetComponent<PersistentGUID>().SaveBoolValue("isFinishedDialogue", _isFinishedDialogue);
+        ES3.Save("_lastAnimationState", _player._lastAnimationState); // This is saved but doesnt seem to be loaded anywhere?
+
         IsStartedDialogue = false;
         ShowIndicator = false;
         DisableAnimators();
