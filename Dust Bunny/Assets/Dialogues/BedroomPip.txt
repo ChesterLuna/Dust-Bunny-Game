@@ -13,7 +13,7 @@ $Rattle
 
 
 !(Pip drops from the vent.)
-
+$Rattle
 #Spek
 :Pip!? What are you doing here? It's dangerous!
 

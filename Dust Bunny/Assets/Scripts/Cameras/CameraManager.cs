@@ -189,6 +189,25 @@ public class CameraManager : MonoBehaviour
         _currentCameraOrthographicSize = newSize;
     } // end SetCurrentCameraOrthographicSize
 
+    public void SetOrthographicSizeDialogue(float newSize)
+    {
+        bool tween = true;
+        float lerpTime = 1.7f;
+        bool addValue = false;
+        if (_currentCamera == null) return;
+
+        if (addValue) newSize += _currentCamera.m_Lens.OrthographicSize;
+        if (newSize < 1)
+        {
+            newSize = 1;
+            Debug.LogWarning("Orthographic size cannot be less than 1");
+        }
+
+        float actualLerpTime = tween ? lerpTime : 0.01f;
+        DOTween.To(() => _currentCamera.m_Lens.OrthographicSize, x => _currentCamera.m_Lens.OrthographicSize = x, newSize, actualLerpTime);
+        _currentCameraOrthographicSize = newSize;
+    } // end SetCurrentCameraOrthographicSize
+
     #region Shake
     [SerializeField] private float _defaultShakeIntensity = 1f;
     [SerializeField] private float _defaultshakeTime = 0.2f;
