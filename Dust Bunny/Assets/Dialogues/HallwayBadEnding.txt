@@ -22,17 +22,18 @@ $Loud_Whirring
 
 (Seemingly unable to contend with the dust, the vacuum goes quiet.)
 
-!(Pip jumps.)
+!(Pip jumps.) 0
 
 #Spek
 :Shh!
 
 >(They both step closer to the end of the ledge, to get a better look.)
-!Pip Stays
+!Pip Stays 1
 
 #???
 :(Clunk) ...
 
+>After State
 #???
 :(Clatter) ...
 
@@ -45,7 +46,6 @@ $Loud_Whirring
 #Spek
 :I-
 
-! Strong Screenshaking
 $Loud_Whirring
 #???
 :WHIRRRR!!! Rumblerumblerumble...
@@ -55,9 +55,12 @@ $Loud_Whirring
 #Spek
 :...It didn't work.
 
-!(Spek turns to Pip as the vacuum continues rumbling in the background)
 #Spek
 :Alright, we'll just have to try something else, then. Do you have any ideas, Pip?
 
 #Pip
 :I-I don't know... Let me think.
+
+>Leaving Scene make sure
+# 
+: 
