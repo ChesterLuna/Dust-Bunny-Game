@@ -8,10 +8,16 @@ public class ButtonPromptTutorialTrigger : MonoBehaviour
     public ButtonPromptTutorial.Type type;
     public bool followPlayer = true;
     public bool showOnStart = false;
+    public float showOnStartTimer;
     public GameObject playerIfShowOnStart;
 
     void Start(){
-        if(showOnStart){
+
+    }
+
+    void Update(){
+        showOnStartTimer -= Time.deltaTime;
+        if (showOnStartTimer < 0 && showOnStart){
             ShowPrompt(playerIfShowOnStart);
         }
     }
