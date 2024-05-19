@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-
+using SpringCleaning.Player;
 public class Checkpoint : MonoBehaviour
 {
     [SerializeField] private bool _useCustomLocation;

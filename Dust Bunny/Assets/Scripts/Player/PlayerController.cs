@@ -3,1264 +3,1272 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using SpringCleaning.Physics;
+using SpringCleaning.Camera;
+using Sirenix.OdinInspector;
 
-
-[RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(CapsuleCollider2D))]
-public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
+namespace SpringCleaning.Player
 {
-    #region References
-
-    private BoxCollider2D _collider;
-    private CapsuleCollider2D _airborneCollider;
-    private ConstantForce2D _constantForce;
-    private Rigidbody2D _rb;
-
-    #endregion
-
-    [SerializeField] GameObject _actionIndicator;
-    public GameObject _hitboxCenter;
-    #region Camera
-    // Camera
-    [Header("Camera")]
-    [SerializeField] private CameraFollowObject _cameraFollowObject;
-    private float _fallSpeedYDampingChangeThreshold;
-    #endregion
-
-    #region Interface
-    [field: SerializeField] private PlayerStats[] _allStats = new PlayerStats[3];
-
-    [field: SerializeField] public PlayerStats Stats { get; private set; }
-    public ControllerState State { get; private set; }
-    public event Action<JumpType> Jumped;
-    public event Action<bool, float> GroundedChanged;
-    public event Action<bool, Vector2> DashChanged;
-    public event Action<bool> WallGrabChanged;
-    public event Action<bool> SizeChanged;
-    public event Action<float, bool> UsedDust;
-    public event Action<float> GainedDust;
-    public event Action<Vector2> Repositioned;
-    public event Action<bool, bool> ToggledPlayer;
-
-    public bool Active { get; private set; } = true;
-    public Vector2 Up { get; private set; }
-    public Vector2 Forward { get; private set; }
-    public Vector2 Right { get; private set; }
-    public Vector2 Input => _frameInput.Move;
-    public Vector2 GroundNormal { get; private set; }
-    public Vector2 Velocity { get; private set; }
-    public int WallDirection { get; private set; }
-    public bool ClimbingLadder { get; private set; }
-    public PlayerStates PlayerState { get; set; } = PlayerStates.Playing;
-
-    public void AddFrameForce(Vector2 force, bool resetVelocity = false)
+    [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D)), SelectionBase, DefaultExecutionOrder(1)]
+    public class PlayerController : MonoBehaviour, IPlayerController
     {
-        if (resetVelocity) SetVelocity(Vector2.zero);
-        _forceToApplyThisFrame += force;
-    } // end AddFrameForce
+        #region References
+        private BoxCollider2D _collider;
+        private CapsuleCollider2D _airborneCollider;
+        private ConstantForce2D _constantForce;
+        private Rigidbody2D _rb;
 
-    public void LoadState(ControllerState state)
-    {
-        RepositionImmediately(state.Position);
-        _rb.rotation = state.Rotation;
-        SetVelocity(state.Velocity);
+        #endregion
 
-        if (state.Grounded) ToggleGrounded(true);
-    } // end LoadState
+        [SerializeField] GameObject _actionIndicator;
+        public GameObject _hitboxCenter;
+        #region Camera
+        // Camera
+        [Header("Camera")]
+        [SerializeField] private CameraFollowObject _cameraFollowObject;
+        private float _fallSpeedYDampingChangeThreshold;
+        #endregion
 
-    public void RepositionImmediately(Vector2 position, bool resetVelocity = false)
-    {
-        _rb.position = position;
-        if (resetVelocity) SetVelocity(Vector2.zero);
-        Repositioned?.Invoke(position);
-    } // end RepositionImmediately
+        #region Interface
+        [field: SerializeField] private PlayerStats[] _allStats = new PlayerStats[3];
 
-    public void TogglePlayer(bool on, bool dead = false, PlayerStates playerState = PlayerStates.Playing)
-    {
-        PlayerState = playerState;
-        Active = on;
-        _rb.isKinematic = !on;
-        ToggledPlayer?.Invoke(on, dead);
-    } // end TogglePlayer
+        [field: SerializeField] public PlayerStats Stats { get; private set; }
+        public ControllerState State { get; private set; }
+        public event Action<JumpType> Jumped;
+        public event Action<bool, float> GroundedChanged;
+        public event Action<bool, Vector2> DashChanged;
+        public event Action<bool> WallGrabChanged;
+        public event Action<bool> SizeChanged;
+        public event Action<float, bool> UsedDust;
+        public event Action<float> GainedDust;
+        public event Action<Vector2> Repositioned;
+        public event Action<bool, bool> ToggledPlayer;
 
-    #endregion
+        public bool Active { get; private set; } = true;
+        public Vector2 Up { get; private set; }
+        public Vector2 Right { get; private set; }
+        public Vector2 Input => _frameInput.Move;
+        public Vector2 GroundNormal { get; private set; }
+        public Vector2 Velocity { get; private set; }
+        public int WallDirection { get; private set; }
+        public bool ClimbingLadder { get; private set; }
+        public PlayerStates PlayerState { get; set; } = PlayerStates.Playing;
 
-    [SerializeField] private bool _drawGizmos = true;
-
-    #region Loop
-
-    private float _delta, _time;
-
-    private void Awake()
-    {
-        if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
-        if (GameManager.instance.CheckpointDustLevel != -1) _currentDust = GameManager.instance.CheckpointDustLevel;
-        if (SceneManager.GetActiveScene().name == "Burrow-NEW") // Hardcoded to have a nice pan in at the start. Otherwise it is not wanted.
+        public void AddFrameForce(Vector2 force, bool resetVelocity = false)
         {
-            SetupCharacter(tween: true);
-        }
-        else
+            if (resetVelocity) SetVelocity(Vector2.zero);
+            _forceToApplyThisFrame += force;
+        } // end AddFrameForce
+
+        public void LoadState(ControllerState state)
         {
-            SetupCharacter();
-        }
-        PhysicsSimulator.Instance.AddPlayer(this);
-        _lastAnimationState = ES3.Load("_lastAnimationState", 0);
-    } // end Awake
+            RepositionImmediately(state.Position);
+            _rb.rotation = state.Rotation;
+            SetVelocity(state.Velocity);
 
-    private void Start()
-    {
-        if (GameManager.instance.CheckpointLocation.HasValue)
+            if (state.Grounded) ToggleGrounded(true);
+        } // end LoadState
+
+        public void RepositionImmediately(Vector2 position, bool resetVelocity = false)
         {
-            RepositionImmediately(GameManager.instance.CheckpointLocation.Value, true);
-        }
-        _fallSpeedYDampingChangeThreshold = CameraManager.instance._fallSpeedYDampingChangeThreshold;
-    } // end Start
+            _rb.position = position;
+            if (resetVelocity) SetVelocity(Vector2.zero);
+            Repositioned?.Invoke(position);
+        } // end RepositionImmediately
 
-    private void OnDestroy() => PhysicsSimulator.Instance.RemovePlayer(this);
-
-    public void OnValidate() => SetupCharacter();
-
-    public void TickUpdate(float delta, float time)
-    {
-        _delta = delta;
-        _time = time;
-
-        GatherInput();
-        updateCameraYDamping();
-
-    } // end TickUpdate
-
-    public void TickFixedUpdate(float delta)
-    {
-        _delta = delta;
-        if (!Active)
+        public void TogglePlayer(bool on, bool dead = false, PlayerStates playerState = PlayerStates.Playing)
         {
-            SetVelocity(Vector2.zero);
-            return;
-        }
-        RemoveTransientVelocity();
+            PlayerState = playerState;
+            Active = on;
+            _rb.isKinematic = !on;
+            ToggledPlayer?.Invoke(on, dead);
+        } // end TogglePlayer
 
-        SetFrameData();
+        #endregion
 
-        CalculateCollisions();
-        CalculateDirection();
+        #region Loop
 
-        CalculateWalls();
-        CalculateLadders();
-        CalculateJump();
-        CalculateDash();
-        CalculateInteract();
+        private float _delta, _time;
 
-        CalculateExternalModifiers();
-
-        TraceGround();
-        Move();
-
-        CleanFrameData();
-
-        SaveCharacterState();
-    } // end TickFixedUpdate
-
-    #endregion
-
-    #region Cameras
-    private void updateCameraYDamping()
-    {
-        // If we are falling past a certain speed threshold
-        if (_rb.velocity.y < _fallSpeedYDampingChangeThreshold && !CameraManager.instance.IsLerpingYDamping && !CameraManager.instance.LerpedFromPlayerFalling)
+        private void Awake()
         {
-            CameraManager.instance.LerpYDamping(true);
-        }
-        if (_rb.velocity.y >= 0f && !CameraManager.instance.IsLerpingYDamping && CameraManager.instance.LerpedFromPlayerFalling)
-        {
-            CameraManager.instance.LerpedFromPlayerFalling = false;
-            CameraManager.instance.LerpYDamping(false);
-        }
-    } // end updateCameraYDamping
-    #endregion
-
-    #region Setup
-
-    private bool _cachedQueryMode, _cachedQueryTriggers;
-    private GeneratedCharacterSize _character;
-    private const float GRAVITY_SCALE = 1;
-
-    private void SetupCharacter(ColliderMode mode = ColliderMode.Airborne, bool tween = false)
-    {
-        Stats = _allStats[DustLevelIndex(_currentDust)];
-        CameraManager.instance?.SetOrthographicSize(Stats.CameraOrthographicSize, tween);
-
-        _character = Stats.CharacterSize.GenerateCharacterSize();
-        _cachedQueryMode = Physics2D.queriesStartInColliders;
-
-        _wallDetectionBounds = new Bounds(
-            new Vector3(0, _character.Height / 2),
-            new Vector3(_character.StandingColliderSize.x + CharacterSize.COLLIDER_EDGE_RADIUS * 2 + Stats.WallDetectorRange, _character.Height - 0.1f));
-
-        _rb = GetComponent<Rigidbody2D>();
-        _rb.hideFlags = HideFlags.NotEditable;
-
-        // Primary collider
-        _collider = GetComponent<BoxCollider2D>();
-        _collider.edgeRadius = CharacterSize.COLLIDER_EDGE_RADIUS;
-        _collider.hideFlags = HideFlags.NotEditable;
-        _collider.sharedMaterial = _rb.sharedMaterial;
-        _collider.enabled = true;
-
-        // Airborne collider
-        _airborneCollider = GetComponent<CapsuleCollider2D>();
-        _airborneCollider.hideFlags = HideFlags.NotEditable;
-        _airborneCollider.size = new Vector2(_character.Width - SKIN_WIDTH * 2, _character.Height - SKIN_WIDTH * 2);
-        _airborneCollider.offset = new Vector2(0, _character.Height / 2);
-        _airborneCollider.sharedMaterial = _rb.sharedMaterial;
-
-        SetColliderMode(mode);
-        SizeChanged?.Invoke(tween);
-    } // end SetupCharacter
-
-    #endregion
-
-    #region Input
-
-    private FrameInput _frameInput;
-
-    private void GatherInput()
-    {
-        // Early return if time is frozen (we don't want to buffer inputs)
-        if (Time.timeScale == 0) return;
-
-        _frameInput = UserInput.instance.Gather(PlayerState);
-
-
-        if (_frameInput.JumpDown)
-        {
-            _jumpToConsume = true;
-            _timeJumpWasPressed = _time;
-        }
-
-        if (_frameInput.DashDown)
-        {
-            _dashToConsume = true;
-        }
-
-        if (_frameInput.InteractDown)
-        {
-            _interactToConsume = true;
-        }
-    } // end GatherInput
-
-    #endregion
-
-    #region Frame Data
-
-    private bool _hasInputThisFrame;
-    private Vector2 _trimmedFrameVelocity;
-    private Vector2 _framePosition;
-    private Bounds _wallDetectionBounds;
-
-    private void SetFrameData()
-    {
-        var rot = _rb.rotation * Mathf.Deg2Rad;
-        Up = new Vector2(-Mathf.Sin(rot), Mathf.Cos(rot));
-        Right = new Vector2(Up.y, -Up.x);
-        _framePosition = _rb.position;
-
-        _hasInputThisFrame = _frameInput.Move.x != 0;
-        if (_hasInputThisFrame || Forward == Vector2.zero)
-        {
-            Vector2 previousForward = Forward;
-            Forward = Right * Mathf.Sign(_frameInput.Move.x);
-            if (previousForward != Forward && previousForward != Vector2.zero) _cameraFollowObject.CallTurn();
-        }
-        Velocity = _rb.velocity;
-        _trimmedFrameVelocity = new Vector2(Velocity.x, 0);
-    } // end SetFrameData
-
-    private void RemoveTransientVelocity()
-    {
-        var currentVelocity = _rb.velocity;
-        var velocityBeforeReduction = currentVelocity;
-
-        currentVelocity -= _totalTransientVelocityAppliedLastFrame;
-        SetVelocity(currentVelocity);
-
-        _frameTransientVelocity = Vector2.zero;
-        _totalTransientVelocityAppliedLastFrame = Vector2.zero;
-
-        // If flung into a wall, dissolve the decay
-        // Replace this entire section with Boubourriquet's solution
-        var decay = Stats.Friction * Stats.AirFrictionMultiplier * Stats.ExternalVelocityDecayRate;
-        if ((velocityBeforeReduction.x < 0 && _decayingTransientVelocity.x < velocityBeforeReduction.x) ||
-            (velocityBeforeReduction.x > 0 && _decayingTransientVelocity.x > velocityBeforeReduction.x) ||
-            (velocityBeforeReduction.y < 0 && _decayingTransientVelocity.y < velocityBeforeReduction.y) ||
-            (velocityBeforeReduction.y > 0 && _decayingTransientVelocity.y > velocityBeforeReduction.y)) decay *= 5;
-
-        _decayingTransientVelocity = Vector2.MoveTowards(_decayingTransientVelocity, Vector2.zero, decay * _delta);
-
-        _immediateMove = Vector2.zero;
-    } // end RemoveTransientVelocity
-
-    private void CleanFrameData()
-    {
-        _jumpToConsume = false;
-        _dashToConsume = false;
-        _interactToConsume = false;
-        _forceToApplyThisFrame = Vector2.zero;
-        _lastFrameY = Velocity.y;
-    } // end CleanFrameData
-
-    #endregion
-
-    #region Collisions
-
-    private const float SKIN_WIDTH = 0.02f;
-    private const int RAY_SIDE_COUNT = 5;
-    private RaycastHit2D _groundHit;
-    private bool _grounded;
-    public bool Grounded
-    {
-        get { return _grounded; }
-    }
-    private float _currentStepDownLength;
-    private float GrounderLength => _character.StepHeight + SKIN_WIDTH;
-
-    private Vector2 RayPoint => _framePosition + Up * (_character.StepHeight + SKIN_WIDTH);
-
-    private void CalculateCollisions()
-    {
-        Physics2D.queriesStartInColliders = false;
-
-        // Is the middle ray good?
-        var isGroundedThisFrame = PerformRay(RayPoint);
-
-        // If not, zigzag rays from the center outward until we find a hit
-        if (!isGroundedThisFrame)
-        {
-            foreach (var offset in GenerateRayOffsets())
+            if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
+            if (GameManager.instance.CheckpointDustLevel != -1) _currentDust = GameManager.instance.CheckpointDustLevel;
+            if (SceneManager.GetActiveScene().name == "Burrow-NEW") // Hardcoded to have a nice pan in at the start. Otherwise it is not wanted.
             {
-                isGroundedThisFrame = PerformRay(RayPoint + Right * offset) || PerformRay(RayPoint - Right * offset);
-                if (isGroundedThisFrame) break;
-            }
-        }
-
-        if (isGroundedThisFrame && !_grounded) ToggleGrounded(true);
-        else if (!isGroundedThisFrame && _grounded) ToggleGrounded(false);
-
-        Physics2D.queriesStartInColliders = _cachedQueryMode;
-
-        bool PerformRay(Vector2 point)
-        {
-            _groundHit = Physics2D.Raycast(point, -Up, GrounderLength + _currentStepDownLength, Stats.CollisionLayers);
-            if (!_groundHit) return false;
-
-            if (Vector2.Angle(_groundHit.normal, Up) > Stats.MaxWalkableSlope)
-            {
-                return false;
-            }
-
-            return true;
-        }
-    } // end CalculateCollisions
-
-    private IEnumerable<float> GenerateRayOffsets()
-    {
-        var extent = _character.StandingColliderSize.x / 2 - _character.RayInset;
-        var offsetAmount = extent / RAY_SIDE_COUNT;
-        for (var i = 1; i < RAY_SIDE_COUNT + 1; i++)
-        {
-            yield return offsetAmount * i;
-        }
-    } // end GenerateRayOffsets
-
-    private void ToggleGrounded(bool grounded)
-    {
-        _grounded = grounded;
-        if (grounded)
-        {
-            GroundedChanged?.Invoke(true, _lastFrameY);
-            _rb.gravityScale = 0;
-            SetVelocity(_trimmedFrameVelocity);
-            _constantForce.force = Vector2.zero;
-            _currentStepDownLength = _character.StepHeight;
-            ResetDashes();
-            _coyoteUsable = true;
-            _bufferedJumpUsable = true;
-            ResetAirJumps();
-            SetColliderMode(ColliderMode.Standard);
-        }
-        else
-        {
-            GroundedChanged?.Invoke(false, 0);
-            _timeLeftGrounded = _time;
-            _rb.gravityScale = GRAVITY_SCALE;
-            SetColliderMode(ColliderMode.Airborne);
-        }
-    } // end ToggleGrounded
-
-    private void SetColliderMode(ColliderMode mode)
-    {
-        _airborneCollider.enabled = mode == ColliderMode.Airborne;
-
-        switch (mode)
-        {
-            case ColliderMode.Standard:
-                _collider.size = _character.StandingColliderSize;
-                _collider.offset = _character.StandingColliderCenter;
-                break;
-            case ColliderMode.Airborne:
-                break;
-        }
-    } // end SetColliderMode
-
-    private enum ColliderMode
-    {
-        Standard,
-        Airborne
-    } // end enum ColliderMode
-
-    #endregion
-
-    #region Direction
-
-    private Vector2 _frameDirection;
-
-    private void CalculateDirection()
-    {
-        _frameDirection = new Vector2(_frameInput.Move.x, 0);
-
-        if (_grounded)
-        {
-            GroundNormal = _groundHit.normal;
-            var angle = Vector2.Angle(GroundNormal, Up);
-            if (angle < Stats.MaxWalkableSlope) _frameDirection.y = _frameDirection.x * -GroundNormal.x / GroundNormal.y;
-        }
-
-        _frameDirection = _frameDirection.normalized;
-    } // end CalculateDirection
-
-    #endregion
-
-    #region Walls
-
-    private const float WALL_REATTACH_COOLDOWN = 0.2f;
-
-    private float _wallJumpInputNerfPoint;
-    private int _wallDirectionForJump;
-    private bool _isOnWall;
-    private float _timeLeftWall;
-    private float _currentWallSpeedVel;
-    private float _canGrabWallAfter;
-    private int _wallDirThisFrame;
-
-    private bool HorizontalInputPressed => Mathf.Abs(_frameInput.Move.x) > Stats.HorizontalDeadZoneThreshold;
-    private bool IsPushingAgainstWall => HorizontalInputPressed && (int)Mathf.Sign(_frameDirection.x) == _wallDirThisFrame;
-
-    private void CalculateWalls()
-    {
-        if (!Stats.AllowWalls) return;
-
-        var rayDir = _isOnWall ? WallDirection : _frameDirection.x;
-        var hasHitWall = DetectWallCast(rayDir);
-
-        _wallDirThisFrame = hasHitWall ? (int)rayDir : 0;
-
-        if (!_isOnWall && ShouldStickToWall() && _time > _canGrabWallAfter && Velocity.y < 0) ToggleOnWall(true);
-        else if (_isOnWall && !ShouldStickToWall()) ToggleOnWall(false);
-
-        // If we're not grabbing a wall, let's check if we're against one for wall-jumping purposes
-        if (!_isOnWall)
-        {
-            if (DetectWallCast(-1)) _wallDirThisFrame = -1;
-            else if (DetectWallCast(1)) _wallDirThisFrame = 1;
-        }
-
-        bool ShouldStickToWall()
-        {
-            if (_wallDirThisFrame == 0 || _grounded) return false;
-
-            if (HorizontalInputPressed && !IsPushingAgainstWall) return false; // If pushing away
-            return !Stats.RequireInputPush || (IsPushingAgainstWall);
-        }
-    } // end CalculateWalls
-
-    private bool DetectWallCast(float dir)
-    {
-        return Physics2D.BoxCast(_framePosition + (Vector2)_wallDetectionBounds.center, new Vector2(_character.StandingColliderSize.x - SKIN_WIDTH, _wallDetectionBounds.size.y), 0, new Vector2(dir, 0), Stats.WallDetectorRange,
-            Stats.ClimbableLayer);
-    } // end DetectWallCast
-
-    private void ToggleOnWall(bool on)
-    {
-        _isOnWall = on;
-
-        if (on)
-        {
-            _decayingTransientVelocity = Vector2.zero;
-            _bufferedJumpUsable = true;
-            _wallJumpCoyoteUsable = true;
-            WallDirection = _wallDirThisFrame;
-        }
-        else
-        {
-            _timeLeftWall = _time;
-            _canGrabWallAfter = _time + WALL_REATTACH_COOLDOWN;
-            _rb.gravityScale = GRAVITY_SCALE;
-            WallDirection = 0;
-            if (Velocity.y > 0)
-            {
-                AddFrameForce(new Vector2(0, Stats.WallPopForce), true);
-            }
-
-            ResetAirJumps(); // so that we can air jump even if we didn't leave via a wall jump
-        }
-
-        WallGrabChanged?.Invoke(on);
-    } // end ToggleOnWall
-
-    #endregion
-
-    #region Ladders
-
-    private bool CanEnterLadder => _ladderHit && _time > _timeLeftLadder + Stats.LadderCooldownTime;
-    private bool ShouldMountLadder => Stats.AutoAttachToLadders || _frameInput.Move.y > Stats.VerticalDeadZoneThreshold || (!_grounded && _frameInput.Move.y < -Stats.VerticalDeadZoneThreshold);
-    private bool ShouldDismountLadder => !Stats.AutoAttachToLadders && _grounded && _frameInput.Move.y < -Stats.VerticalDeadZoneThreshold;
-
-    private float _timeLeftLadder;
-    private Collider2D _ladderHit;
-    private float _ladderSnapVel;
-
-    private void CalculateLadders()
-    {
-        if (!Stats.AllowLadders) return;
-
-        Physics2D.queriesHitTriggers = true; // Ladders are set to Trigger
-        _ladderHit = Physics2D.OverlapBox(_framePosition + (Vector2)_wallDetectionBounds.center, _wallDetectionBounds.size, 0, Stats.LadderLayer);
-
-        Physics2D.queriesHitTriggers = _cachedQueryTriggers;
-
-        if (!ClimbingLadder && CanEnterLadder && ShouldMountLadder) ToggleClimbingLadder(true);
-        else if (ClimbingLadder && (!_ladderHit || ShouldDismountLadder)) ToggleClimbingLadder(false);
-    } // end CalculateLadders
-
-    private void ToggleClimbingLadder(bool on)
-    {
-        if (ClimbingLadder == on) return;
-        if (on)
-        {
-            SetVelocity(Vector2.zero);
-            _rb.gravityScale = 0;
-            _ladderSnapVel = 0; // reset damping velocity for consistency
-        }
-        else
-        {
-            if (_ladderHit) _timeLeftLadder = _time; // to prevent immediately re-mounting ladder
-            if (_frameInput.Move.y > 0)
-            {
-                AddFrameForce(new Vector2(0, Stats.LadderPopForce));
-            }
-
-            _rb.gravityScale = GRAVITY_SCALE;
-        }
-
-        ClimbingLadder = on;
-        ResetAirJumps();
-    } // end ToggleClimbingLadder
-
-    #endregion
-
-    #region Jump
-
-    private const float JUMP_CLEARANCE_TIME = 0.25f;
-    private bool IsWithinJumpClearance => _lastJumpExecutedTime + JUMP_CLEARANCE_TIME > _time;
-    private float _lastJumpExecutedTime;
-    private bool _bufferedJumpUsable;
-    private bool _jumpToConsume;
-    private float _timeJumpWasPressed;
-    private Vector2 _forceToApplyThisFrame;
-    private bool _endedJumpEarly;
-    private float _endedJumpForce;
-    private int _totalAirJumpsRemaining;
-    private int _freeAirJumpsRemaining;
-    private bool _wallJumpCoyoteUsable;
-    private bool _coyoteUsable;
-    private float _timeLeftGrounded;
-    private float _returnWallInputLossAfter;
-    private DropDownPlatform _currentDropDownPlatform = null;
-
-    private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + Stats.BufferedJumpTime && !IsWithinJumpClearance;
-    private bool CanUseCoyote => _coyoteUsable && !_grounded && _time < _timeLeftGrounded + Stats.CoyoteTime;
-    private bool CanAirJump => !_grounded && _totalAirJumpsRemaining > 0 && (_freeAirJumpsRemaining > 0 || _currentDust + Stats.AirJumpCost > 0);
-    private bool CanWallJump => !_grounded && (_isOnWall || _wallDirThisFrame != 0) || (_wallJumpCoyoteUsable && _time < _timeLeftWall + Stats.WallCoyoteTime);
-
-    private void CalculateJump()
-    {
-        if (_jumpToConsume || HasBufferedJump)
-        {
-            if (CanWallJump)
-            {
-                ExecuteJump(JumpType.WallJump);
-            }
-            else if (_currentDropDownPlatform != null && _frameInput.Move.y < 0f)
-            {
-                ExecuteJump(JumpType.PlatformJumpDrop);
-            }
-            else if (_grounded || ClimbingLadder)
-            {
-                ExecuteJump(JumpType.Jump);
-            }
-            else if (CanUseCoyote)
-            {
-                ExecuteJump(JumpType.Coyote);
-            }
-            else if (CanAirJump)
-            {
-                ExecuteJump(JumpType.AirJump);
-            }
-        }
-
-        if ((!_endedJumpEarly && !_grounded && !_frameInput.JumpHeld && Velocity.y > 0) || Velocity.y < 0) _endedJumpEarly = true; // Early end detection
-
-
-        if (_time > _returnWallInputLossAfter) _wallJumpInputNerfPoint = Mathf.MoveTowards(_wallJumpInputNerfPoint, 1, _delta / Stats.WallJumpInputLossReturnTime);
-    } // end CalculateJump
-
-    private void ExecuteJump(JumpType jumpType)
-    {
-        SetVelocity(_trimmedFrameVelocity);
-        _endedJumpEarly = false;
-        _bufferedJumpUsable = false;
-        _lastJumpExecutedTime = _time;
-        _currentStepDownLength = 0;
-        if (ClimbingLadder) ToggleClimbingLadder(false);
-
-        if (jumpType is JumpType.Jump or JumpType.Coyote)
-        {
-            _coyoteUsable = false;
-            AddFrameForce(new Vector2(0, Stats.JumpPower));
-        }
-        else if (jumpType is JumpType.AirJump)
-        {
-            _totalAirJumpsRemaining--;
-            if (_freeAirJumpsRemaining > 0) _freeAirJumpsRemaining--;
-            else
-            {
-                ChangeDust(Stats.AirJumpCost, false);
-            }
-            AddFrameForce(new Vector2(0, Stats.JumpPower));
-        }
-        else if (jumpType is JumpType.WallJump)
-        {
-            if (Stats.ResetDashOnWallJump) ResetDashes();
-            ToggleOnWall(false);
-
-            _wallJumpCoyoteUsable = false;
-            _wallJumpInputNerfPoint = 0;
-            _returnWallInputLossAfter = _time + Stats.WallJumpTotalInputLossTime;
-            _wallDirectionForJump = _wallDirThisFrame;
-            if (_isOnWall || IsPushingAgainstWall)
-            {
-                AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallPushPower);
+                SetupCharacter(tween: true);
             }
             else
             {
-                AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallJumpPower); // This is not used as the player must push into the wall to jump
+                SetupCharacter();
+            }
+            _lastAnimationState = ES3.Load("_lastAnimationState", 0);
+        } // end Awake
+
+        private void Start()
+        {
+            if (GameManager.instance.CheckpointLocation.HasValue)
+            {
+                RepositionImmediately(GameManager.instance.CheckpointLocation.Value, true);
+            }
+            _fallSpeedYDampingChangeThreshold = CameraManager.Instance._fallSpeedYDampingChangeThreshold;
+        } // end Start
+
+
+        public void OnValidate() => SetupCharacter();
+
+        public void Update()
+        {
+            // _delta = Time.deltaTime; // Try having this disabled
+            _time += Time.deltaTime;
+
+            GatherInput();
+
+            // Handle Camera TODO - Move to Seperate Script
+            if (_rb.velocity.y < CameraManager.Instance._fallSpeedYDampingChangeThreshold && !CameraManager.Instance.IsLerpingYDamping && !CameraManager.Instance.LerpedFromPlayerFalling)
+            {
+                CameraManager.Instance.LerpYDamping(true);
+            }
+            if (_rb.velocity.y >= 0f && !CameraManager.Instance.IsLerpingYDamping && CameraManager.Instance.LerpedFromPlayerFalling)
+            {
+                CameraManager.Instance.LerpedFromPlayerFalling = false;
+                CameraManager.Instance.LerpYDamping(false);
             }
         }
-        else if (jumpType is JumpType.PlatformJumpDrop)
+
+        public void FixedUpdate()
         {
-            _currentDropDownPlatform.DropDown(_collider);
+            _delta = Time.fixedDeltaTime;
+
+            if (!Active)
+            {
+                SetVelocity(Vector2.zero);
+                return;
+            }
+            RemoveTransientVelocity();
+
+            SetFrameData();
+
+            CalculateCollisions();
+            CalculateDirection();
+
+            CalculateWalls();
+            CalculateLadders();
+            CalculateJump();
+            CalculateDash();
+            CalculateInteract();
+
+            CalculateExternalModifiers();
+
+            TraceGround();
+            Move();
+
+            CleanFrameData();
+
+            SaveCharacterState();
+        } // end FixedUpdate
+
+        #endregion
+
+        #region Cameras
+        private void updateCameraYDamping()
+        {
+            // If we are falling past a certain speed threshold
+            if (_rb.velocity.y < _fallSpeedYDampingChangeThreshold && !CameraManager.Instance.IsLerpingYDamping && !CameraManager.Instance.LerpedFromPlayerFalling)
+            {
+                CameraManager.Instance.LerpYDamping(true);
+            }
+            if (_rb.velocity.y >= 0f && !CameraManager.Instance.IsLerpingYDamping && CameraManager.Instance.LerpedFromPlayerFalling)
+            {
+                CameraManager.Instance.LerpedFromPlayerFalling = false;
+                CameraManager.Instance.LerpYDamping(false);
+            }
+        } // end updateCameraYDamping
+        #endregion
+
+        #region Setup
+
+        private bool _cachedQueryMode, _cachedQueryTriggers;
+        private GeneratedCharacterSize _character;
+        private const float GRAVITY_SCALE = 1;
+
+        private void SetupCharacter(bool tween = false)
+        {
+            Stats = _allStats[DustLevelIndex(_currentDust)];
+            if (Stats == null) return; // Prevents errors when the script is first added
+            CameraManager.Instance?.SetOrthographicSize(Stats.CameraOrthographicSize, tween);
+
+            _character = Stats.CharacterSize.GenerateCharacterSize();
+            _cachedQueryMode = Physics2D.queriesStartInColliders;
+            _cachedQueryTriggers = Physics2D.queriesHitTriggers;
+
+            _wallDetectionBounds = new Bounds(
+                new Vector3(0, _character.Height / 2),
+                new Vector3(_character.StandingColliderSize.x + CharacterSize.COLLIDER_EDGE_RADIUS * 2 + Stats.WallDetectorRange, _character.Height - 0.1f));
+
+            _rb = GetComponent<Rigidbody2D>();
+            _rb.hideFlags = HideFlags.NotEditable;
+
+            // Primary collider
+            _collider = GetComponent<BoxCollider2D>();
+            _collider.edgeRadius = CharacterSize.COLLIDER_EDGE_RADIUS;
+            _collider.hideFlags = HideFlags.NotEditable;
+            _collider.sharedMaterial = _rb.sharedMaterial;
+            _collider.enabled = true;
+            _collider.size = _character.StandingColliderSize;
+            _collider.offset = _character.StandingColliderCenter;
+            SizeChanged?.Invoke(tween);
+        } // end SetupCharacter
+
+        #endregion
+
+        #region Input
+
+        private FrameInput _frameInput;
+
+        private void GatherInput()
+        {
+            // Early return if time is frozen (we don't want to buffer inputs)
+            if (Time.timeScale == 0) return;
+
+            _frameInput = UserInput.instance.Gather(PlayerState);
+
+
+            if (_frameInput.JumpDown)
+            {
+                _jumpToConsume = true;
+                _timeJumpWasPressed = _time;
+            }
+
+            if (_frameInput.DashDown)
+            {
+                _dashToConsume = true;
+            }
+
+            if (_frameInput.InteractDown)
+            {
+                _interactToConsume = true;
+            }
+        } // end GatherInput
+
+        #endregion
+
+        #region Frame Data
+
+        private bool _hasInputThisFrame;
+        private Vector2 _trimmedFrameVelocity;
+        private Vector2 _framePosition;
+        private Bounds _wallDetectionBounds;
+
+        private void SetFrameData()
+        {
+            // float rot = _rb.rotation * Mathf.Deg2Rad;
+            // Up = new Vector2(-Mathf.Sin(rot), Mathf.Cos(rot));
+            // Right = new Vector2(Up.y, -Up.x);
+            Up = transform.up;
+            Right = transform.right;
+            _framePosition = _rb.position;
+
+            _hasInputThisFrame = _frameInput.Move.x != 0;
+            // if (_hasInputThisFrame || Forward == Vector2.zero)
+            // {
+            //     Vector2 previousForward = Forward;
+            //     Forward = Right * Mathf.Sign(_frameInput.Move.x);
+            //     if (previousForward != Forward && previousForward != Vector2.zero) _cameraFollowObject.CallTurn();
+            // }
+            Velocity = _rb.velocity;
+            _trimmedFrameVelocity = new Vector2(Velocity.x, 0);
+        } // end SetFrameData
+
+        /// <summary>
+        /// Removes any transient velocity applied last frame
+        /// </summary>
+        private void RemoveTransientVelocity()
+        {
+            Vector2 currentVelocity = _rb.velocity;
+            Vector2 velocityBeforeReduction = currentVelocity;
+
+            currentVelocity -= _totalTransientVelocityAppliedLastFrame;
+            SetVelocity(currentVelocity);
+
+            _frameTransientVelocity = Vector2.zero;
+            _totalTransientVelocityAppliedLastFrame = Vector2.zero;
+
+            // If flung into a wall, dissolve the decay
+            // Replace this entire section with Boubourriquet's solution
+            float decay = Stats.Friction * Stats.AirFrictionMultiplier * Stats.ExternalVelocityDecayRate;
+            if ((velocityBeforeReduction.x < 0 && _decayingTransientVelocity.x < velocityBeforeReduction.x) ||
+                (velocityBeforeReduction.x > 0 && _decayingTransientVelocity.x > velocityBeforeReduction.x) ||
+                (velocityBeforeReduction.y < 0 && _decayingTransientVelocity.y < velocityBeforeReduction.y) ||
+                (velocityBeforeReduction.y > 0 && _decayingTransientVelocity.y > velocityBeforeReduction.y)) decay *= 5;
+
+            _decayingTransientVelocity = Vector2.MoveTowards(_decayingTransientVelocity, Vector2.zero, decay * _delta);
+
+            _immediateMove = Vector2.zero;
+        } // end RemoveTransientVelocity
+
+        /// <summary>
+        /// Resets most frame data to prevent any carry-over between frames, the rest of the data is reset before the next state (after the data is saved) via "RemoveTransientVelocity()"
+        /// </summary>
+        private void CleanFrameData()
+        {
+            _jumpToConsume = false;
+            _dashToConsume = false;
+            _interactToConsume = false;
+            _forceToApplyThisFrame = Vector2.zero;
+            _lastFrameY = Velocity.y;
+        } // end CleanFrameData
+
+        #endregion
+
+        #region Collisions
+
+        private const float SKIN_WIDTH = 0.02f;
+        private const int RAY_SIDE_COUNT = 5;
+        private RaycastHit2D _groundHit;
+        private bool _grounded;
+        public bool Grounded
+        {
+            get { return _grounded; }
         }
+        private float _currentStepDownLength;
+        private float GrounderLength => _character.StepHeight + SKIN_WIDTH;
 
-        Jumped?.Invoke(jumpType);
-    } // end ExecuteJump
+        private Vector2 RayPoint => _framePosition + Up * (_character.StepHeight + SKIN_WIDTH);
 
-    public void ResetAirJumps()
-    {
-        _totalAirJumpsRemaining = Stats.MaxAirJumps;
-        _freeAirJumpsRemaining = Stats.AirJumpBeforeCost;
-    }
-    #endregion
-
-    #region Dash
-
-    private bool _dashToConsume;
-    private bool _canDash;
-    private bool _stopDashing;
-    private Vector2 _dashVel;
-    private bool _dashing;
-    private float _startedDashing;
-    private float _nextDashTime;
-    private int _totalDashesRemaining;
-    private int _freeDashesRemaining;
-
-    public bool CanDash()
-    {
-        return Stats.AllowDash && _totalDashesRemaining > 0 && (_canDash || _freeDashesRemaining > 0 || _currentDust + Stats.DashCost > 0) && _time > _nextDashTime;
-    }
-
-    private void CalculateDash()
-    {
-        if (!Stats.AllowDash) return;
-
-        if (_dashToConsume && CanDash())
+        private void CalculateCollisions()
         {
-            // Handle the dash
-            Vector2 dir;
-            if (UserInput.instance.UseMouseForDash)
-            {
-                Vector2 playerPos = Camera.main.WorldToScreenPoint(transform.position);
-                dir = (_frameInput.DashDirection - playerPos).normalized;
-            }
-            else
-            {
-                dir = new Vector2(_frameInput.Move.x, _frameInput.Move.y).normalized;
-            }
-            if (dir == Vector2.zero)
-            {
-                dir = Forward;
-            }
+            // Is the middle ray good?
+            bool isGroundedThisFrame = PerformRay(RayPoint);
 
-            _dashVel = dir * Stats.DashVelocity;
-            _dashing = true;
-            _canDash = false;
-            _startedDashing = _time;
-            _nextDashTime = _time + Stats.DashCooldown;
-            DashChanged?.Invoke(true, dir);
-
-            // Handle Costs
-            if (_freeDashesRemaining > 0) _freeDashesRemaining--;
-            else
+            // If not, zigzag rays from the center outward until we find a hit
+            if (!isGroundedThisFrame)
             {
-                ChangeDust(Stats.DashCost, false);
-            }
-            _totalDashesRemaining--;
-
-        }
-
-        if (_dashing)
-        {
-            if (_time > _startedDashing + Stats.DashDuration || _stopDashing)
-            {
-                _dashing = false;
-                _stopDashing = false;
-                DashChanged?.Invoke(false, Vector2.zero);
-
-                SetVelocity(new Vector2(Velocity.x * Stats.DashEndHorizontalMultiplier, Velocity.y));
-                if (_grounded)
+                foreach (float offset in GenerateRayOffsets())
                 {
-                    ResetDashes();
+                    isGroundedThisFrame = PerformRay(RayPoint + Right * offset);
+                    if (isGroundedThisFrame) break;
                 }
             }
-        }
-    } // end CalculateDash
 
-    public void ResetDashes()
-    {
-        _canDash = true;
-        _totalDashesRemaining = Stats.MaxDashes;
-        _freeDashesRemaining = Stats.DashesBeforeCost;
-    } // end ResetDashes
+            if (isGroundedThisFrame && !_grounded) ToggleGrounded(true);
+            else if (!isGroundedThisFrame && _grounded) ToggleGrounded(false);
 
-    #endregion
-
-    #region Interact
-    private bool _interactToConsume;
-    private void CalculateInteract()
-    {
-        if (!_interactToConsume) return;
-        List<Collider2D> results = new List<Collider2D>();
-        Collider2D activeCollider = _collider.isActiveAndEnabled ? _collider : _airborneCollider;
-
-        Physics2D.queriesHitTriggers = true;
-        activeCollider.OverlapCollider(new ContactFilter2D().NoFilter(), results);
-        Physics2D.queriesHitTriggers = _cachedQueryTriggers;
-        foreach (Collider2D collider in results)
-        {
-            collider.gameObject.GetComponent<IInteractable>()?.Interact();
-        }
-    } // end CalculateInteract
-    #endregion
-
-    public Vector2 GetColliderPosition()
-    {
-        Collider2D activeCollider = _collider.isActiveAndEnabled ? _collider : _airborneCollider;
-        return activeCollider.bounds.center;
-    }
-
-    #region Move
-
-    private Vector2 _frameTransientVelocity;
-    private Vector2 _immediateMove;
-    private Vector2 _decayingTransientVelocity;
-    private Vector2 _totalTransientVelocityAppliedLastFrame;
-    private Vector2 _frameSpeedModifier, _currentFrameSpeedModifier = Vector2.one;
-    private const float SLOPE_ANGLE_FOR_EXACT_MOVEMENT = 0.7f;
-    private IPhysicsMover _lastPlatform;
-    private float _lastFrameY;
-
-    private void TraceGround()
-    {
-        IPhysicsMover currentPlatform = null;
-
-        if (_grounded && !IsWithinJumpClearance)
-        {
-            // Use transient velocity to keep grounded. Move position is not interpolated
-            var distanceFromGround = _character.StepHeight - _groundHit.distance;
-            if (distanceFromGround != 0)
+            bool PerformRay(Vector2 point)
             {
-                var requiredMove = Vector2.zero;
-                requiredMove.y += distanceFromGround;
-                if (Stats.PositionCorrectionMode is PositionCorrectionMode.Velocity) _frameTransientVelocity = requiredMove / _delta;
-                else _immediateMove = requiredMove;
+                Physics2D.queriesHitTriggers = false;
+                Physics2D.queriesStartInColliders = false;
+                _groundHit = Physics2D.Raycast(point, -Up, GrounderLength + _currentStepDownLength, Stats.CollisionLayers);
+                Physics2D.queriesStartInColliders = _cachedQueryMode;
+                Physics2D.queriesHitTriggers = _cachedQueryTriggers;
+
+                if (!_groundHit) return false;
+
+                if (Vector2.Angle(_groundHit.normal, Up) > Stats.MaxWalkableSlope)
+                {
+                    return false;
+                }
+
+                return true;
             }
+        } // end CalculateCollisions
 
-            if (_groundHit.transform.TryGetComponent(out currentPlatform))
+        private IEnumerable<float> GenerateRayOffsets()
+        {
+            float extent = _character.StandingColliderSize.x / 2 - _character.RayInset;
+            float offsetAmount = extent / RAY_SIDE_COUNT;
+            for (int i = 1; i < RAY_SIDE_COUNT + 1; i++)
             {
-                _activatedMovers.Add(currentPlatform);
+                yield return offsetAmount * i;
             }
+        } // end GenerateRayOffsets
 
-            _currentDropDownPlatform = _groundHit.transform.GetComponentInChildren<DropDownPlatform>();
-        }
-
-        if (_lastPlatform != currentPlatform)
+        /// <summary>
+        /// Toggles the grounded state of the player (and all relevant variables) based on the passed parameter
+        /// </summary>
+        /// <param name="grounded"></param>
+        private void ToggleGrounded(bool grounded)
         {
-            // With no bounding, this is a simple contact-only platform
-            // If it does have a bounding, we'll disconnect from it when the trigger exits
-            if (_lastPlatform is { UsesBounding: false })
+            _grounded = grounded;
+            if (grounded)
             {
-                _activatedMovers.Remove(_lastPlatform);
-                ApplyMoverExitVelocity(_lastPlatform);
-            }
-
-            _lastPlatform = currentPlatform;
-        }
-
-        // Handle platforms
-        foreach (var platform in _activatedMovers)
-        {
-            // Don't apply if we're next to it
-            if (_framePosition.y < platform.FramePosition.y - SKIN_WIDTH) continue;
-            _frameTransientVelocity += platform.FramePositionDelta / _delta;
-        }
-    } // end TraceGround
-
-    private void ApplyMoverExitVelocity(IPhysicsMover mover)
-    {
-        var platformVel = mover.TakeOffVelocity;
-        if (platformVel.y < 0) platformVel.y *= Stats.NegativeYVelocityNegation;
-        _decayingTransientVelocity += platformVel;
-    } // end ApplyMoverExitVelocity
-
-    private void Move()
-    {
-        if (_forceToApplyThisFrame != Vector2.zero)
-        {
-            _rb.velocity += AdditionalFrameVelocities();
-            _rb.AddForce(_forceToApplyThisFrame * _rb.mass, ForceMode2D.Impulse);
-
-            // Returning provides the crispest & most accurate jump experience
-            // Required for reliable slope jumps
-            return;
-        }
-
-        if (_dashing)
-        {
-            SetVelocity(_dashVel);
-            return;
-        }
-
-        if (_isOnWall)
-        {
-            _constantForce.force = Vector2.zero;
-
-            float wallVelocity;
-            if (_frameInput.Move.y != 0) wallVelocity = _frameInput.Move.y * Stats.WallClimbSpeed;
-            else wallVelocity = Mathf.MoveTowards(Mathf.Min(Velocity.y, 0), -Stats.WallClimbSpeed, Stats.WallFallAcceleration * _delta);
-
-            SetVelocity(new Vector2(_rb.velocity.x, wallVelocity));
-            return;
-        }
-
-        if (ClimbingLadder)
-        {
-            _constantForce.force = Vector2.zero;
-            _rb.gravityScale = 0;
-
-            var goalVelocity = Vector2.zero;
-            goalVelocity.y = _frameInput.Move.y * (_frameInput.Move.y > 0 ? Stats.LadderClimbSpeed : Stats.LadderSlideSpeed);
-
-            // Horizontal
-            float goalX;
-            if (Stats.SnapToLadders && _frameInput.Move.x == 0)
-            {
-                var targetX = _ladderHit.transform.position.x;
-                goalX = Mathf.SmoothDamp(_framePosition.x, targetX, ref _ladderSnapVel, Stats.LadderSnapTime);
+                GroundedChanged?.Invoke(true, _lastFrameY);
+                _rb.gravityScale = 0;
+                SetVelocity(_trimmedFrameVelocity);
+                _constantForce.force = Vector2.zero;
+                _currentStepDownLength = _character.StepHeight;
+                ResetDashes();
+                _coyoteUsable = true;
+                _bufferedJumpUsable = true;
+                ResetAirJumps();
             }
             else
             {
-                goalX = Mathf.MoveTowards(_framePosition.x, _framePosition.x + _frameInput.Move.x, Stats.Acceleration * Stats.LadderShimmySpeedMultiplier * _delta);
+                GroundedChanged?.Invoke(false, 0);
+                _timeLeftGrounded = _time;
+                _rb.gravityScale = GRAVITY_SCALE;
+            }
+        } // end ToggleGrounded
+
+
+
+        #endregion
+
+        #region Direction
+
+        // The input of the player corrected to align with the angle of the ground.
+        private Vector2 _frameDirection;
+
+        /// <summary>
+        /// Calculates the direction of the player's movement based on the input and ground angle.
+        /// </summary>
+        private void CalculateDirection()
+        {
+            _frameDirection = new Vector2(_frameInput.Move.x, 0);
+
+            if (_grounded)
+            {
+                GroundNormal = _groundHit.normal;
+                float angle = Vector2.Angle(GroundNormal, Up);
+                if (angle < Stats.MaxWalkableSlope) _frameDirection.y = _frameDirection.x * -GroundNormal.x / GroundNormal.y;
             }
 
-            goalVelocity.x = (goalX - _framePosition.x) / _delta;
+            _frameDirection = _frameDirection.normalized;
+        } // end CalculateDirection
 
-            SetVelocity(goalVelocity);
+        #endregion
 
-            return;
-        }
+        #region Walls
 
-        var extraForce = new Vector2(0, _grounded ? 0 : -Stats.ExtraConstantGravity * (_endedJumpEarly && Velocity.y > 0 ? Stats.EndJumpEarlyExtraForceMultiplier : 1));
-        _constantForce.force = extraForce * _rb.mass;
+        private const float WALL_REATTACH_COOLDOWN = 0.2f;
 
-        var targetSpeed = _hasInputThisFrame ? Stats.BaseSpeed : 0;
+        private float _wallJumpInputNerfPoint;
+        private int _wallDirectionForJump;
+        private bool _isOnWall;
+        private float _timeLeftWall;
+        private float _currentWallSpeedVel;
+        private float _canGrabWallAfter;
+        private int _wallDirThisFrame;
 
-        var step = _hasInputThisFrame ? Stats.Acceleration : Stats.Friction;
+        private bool HorizontalInputPressed => Mathf.Abs(_frameInput.Move.x) > Stats.HorizontalDeadZoneThreshold;
+        private bool IsPushingAgainstWall => HorizontalInputPressed && (int)Mathf.Sign(_frameDirection.x) == _wallDirThisFrame;
 
-        var xDir = _hasInputThisFrame ? _frameDirection : Velocity.normalized;
-
-        // Quicker direction change
-        if (Vector3.Dot(_trimmedFrameVelocity, _frameDirection) < 0) step *= Stats.DirectionCorrectionMultiplier;
-
-        Vector2 newVelocity;
-        step *= _delta;
-        if (_grounded)
+        private void CalculateWalls()
         {
-            var speed = Mathf.MoveTowards(Velocity.magnitude, targetSpeed, step);
+            if (!Stats.AllowWalls) return;
 
-            // Blend the two approaches
-            var targetVelocity = xDir * speed;
+            float rayDir = _isOnWall ? WallDirection : _frameDirection.x;
+            bool hasHitWall = DetectWallCast(rayDir);
 
-            // Calculate the new speed based on the current and target speeds
-            var newSpeed = Mathf.MoveTowards(Velocity.magnitude, targetVelocity.magnitude, step);
+            _wallDirThisFrame = hasHitWall ? (int)rayDir : 0;
 
-            // TODO: Lets actually trace the ground direction automatically instead of direct
-            var smoothed = Vector2.MoveTowards(Velocity, targetVelocity, step); // Smooth but potentially inaccurate
-            var direct = targetVelocity.normalized * newSpeed; // Accurate but abrupt
-            var slopePoint = Mathf.InverseLerp(0, SLOPE_ANGLE_FOR_EXACT_MOVEMENT, Mathf.Abs(_frameDirection.y)); // Blend factor
+            if (!_isOnWall && ShouldStickToWall() && _time > _canGrabWallAfter && Velocity.y < 0) ToggleOnWall(true);
+            else if (_isOnWall && !ShouldStickToWall()) ToggleOnWall(false);
 
-            // Calculate the blended velocity
-            newVelocity = Vector2.Lerp(smoothed, direct, slopePoint);
-        }
-        else
-        {
-            step *= Stats.AirFrictionMultiplier;
-
-            if (_wallJumpInputNerfPoint < 1 && (int)Mathf.Sign(xDir.x) == (int)Mathf.Sign(_wallDirectionForJump))
+            // If we're not grabbing a wall, let's check if we're against one for wall-jumping purposes
+            if (!_isOnWall)
             {
-                if (_time < _returnWallInputLossAfter) xDir.x = -_wallDirectionForJump;
-                else xDir.x *= _wallJumpInputNerfPoint;
+                if (DetectWallCast(-1)) _wallDirThisFrame = -1;
+                else if (DetectWallCast(1)) _wallDirThisFrame = 1;
             }
 
-            var targetX = Mathf.MoveTowards(_trimmedFrameVelocity.x, xDir.x * targetSpeed, step);
-            newVelocity = new Vector2(targetX, _rb.velocity.y);
-        }
-
-        SetVelocity((newVelocity + AdditionalFrameVelocities()) * _currentFrameSpeedModifier);
-
-        Vector2 AdditionalFrameVelocities()
-        {
-            if (_immediateMove.sqrMagnitude > SKIN_WIDTH)
+            bool ShouldStickToWall()
             {
-                _rb.MovePosition(_framePosition + _immediateMove);
+                if (_wallDirThisFrame == 0 || _grounded) return false;
+
+                if (HorizontalInputPressed && !IsPushingAgainstWall) return false; // If pushing away
+                return !Stats.RequireInputPush || (IsPushingAgainstWall);
             }
-            _totalTransientVelocityAppliedLastFrame = _frameTransientVelocity + _decayingTransientVelocity;
-            return _totalTransientVelocityAppliedLastFrame;
-        }
-    } // end Move
+        } // end CalculateWalls
 
-    public void SetVelocity(Vector2 newVel)
-    {
-        _rb.velocity = newVel;
-        Velocity = newVel;
-    } // end SetVelocity
-
-    #endregion
-
-    private void SaveCharacterState()
-    {
-        State = new ControllerState
+        private bool DetectWallCast(float dir)
         {
-            Position = _framePosition,
-            Rotation = _rb.rotation,
-            Velocity = Velocity,
-            Grounded = _grounded
-        };
-    } // end SaveCharacterState
+            Physics2D.queriesHitTriggers = false;
+            bool result = Physics2D.BoxCast(_framePosition + (Vector2)_wallDetectionBounds.center, new Vector2(_character.StandingColliderSize.x - SKIN_WIDTH, _wallDetectionBounds.size.y), 0, new Vector2(dir, 0), Stats.WallDetectorRange, Stats.ClimbableLayer);
+            Physics2D.queriesHitTriggers = _cachedQueryTriggers;
+            return result;
+        } // end DetectWallCast
 
-    [SerializeField] public int _lastAnimationState = 0;
-
-    public void EnableDialogue()
-    {
-        _stopDashing = true;
-        SetVelocity(new Vector2(0, Velocity.y));
-        PlayerState = PlayerStates.Dialogue;
-    }
-
-    public void DisableDialogue()
-    {
-        _stopDashing = false;
-        PlayerState = PlayerStates.Playing;
-    }
-
-    #region Dust & Size
-
-    // Size Changing variables
-    // [Header("Size Changing")]
-    // [Range(0, 5)][SerializeField] int _bunnySize = 1;
-    // [SerializeField] float _bunnySizeScalar = 1.5f;
-    // Vector3 _originalSize = new Vector3(1f, 1f, 1f);
-
-    // [SerializeField] float _scaleSpeed = 1.6f;
-    // bool _growing = false;
-    // Coroutine _lastDamp;
-    // float _epsilon = 0.01f;
-
-
-    // Dust Changing variables
-    [Header("Dust Values")]
-    [SerializeField] private float _currentDust = 100f;
-    private bool _dustLossInvulnerable = false;
-    [HideInInspector] public float CurrentDust => _currentDust;
-    [SerializeField] private float _maxDust = 100f;
-    [SerializeField] private float[] _dustLevels = new float[5] { 0f, 20f, 40f, 60f, 80f };
-
-    private int DustLevelIndex(float dustLevel)
-    {
-        for (int i = _dustLevels.Length - 1; i > -1; i--)
+        private void ToggleOnWall(bool on)
         {
-            if (dustLevel >= _dustLevels[i])
+            _isOnWall = on;
+
+            if (on)
             {
-                return i;
+                _decayingTransientVelocity = Vector2.zero;
+                _bufferedJumpUsable = true;
+                _wallJumpCoyoteUsable = true;
+                WallDirection = _wallDirThisFrame;
             }
-        }
-        // Safety return
-        return 0;
-    } // end DustLevelIndex
-
-    public void ChangeDust(float scalar, bool hostile)
-    {
-        if (scalar < 0)
-        {
-            UsedDust?.Invoke(scalar, hostile);
-            if (hostile)
+            else
             {
-                if (!_dustLossInvulnerable)
+                _timeLeftWall = _time;
+                _canGrabWallAfter = _time + WALL_REATTACH_COOLDOWN;
+                _rb.gravityScale = GRAVITY_SCALE;
+                WallDirection = 0;
+                if (Velocity.y > 0)
                 {
-                    if (Stats.IFrameDuration > 0) StartCoroutine(LazyHandleIframes());
-                    if (Stats.FreezeOnDamageDuration > 0) StartCoroutine(FreezeGameOnTakeDamage());
+                    AddFrameForce(new Vector2(0, Stats.WallPopForce), true);
+                }
+
+                ResetAirJumps(); // so that we can air jump even if we didn't leave via a wall jump
+            }
+
+            WallGrabChanged?.Invoke(on);
+        } // end ToggleOnWall
+
+        #endregion
+
+        #region Ladders
+
+        private bool CanEnterLadder => _ladderHit && _time > _timeLeftLadder + Stats.LadderCooldownTime;
+        private bool ShouldMountLadder => Stats.AutoAttachToLadders || _frameInput.Move.y > Stats.VerticalDeadZoneThreshold || (!_grounded && _frameInput.Move.y < -Stats.VerticalDeadZoneThreshold);
+        private bool ShouldDismountLadder => !Stats.AutoAttachToLadders && _grounded && _frameInput.Move.y < -Stats.VerticalDeadZoneThreshold;
+
+        private float _timeLeftLadder;
+        private Collider2D _ladderHit;
+        private float _ladderSnapVel;
+
+        private void CalculateLadders()
+        {
+            if (!Stats.AllowLadders) return;
+
+            Physics2D.queriesHitTriggers = true; // Ladders are set to Trigger
+            _ladderHit = Physics2D.OverlapBox(_framePosition + (Vector2)_wallDetectionBounds.center, _wallDetectionBounds.size, 0, Stats.LadderLayer);
+            Physics2D.queriesHitTriggers = _cachedQueryTriggers;
+
+            if (!ClimbingLadder && CanEnterLadder && ShouldMountLadder) ToggleClimbingLadder(true);
+            else if (ClimbingLadder && (!_ladderHit || ShouldDismountLadder)) ToggleClimbingLadder(false);
+        } // end CalculateLadders
+
+        private void ToggleClimbingLadder(bool on)
+        {
+            if (ClimbingLadder == on) return;
+            if (on)
+            {
+                SetVelocity(Vector2.zero);
+                _rb.gravityScale = 0;
+                _ladderSnapVel = 0; // reset damping velocity for consistency
+            }
+            else
+            {
+                if (_ladderHit) _timeLeftLadder = _time; // to prevent immediately re-mounting ladder
+                if (_frameInput.Move.y > 0)
+                {
+                    AddFrameForce(new Vector2(0, Stats.LadderPopForce));
+                }
+
+                _rb.gravityScale = GRAVITY_SCALE;
+            }
+
+            ClimbingLadder = on;
+            ResetAirJumps();
+        } // end ToggleClimbingLadder
+
+        #endregion
+
+        #region Jump
+
+        private const float JUMP_CLEARANCE_TIME = 0.25f;
+        private bool IsWithinJumpClearance => _lastJumpExecutedTime + JUMP_CLEARANCE_TIME > _time;
+        private float _lastJumpExecutedTime;
+        private bool _bufferedJumpUsable;
+        private bool _jumpToConsume;
+        private float _timeJumpWasPressed;
+        private Vector2 _forceToApplyThisFrame;
+        private bool _endedJumpEarly;
+        private float _endedJumpForce;
+        private int _totalAirJumpsRemaining;
+        private int _freeAirJumpsRemaining;
+        private bool _wallJumpCoyoteUsable;
+        private bool _coyoteUsable;
+        private float _timeLeftGrounded;
+        private float _returnWallInputLossAfter;
+        private DropDownPlatform _currentDropDownPlatform = null;
+
+        private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + Stats.BufferedJumpTime && !IsWithinJumpClearance;
+        private bool CanUseCoyote => _coyoteUsable && !_grounded && _time < _timeLeftGrounded + Stats.CoyoteTime;
+        private bool CanAirJump => !_grounded && _totalAirJumpsRemaining > 0 && (_freeAirJumpsRemaining > 0 || _currentDust + Stats.AirJumpCost > 0);
+        private bool CanWallJump => !_grounded && (_isOnWall || _wallDirThisFrame != 0) || (_wallJumpCoyoteUsable && _time < _timeLeftWall + Stats.WallCoyoteTime);
+
+        private void CalculateJump()
+        {
+            if (_jumpToConsume || HasBufferedJump)
+            {
+                if (CanWallJump)
+                {
+                    ExecuteJump(JumpType.WallJump);
+                }
+                else if (_currentDropDownPlatform != null && _frameInput.Move.y < 0f)
+                {
+                    ExecuteJump(JumpType.PlatformJumpDrop);
+                }
+                else if (_grounded || ClimbingLadder)
+                {
+                    ExecuteJump(JumpType.Jump);
+                }
+                else if (CanUseCoyote)
+                {
+                    ExecuteJump(JumpType.Coyote);
+                }
+                else if (CanAirJump)
+                {
+                    ExecuteJump(JumpType.AirJump);
+                }
+            }
+
+            if ((!_endedJumpEarly && !_grounded && !_frameInput.JumpHeld && Velocity.y > 0) || Velocity.y < 0) _endedJumpEarly = true; // Early end detection
+
+
+            if (_time > _returnWallInputLossAfter) _wallJumpInputNerfPoint = Mathf.MoveTowards(_wallJumpInputNerfPoint, 1, _delta / Stats.WallJumpInputLossReturnTime);
+        } // end CalculateJump
+
+        private void ExecuteJump(JumpType jumpType)
+        {
+            SetVelocity(_trimmedFrameVelocity);
+            _endedJumpEarly = false;
+            _bufferedJumpUsable = false;
+            _lastJumpExecutedTime = _time;
+            _currentStepDownLength = 0;
+            if (ClimbingLadder) ToggleClimbingLadder(false);
+
+            if (jumpType is JumpType.Jump or JumpType.Coyote)
+            {
+                _coyoteUsable = false;
+                AddFrameForce(new Vector2(0, Stats.JumpPower));
+            }
+            else if (jumpType is JumpType.AirJump)
+            {
+                _totalAirJumpsRemaining--;
+                if (_freeAirJumpsRemaining > 0) _freeAirJumpsRemaining--;
+                else
+                {
+                    ChangeDust(Stats.AirJumpCost, false);
+                }
+                AddFrameForce(new Vector2(0, Stats.JumpPower));
+            }
+            else if (jumpType is JumpType.WallJump)
+            {
+                if (Stats.ResetDashOnWallJump) ResetDashes();
+                ToggleOnWall(false);
+
+                _wallJumpCoyoteUsable = false;
+                _wallJumpInputNerfPoint = 0;
+                _returnWallInputLossAfter = _time + Stats.WallJumpTotalInputLossTime;
+                _wallDirectionForJump = _wallDirThisFrame;
+                if (_isOnWall || IsPushingAgainstWall)
+                {
+                    AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallPushPower);
                 }
                 else
                 {
-                    return;
+                    AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallJumpPower); // This is not used as the player must push into the wall to jump
                 }
             }
-        }
-        else
+            else if (jumpType is JumpType.PlatformJumpDrop)
+            {
+                _currentDropDownPlatform.DropDown(_collider);
+            }
+
+            Jumped?.Invoke(jumpType);
+        } // end ExecuteJump
+
+        public void ResetAirJumps()
         {
-            GainedDust?.Invoke(scalar);
+            _totalAirJumpsRemaining = Stats.MaxAirJumps;
+            _freeAirJumpsRemaining = Stats.AirJumpBeforeCost;
+        }
+        #endregion
+
+        #region Dash
+
+        private bool _dashToConsume;
+        private bool _canDash;
+        private bool _stopDashing;
+        private Vector2 _dashVel;
+        private bool _dashing;
+        private float _startedDashing;
+        private float _nextDashTime;
+        private int _totalDashesRemaining;
+        private int _freeDashesRemaining;
+
+        public bool CanDash()
+        {
+            return Stats.AllowDash && _totalDashesRemaining > 0 && (_canDash || _freeDashesRemaining > 0 || _currentDust + Stats.DashCost > 0) && _time > _nextDashTime;
         }
 
-        float _oldDust = _currentDust;
-        _currentDust += scalar;
-        if (_currentDust > _maxDust)
+        private void CalculateDash()
         {
-            _currentDust = _maxDust;
-        }
-        else if (_currentDust <= 0)
-        {
-            _currentDust = 0;
-            Die();
-            return;
-        }
-        if (DustLevelIndex(_currentDust) != DustLevelIndex(_oldDust))
-        {
-            ColliderMode mode = _airborneCollider.enabled ? ColliderMode.Airborne : ColliderMode.Standard;
-            SetupCharacter(mode, true);
-        }
-    } // end ChangeDust
+            if (!Stats.AllowDash) return;
 
-    private IEnumerator FreezeGameOnTakeDamage() // TODO This should be in either update or fixed update
+            if (_dashToConsume && CanDash())
+            {
+                // Handle the dash
+                Vector2 dir;
+                if (UserInput.instance.UseMouseForDash)
+                {
+                    Vector2 playerPos = UnityEngine.Camera.main.WorldToScreenPoint(transform.position);
+                    dir = (_frameInput.DashDirection - playerPos).normalized;
+                }
+                else
+                {
+                    dir = new Vector2(_frameInput.Move.x, _frameInput.Move.y).normalized;
+                }
+                if (dir == Vector2.zero)
+                {
+                    dir = Right;
+                }
+
+                _dashVel = dir * Stats.DashVelocity;
+                _dashing = true;
+                _canDash = false;
+                _startedDashing = _time;
+                _nextDashTime = _time + Stats.DashCooldown;
+                DashChanged?.Invoke(true, dir);
+
+                // Handle Costs
+                if (_freeDashesRemaining > 0) _freeDashesRemaining--;
+                else
+                {
+                    ChangeDust(Stats.DashCost, false);
+                }
+                _totalDashesRemaining--;
+
+            }
+
+            if (_dashing)
+            {
+                if (_time > _startedDashing + Stats.DashDuration || _stopDashing)
+                {
+                    _dashing = false;
+                    _stopDashing = false;
+                    DashChanged?.Invoke(false, Vector2.zero);
+
+                    SetVelocity(new Vector2(Velocity.x * Stats.DashEndHorizontalMultiplier, Velocity.y));
+                    if (_grounded)
+                    {
+                        ResetDashes();
+                    }
+                }
+            }
+        } // end CalculateDash
+
+        public void ResetDashes()
+        {
+            _canDash = true;
+            _totalDashesRemaining = Stats.MaxDashes;
+            _freeDashesRemaining = Stats.DashesBeforeCost;
+        } // end ResetDashes
+
+        #endregion
+
+        #region Interact
+        private bool _interactToConsume;
+        private void CalculateInteract()
+        {
+            if (!_interactToConsume) return;
+            List<Collider2D> results = new List<Collider2D>();
+            Collider2D activeCollider = _collider.isActiveAndEnabled ? _collider : _airborneCollider;
+
+            Physics2D.queriesHitTriggers = true;
+            activeCollider.OverlapCollider(new ContactFilter2D().NoFilter(), results);
+            Physics2D.queriesHitTriggers = _cachedQueryTriggers;
+            foreach (Collider2D collider in results)
+            {
+                collider.gameObject.GetComponent<IInteractable>()?.Interact();
+            }
+        } // end CalculateInteract
+        #endregion
+
+        public Vector2 GetColliderPosition()
+        {
+            Collider2D activeCollider = _collider.isActiveAndEnabled ? _collider : _airborneCollider;
+            return activeCollider.bounds.center;
+        }
+
+        #region Move
+
+        private Vector2 _frameTransientVelocity;
+        private Vector2 _immediateMove;
+        private Vector2 _decayingTransientVelocity;
+        private Vector2 _totalTransientVelocityAppliedLastFrame;
+        private Vector2 _frameSpeedModifier, _currentFrameSpeedModifier = Vector2.one;
+        private const float SLOPE_ANGLE_FOR_EXACT_MOVEMENT = 0.7f;
+        private IPhysicsMover _lastPlatform;
+        private float _lastFrameY;
+
+        private void TraceGround()
+        {
+            IPhysicsMover currentPlatform = null;
+
+            if (_grounded && !IsWithinJumpClearance)
+            {
+                // Use transient velocity to keep grounded. Move position is not interpolated
+                float distanceFromGround = _character.StepHeight - _groundHit.distance;
+                if (distanceFromGround != 0)
+                {
+                    Vector2 requiredMove = Vector2.zero;
+                    requiredMove.y += distanceFromGround;
+
+                    if (Stats.PositionCorrectionMode is PositionCorrectionMode.Velocity) _frameTransientVelocity = requiredMove / _delta;
+                    else _immediateMove = requiredMove;
+                }
+
+                if (_groundHit.transform.TryGetComponent(out currentPlatform))
+                {
+                    _activatedMovers.Add(currentPlatform);
+                }
+
+                _currentDropDownPlatform = _groundHit.transform.GetComponentInChildren<DropDownPlatform>();
+            }
+
+            if (_lastPlatform != currentPlatform)
+            {
+                // With no bounding, this is a simple contact-only platform
+                // If it does have a bounding, we'll disconnect from it when the trigger exits
+                if (_lastPlatform is { UsesBounding: false })
+                {
+                    _activatedMovers.Remove(_lastPlatform);
+                    ApplyMoverExitVelocity(_lastPlatform);
+                }
+
+                _lastPlatform = currentPlatform;
+            }
+
+            // Handle platforms
+            foreach (IPhysicsMover platform in _activatedMovers)
+            {
+                // Don't apply if we're next to it
+                if (_framePosition.y < platform.FramePosition.y - SKIN_WIDTH) continue;
+
+                _frameTransientVelocity += platform.FramePositionDelta / _delta;
+            }
+        } // end TraceGround
+
+        private void ApplyMoverExitVelocity(IPhysicsMover mover)
+        {
+            Vector2 platformVel = mover.TakeOffVelocity;
+            if (platformVel.y < 0) platformVel.y *= Stats.NegativeYVelocityNegation;
+            _decayingTransientVelocity += platformVel;
+        } // end ApplyMoverExitVelocity
+
+        private void Move()
+        {
+            if (_forceToApplyThisFrame != Vector2.zero)
+            {
+                _rb.velocity += AdditionalFrameVelocities();
+                _rb.AddForce(_forceToApplyThisFrame * _rb.mass, ForceMode2D.Impulse);
+
+                // Returning provides the crispest & most accurate jump experience
+                // Required for reliable slope jumps
+                return;
+            }
+
+            if (_dashing)
+            {
+                SetVelocity(_dashVel);
+                return;
+            }
+
+            if (_isOnWall)
+            {
+                _constantForce.force = Vector2.zero;
+
+                float wallVelocity;
+                if (_frameInput.Move.y != 0) wallVelocity = _frameInput.Move.y * Stats.WallClimbSpeed;
+                else wallVelocity = Mathf.MoveTowards(Mathf.Min(Velocity.y, 0), -Stats.WallClimbSpeed, Stats.WallFallAcceleration * _delta);
+
+                SetVelocity(new Vector2(_rb.velocity.x, wallVelocity));
+                return;
+            }
+
+            if (ClimbingLadder)
+            {
+                _constantForce.force = Vector2.zero;
+                _rb.gravityScale = 0;
+
+                Vector2 goalVelocity = Vector2.zero;
+                goalVelocity.y = _frameInput.Move.y * (_frameInput.Move.y > 0 ? Stats.LadderClimbSpeed : Stats.LadderSlideSpeed);
+
+                // Horizontal
+                float goalX;
+                if (Stats.SnapToLadders && _frameInput.Move.x == 0)
+                {
+                    float targetX = _ladderHit.transform.position.x;
+                    goalX = Mathf.SmoothDamp(_framePosition.x, targetX, ref _ladderSnapVel, Stats.LadderSnapTime);
+                }
+                else
+                {
+                    goalX = Mathf.MoveTowards(_framePosition.x, _framePosition.x + _frameInput.Move.x, Stats.Acceleration * Stats.LadderShimmySpeedMultiplier * _delta);
+                }
+
+                goalVelocity.x = (goalX - _framePosition.x) / _delta;
+
+                SetVelocity(goalVelocity);
+
+                return;
+            }
+
+            Vector2 extraForce = new Vector2(0, _grounded ? 0 : -Stats.ExtraConstantGravity * (_endedJumpEarly && Velocity.y > 0 ? Stats.EndJumpEarlyExtraForceMultiplier : 1));
+            _constantForce.force = extraForce * _rb.mass;
+
+            float targetSpeed = _hasInputThisFrame ? Stats.BaseSpeed : 0;
+
+            float step = _hasInputThisFrame ? Stats.Acceleration : Stats.Friction;
+
+            Vector2 xDir = _hasInputThisFrame ? _frameDirection : Velocity.normalized;
+
+            // Quicker direction change
+            if (Vector3.Dot(_trimmedFrameVelocity, _frameDirection) < 0) step *= Stats.DirectionCorrectionMultiplier;
+
+            Vector2 newVelocity;
+            step *= _delta;
+            if (_grounded)
+            {
+                float speed = Mathf.MoveTowards(Velocity.magnitude, targetSpeed, step);
+
+                // Blend the two approaches
+                Vector2 targetVelocity = xDir * speed;
+
+                // Calculate the new speed based on the current and target speeds
+                float newSpeed = Mathf.MoveTowards(Velocity.magnitude, targetVelocity.magnitude, step);
+
+                // TODO: Lets actually trace the ground direction automatically instead of direct
+                Vector2 smoothed = Vector2.MoveTowards(Velocity, targetVelocity, step); // Smooth but potentially inaccurate
+                Vector2 direct = targetVelocity.normalized * newSpeed; // Accurate but abrupt
+                float slopePoint = Mathf.InverseLerp(0, SLOPE_ANGLE_FOR_EXACT_MOVEMENT, Mathf.Abs(_frameDirection.y)); // Blend factor
+
+                // Calculate the blended velocity
+                newVelocity = Vector2.Lerp(smoothed, direct, slopePoint);
+            }
+            else
+            {
+                step *= Stats.AirFrictionMultiplier;
+
+                if (_wallJumpInputNerfPoint < 1 && (int)Mathf.Sign(xDir.x) == (int)Mathf.Sign(_wallDirectionForJump))
+                {
+                    if (_time < _returnWallInputLossAfter) xDir.x = -_wallDirectionForJump;
+                    else xDir.x *= _wallJumpInputNerfPoint;
+                }
+
+                float targetX = Mathf.MoveTowards(_trimmedFrameVelocity.x, xDir.x * targetSpeed, step);
+                newVelocity = new Vector2(targetX, _rb.velocity.y);
+            }
+
+            SetVelocity((newVelocity + AdditionalFrameVelocities()) * _currentFrameSpeedModifier);
+
+            Vector2 AdditionalFrameVelocities()
+            {
+                if (_immediateMove.sqrMagnitude > SKIN_WIDTH)
+                {
+                    _rb.MovePosition(_framePosition + _immediateMove);
+                }
+
+                _totalTransientVelocityAppliedLastFrame = _frameTransientVelocity + _decayingTransientVelocity;
+                return _totalTransientVelocityAppliedLastFrame;
+            }
+        } // end Move
+
+        public void SetVelocity(Vector2 newVel)
+        {
+            _rb.velocity = newVel;
+            Velocity = newVel;
+        } // end SetVelocity
+
+        #endregion
+
+        private void SaveCharacterState()
+        {
+            State = new ControllerState
+            {
+                Position = _framePosition,
+                Rotation = _rb.rotation,
+                Velocity = Velocity,
+                Grounded = _grounded
+            };
+        } // end SaveCharacterState
+
+        [SerializeField] public int _lastAnimationState = 0;
+
+        public void EnableDialogue()
+        {
+            _stopDashing = true;
+            SetVelocity(new Vector2(0, Velocity.y));
+            PlayerState = PlayerStates.Dialogue;
+        }
+
+        public void DisableDialogue()
+        {
+            _stopDashing = false;
+            PlayerState = PlayerStates.Playing;
+        }
+
+        #region Dust & Size
+
+        // Size Changing variables
+        // [Header("Size Changing")]
+        // [Range(0, 5)][SerializeField] int _bunnySize = 1;
+        // [SerializeField] float _bunnySizeScalar = 1.5f;
+        // Vector3 _originalSize = new Vector3(1f, 1f, 1f);
+
+        // [SerializeField] float _scaleSpeed = 1.6f;
+        // bool _growing = false;
+        // Coroutine _lastDamp;
+        // float _epsilon = 0.01f;
+
+
+        // Dust Changing variables
+        [Header("Dust Values")]
+        [SerializeField] private float _currentDust = 100f;
+        private bool _dustLossInvulnerable = false;
+        [HideInInspector] public float CurrentDust => _currentDust;
+        [SerializeField] private float _maxDust = 100f;
+        [SerializeField] private float[] _dustLevels = new float[5] { 0f, 20f, 40f, 60f, 80f };
+
+        private int DustLevelIndex(float dustLevel)
+        {
+            for (int i = _dustLevels.Length - 1; i > -1; i--)
+            {
+                if (dustLevel >= _dustLevels[i])
+                {
+                    return i;
+                }
+            }
+            // Safety return
+            return 0;
+        } // end DustLevelIndex
+
+        public void ChangeDust(float scalar, bool hostile)
+        {
+            if (scalar < 0)
+            {
+                UsedDust?.Invoke(scalar, hostile);
+                if (hostile)
+                {
+                    if (!_dustLossInvulnerable)
+                    {
+                        if (Stats.IFrameDuration > 0) StartCoroutine(LazyHandleIframes());
+                        if (Stats.FreezeOnDamageDuration > 0) StartCoroutine(FreezeGameOnTakeDamage());
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                GainedDust?.Invoke(scalar);
+            }
+
+            float _oldDust = _currentDust;
+            _currentDust += scalar;
+            if (_currentDust > _maxDust)
+            {
+                _currentDust = _maxDust;
+            }
+            else if (_currentDust <= 0)
+            {
+                _currentDust = 0;
+                Die();
+                return;
+            }
+            if (DustLevelIndex(_currentDust) != DustLevelIndex(_oldDust))
+            {
+                SetupCharacter(true);
+            }
+        } // end ChangeDust
+
+        private IEnumerator FreezeGameOnTakeDamage() // TODO This should be in either update or fixed update
+        {
+            // Slow down the game effect, maybe undesirable
+            Time.timeScale = 0.1f;
+            yield return new WaitForSeconds(Stats.FreezeOnDamageDuration);
+            Time.timeScale = 1;
+            yield break;
+        }
+
+        private IEnumerator LazyHandleIframes() // TODO This should be in either update or fixed update
+        {
+            _dustLossInvulnerable = true;
+            yield return new WaitForSeconds(Stats.IFrameDuration);
+            _dustLossInvulnerable = false;
+            yield break;
+        }
+        #endregion
+
+        [Header("Death")]
+        [SerializeField] private Animator _deathTransition;
+        [SerializeField] private float _deathTransitionTime = 1f;
+        public void Die() // TODO, Update
+        {
+            TogglePlayer(false, true, PlayerStates.Dead);
+            LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
+            levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
+            GameManager.instance.PauseGameTime();
+        } // end Die
+
+        #region External Triggers
+
+        private const int MAX_ACTIVE_MOVERS = 5;
+        private readonly HashSet<IPhysicsMover> _activatedMovers = new(MAX_ACTIVE_MOVERS);
+        private readonly HashSet<ISpeedModifier> _modifiers = new();
+        private Vector2 _frameSpeedModifierVelocity;
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.TryGetComponent(out ISpeedModifier modifier)) _modifiers.Add(modifier);
+            else if (other.TryGetComponent(out IPhysicsMover mover) && !mover.RequireGrounding) _activatedMovers.Add(mover);
+        } // end OnTriggerEnter2D
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.TryGetComponent(out ISpeedModifier modifier)) _modifiers.Remove(modifier);
+            else if (other.TryGetComponent(out IPhysicsMover mover)) _activatedMovers.Remove(mover);
+
+            other.TryGetComponent(out IInteractable interactScript);
+            if (interactScript != null && interactScript.ShowIndicator)
+            {
+                _actionIndicator.gameObject.SetActive(false);
+            }
+        } // end OnTriggerExit2D
+
+        void OnTriggerStay2D(Collider2D other)
+        {
+            other.TryGetComponent(out IInteractable interactScript);
+            if (interactScript != null && interactScript.ShowIndicator)
+            {
+                _actionIndicator.transform.localPosition = new Vector3(Stats.ActionIndicatorXOffset, Stats.ActionIndicatorYOffset, 0);
+                _actionIndicator.transform.localScale = new Vector3(Stats.ActionIndicatoryScale, Stats.ActionIndicatoryScale, 0);
+                _actionIndicator.gameObject.SetActive(true);
+            }
+        } // end OnTriggerStay2D
+
+        private void CalculateExternalModifiers()
+        {
+            _frameSpeedModifier = Vector2.one;
+            foreach (ISpeedModifier modifier in _modifiers)
+            {
+                if ((modifier.OnGround && _grounded) || (modifier.InAir && !_grounded))
+                    _frameSpeedModifier += modifier.Modifier;
+            }
+
+            _currentFrameSpeedModifier = Vector2.SmoothDamp(_currentFrameSpeedModifier, _frameSpeedModifier, ref _frameSpeedModifierVelocity, 0.1f);
+        } // end CalculateExternalModifiers
+
+        #endregion
+
+        #region Gizmos
+        [Title("Debug")]
+        [SerializeField]
+        private bool _drawGizmos = true;
+
+        private void OnDrawGizmos()
+        {
+            if (!_drawGizmos) return;
+
+            Vector2 pos = (Vector2)transform.position;
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(pos + Vector2.up * _character.Height / 2, new Vector3(_character.Width, _character.Height));
+            Gizmos.color = Color.magenta;
+
+            Vector2 rayStart = pos + Vector2.up * _character.StepHeight;
+            Vector3 rayDir = Vector3.down * _character.StepHeight;
+            Gizmos.DrawRay(rayStart, rayDir);
+            foreach (float offset in GenerateRayOffsets())
+            {
+                Gizmos.DrawRay(rayStart + Vector2.right * offset, rayDir);
+                Gizmos.DrawRay(rayStart + Vector2.left * offset, rayDir);
+            }
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(pos + (Vector2)_wallDetectionBounds.center, _wallDetectionBounds.size);
+
+
+            Gizmos.color = Color.black;
+            Gizmos.DrawRay(RayPoint, Vector3.right);
+        } // end OnDrawGizmos
+
+        #endregion
+    } // end class PlayerController
+
+    #region Interfaces/Enums/Structs
+    public enum JumpType
     {
-        // Slow down the game effect, maybe undesirable
-        Time.timeScale = 0.1f;
-        yield return new WaitForSeconds(Stats.FreezeOnDamageDuration);
-        Time.timeScale = 1;
-        yield break;
-    }
+        Jump,
+        Coyote,
+        AirJump,
+        WallJump,
+        PlatformJumpDrop
+    } // end enum JumpType
 
-    private IEnumerator LazyHandleIframes() // TODO This should be in either update or fixed update
+    public interface IPlayerController
     {
-        _dustLossInvulnerable = true;
-        yield return new WaitForSeconds(Stats.IFrameDuration);
-        _dustLossInvulnerable = false;
-        yield break;
-    }
+        public PlayerStats Stats { get; }
+        public ControllerState State { get; }
+        public event Action<JumpType> Jumped;
+        public event Action<bool, float> GroundedChanged;
+        public event Action<bool, Vector2> DashChanged;
+        public event Action<bool> WallGrabChanged;
+        public event Action<bool> SizeChanged;
+        public event Action<float, bool> UsedDust;
+        public event Action<float> GainedDust;
+        public event Action<Vector2> Repositioned;
+        public event Action<bool, bool> ToggledPlayer;
+
+        public bool Active { get; }
+        public Vector2 Up { get; }
+        public Vector2 Right { get; }
+        // public Vector2 Forward { get; }
+        public Vector2 Input { get; }
+        public Vector2 GroundNormal { get; }
+        public Vector2 Velocity { get; }
+        public int WallDirection { get; }
+        public bool ClimbingLadder { get; }
+        public float CurrentDust { get; }
+        public PlayerStates PlayerState { get; set; }
+
+        // External force
+        public void AddFrameForce(Vector2 force, bool resetVelocity = false);
+
+        // Utility
+        public void LoadState(ControllerState state);
+        public void RepositionImmediately(Vector2 position, bool resetVelocity = false);
+        public void TogglePlayer(bool on, bool dead = false, PlayerStates playerState = PlayerStates.Playing);
+        public void ResetAirJumps();
+        public void ResetDashes();
+
+        // Dust
+        public void ChangeDust(float scalar, bool hostile);
+
+        // Other
+        public void Die();
+        public bool CanDash();
+    } // end interface IPlayerController
+
+    public enum PlayerStates
+    {
+        Playing,
+        Paused,
+        Dialogue,
+        Dead
+    } // end enum PlayerStates
+
+    public interface ISpeedModifier
+    {
+        public bool InAir { get; }
+        public bool OnGround { get; }
+        public Vector2 Modifier { get; }
+    } // end interface ISpeedModifier
+
+    // Used to save and load character state
+    public struct ControllerState
+    {
+        public Vector2 Position;
+        public float Rotation;
+        public Vector2 Velocity;
+        public bool Grounded;
+    } // end struct ControllerState
     #endregion
-
-    [Header("Death")]
-    [SerializeField] private Animator _deathTransition;
-    [SerializeField] private float _deathTransitionTime = 1f;
-    public void Die() // TODO, Update
-    {
-        TogglePlayer(false, true, PlayerStates.Dead);
-        LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
-        levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
-        GameManager.instance.PauseGameTime();
-    } // end Die
-
-    #region External Triggers
-
-    private const int MAX_ACTIVE_MOVERS = 5;
-    private readonly HashSet<IPhysicsMover> _activatedMovers = new(MAX_ACTIVE_MOVERS);
-    private readonly HashSet<ISpeedModifier> _modifiers = new();
-    private Vector2 _frameSpeedModifierVelocity;
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.TryGetComponent(out ISpeedModifier modifier)) _modifiers.Add(modifier);
-        else if (other.TryGetComponent(out IPhysicsMover mover) && !mover.RequireGrounding) _activatedMovers.Add(mover);
-    } // end OnTriggerEnter2D
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.TryGetComponent(out ISpeedModifier modifier)) _modifiers.Remove(modifier);
-        else if (other.TryGetComponent(out IPhysicsMover mover)) _activatedMovers.Remove(mover);
-
-        other.TryGetComponent(out IInteractable interactScript);
-        if (interactScript != null && interactScript.ShowIndicator)
-        {
-            _actionIndicator.gameObject.SetActive(false);
-        }
-    } // end OnTriggerExit2D
-
-    void OnTriggerStay2D(Collider2D other)
-    {
-        other.TryGetComponent(out IInteractable interactScript);
-        if (interactScript != null && interactScript.ShowIndicator)
-        {
-            _actionIndicator.transform.localPosition = new Vector3(Stats.ActionIndicatorXOffset, Stats.ActionIndicatorYOffset, 0);
-            _actionIndicator.transform.localScale = new Vector3(Stats.ActionIndicatoryScale, Stats.ActionIndicatoryScale, 0);
-            _actionIndicator.gameObject.SetActive(true);
-        }
-    } // end OnTriggerStay2D
-
-    private void CalculateExternalModifiers()
-    {
-        _frameSpeedModifier = Vector2.one;
-        foreach (var modifier in _modifiers)
-        {
-            if ((modifier.OnGround && _grounded) || (modifier.InAir && !_grounded))
-                _frameSpeedModifier += modifier.Modifier;
-        }
-
-        _currentFrameSpeedModifier = Vector2.SmoothDamp(_currentFrameSpeedModifier, _frameSpeedModifier, ref _frameSpeedModifierVelocity, 0.1f);
-    } // end CalculateExternalModifiers
-
-    #endregion
-
-    #region Gizmos
-
-    private void OnDrawGizmos()
-    {
-        if (!_drawGizmos) return;
-
-        var pos = (Vector2)transform.position;
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(pos + Vector2.up * _character.Height / 2, new Vector3(_character.Width, _character.Height));
-        Gizmos.color = Color.magenta;
-
-        var rayStart = pos + Vector2.up * _character.StepHeight;
-        var rayDir = Vector3.down * _character.StepHeight;
-        Gizmos.DrawRay(rayStart, rayDir);
-        foreach (var offset in GenerateRayOffsets())
-        {
-            Gizmos.DrawRay(rayStart + Vector2.right * offset, rayDir);
-            Gizmos.DrawRay(rayStart + Vector2.left * offset, rayDir);
-        }
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(pos + (Vector2)_wallDetectionBounds.center, _wallDetectionBounds.size);
-
-
-        Gizmos.color = Color.black;
-        Gizmos.DrawRay(RayPoint, Vector3.right);
-    } // end OnDrawGizmos
-
-    #endregion
-} // end class PlayerController
-
-public enum JumpType
-{
-    Jump,
-    Coyote,
-    AirJump,
-    WallJump,
-    PlatformJumpDrop
-} // end enum JumpType
-
-public interface IPlayerController
-{
-    public PlayerStats Stats { get; }
-    public ControllerState State { get; }
-    public event Action<JumpType> Jumped;
-    public event Action<bool, float> GroundedChanged;
-    public event Action<bool, Vector2> DashChanged;
-    public event Action<bool> WallGrabChanged;
-    public event Action<bool> SizeChanged;
-    public event Action<float, bool> UsedDust;
-    public event Action<float> GainedDust;
-    public event Action<Vector2> Repositioned;
-    public event Action<bool, bool> ToggledPlayer;
-
-    public bool Active { get; }
-    public Vector2 Up { get; }
-    public Vector2 Right { get; }
-    public Vector2 Forward { get; }
-    public Vector2 Input { get; }
-    public Vector2 GroundNormal { get; }
-    public Vector2 Velocity { get; }
-    public int WallDirection { get; }
-    public bool ClimbingLadder { get; }
-    public float CurrentDust { get; }
-    public PlayerStates PlayerState { get; set; }
-
-    // External force
-    public void AddFrameForce(Vector2 force, bool resetVelocity = false);
-
-    // Utility
-    public void LoadState(ControllerState state);
-    public void RepositionImmediately(Vector2 position, bool resetVelocity = false);
-    public void TogglePlayer(bool on, bool dead = false, PlayerStates playerState = PlayerStates.Playing);
-    public void ResetAirJumps();
-    public void ResetDashes();
-
-    // Dust
-    public void ChangeDust(float scalar, bool hostile);
-
-    // Other
-    public void Die();
-    public bool CanDash();
-} // end interface IPlayerController
-
-public enum PlayerStates
-{
-    Playing,
-    Paused,
-    Dialogue,
-    Dead
-} // end enum PlayerStates
-
-public interface ISpeedModifier
-{
-    public bool InAir { get; }
-    public bool OnGround { get; }
-    public Vector2 Modifier { get; }
-} // end interface ISpeedModifier
-
-// Used to save and load character state
-public struct ControllerState
-{
-    public Vector2 Position;
-    public float Rotation;
-    public Vector2 Velocity;
-    public bool Grounded;
-} // end struct ControllerState
+}

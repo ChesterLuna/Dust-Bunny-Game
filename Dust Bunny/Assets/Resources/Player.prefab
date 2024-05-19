@@ -46284,7 +46284,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3c4ab0e7107734f4bb7def2353cd56bc, type: 2}
   - {fileID: 11400000, guid: a82cc284db0349f42b6bd07381cdfafe, type: 2}
   <Stats>k__BackingField: {fileID: 11400000, guid: 894dfe33661263b42a8e1490d64c0424, type: 2}
-  _drawGizmos: 1
   _lastAnimationState: 0
   _currentDust: 10
   _maxDust: 100
@@ -46296,6 +46295,7 @@ MonoBehaviour:
   - 80
   _deathTransition: {fileID: 0}
   _deathTransitionTime: 1
+  _drawGizmos: 1
 --- !u!50 &7389128596747097769
 Rigidbody2D:
   serializedVersion: 4
@@ -46355,7 +46355,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.65000004}
+  m_Offset: {x: 0, y: 0.40625}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -46366,11 +46366,11 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.79999995, y: 0.19999999}
+  m_Size: {x: 0.35750002, y: 0.122499995}
   m_EdgeRadius: 0.05
 --- !u!70 &722845542398009350
 CapsuleCollider2D:
-  m_ObjectHideFlags: 8
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}

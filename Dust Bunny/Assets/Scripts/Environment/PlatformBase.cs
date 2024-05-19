@@ -1,57 +1,57 @@
 using UnityEngine;
 
-public abstract class PlatformBase : MonoBehaviour, IPhysicsObject, IPhysicsMover
+namespace SpringCleaning.Physics
 {
-    public bool UsesBounding => _boundingEffector != null;
-    public bool RequireGrounding => _requireGrounding;
-    public Vector2 FramePositionDelta { get; private set; }
-    public Vector2 FramePosition => Rb.position;
-    public Vector2 Velocity => Rb.velocity;
-    public Vector2 TakeOffVelocity => _useTakeOffVelocity ? Velocity : Vector2.zero;
-
-    [HideInInspector] protected Rigidbody2D Rb;
-    [SerializeField] private bool _requireGrounding;
-    [SerializeField] private BoxCollider2D _boundingEffector;
-    [SerializeField] private bool _useTakeOffVelocity;
-
-    protected float Time;
-
-    public virtual void OnValidate()
+    public abstract class PlatformBase : MonoBehaviour, IPhysicsMover
     {
-        if (_boundingEffector) _boundingEffector.isTrigger = true;
-    }
+        public bool UsesBounding => _boundingEffector != null;
+        public bool RequireGrounding => _requireGrounding;
+        public Vector2 FramePositionDelta { get; private set; }
+        public Vector2 FramePosition => Rb.position;
+        public Vector2 Velocity => Rb.velocity;
+        public Vector2 TakeOffVelocity => _useTakeOffVelocity ? Velocity : Vector2.zero;
 
-    protected virtual void Awake()
-    {
-        Rb = GetComponent<Rigidbody2D>();
-        Rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        [HideInInspector] protected Rigidbody2D Rb;
+        [SerializeField] private bool _requireGrounding;
+        [SerializeField] private BoxCollider2D _boundingEffector;
+        [SerializeField] private bool _useTakeOffVelocity;
 
-        PhysicsSimulator.Instance.AddPlatform(this);
-    }
+        protected float _time;
 
-    public void TickFixedUpdate(float delta)
-    {
-        if (Rb == null) return;
-        var newPos = Evaluate(delta);
-
-        // Position
-        var positionDifference = newPos - Rb.position;
-        if (positionDifference.sqrMagnitude > 0)
+        public virtual void OnValidate()
         {
-            FramePositionDelta = positionDifference;
-            Rb.velocity = FramePositionDelta / delta;
+            if (_boundingEffector) _boundingEffector.isTrigger = true;
         }
-        else
+
+        protected virtual void Awake()
         {
-            FramePositionDelta = Vector3.zero;
-            Rb.velocity = Vector3.zero;
+            Rb = GetComponent<Rigidbody2D>();
+            Rb.interpolation = RigidbodyInterpolation2D.Interpolate;
         }
-    }
 
-    public void TickUpdate(float delta, float time)
-    {
-        Time = time;
-    }
+        public void FixedUpdate()
+        {
+            var newPos = Evaluate(Time.fixedDeltaTime);
 
-    protected abstract Vector2 Evaluate(float delta);
+            // Position
+            var positionDifference = newPos - Rb.position;
+            if (positionDifference.sqrMagnitude > 0)
+            {
+                FramePositionDelta = positionDifference;
+                Rb.velocity = FramePositionDelta / Time.fixedDeltaTime;
+            }
+            else
+            {
+                FramePositionDelta = Vector3.zero;
+                Rb.velocity = Vector3.zero;
+            }
+        }
+
+        public void Update()
+        {
+            _time += Time.deltaTime;
+        }
+
+        protected abstract Vector2 Evaluate(float delta);
+    }
 }

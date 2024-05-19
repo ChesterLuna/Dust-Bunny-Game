@@ -1,45 +1,48 @@
 using System.Collections;
 using UnityEngine;
-
-public class Teleporter : MonoBehaviour
+using SpringCleaning.Player;
+namespace SpringCleaning.Physics
 {
-    private Transform _teleportTarget;
-    [SerializeField] private AudioClip _teleportOutClip, _teleportInClip;
-    [SerializeField] private GameObject _teleportParticlePrefab;
-    [SerializeField] private float _teleportDelay = 0.5f;
-
-    private void Awake()
+    public class Teleporter : MonoBehaviour
     {
-        _teleportTarget = transform.GetChild(0);
-    }
+        private Transform _teleportTarget;
+        [SerializeField] private AudioClip _teleportOutClip, _teleportInClip;
+        [SerializeField] private GameObject _teleportParticlePrefab;
+        [SerializeField] private float _teleportDelay = 0.5f;
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (!collision.TryGetComponent(out IPlayerController controller)) return;
+        private void Awake()
+        {
+            _teleportTarget = transform.GetChild(0);
+        }
 
-        Instantiate(_teleportParticlePrefab, collision.transform.position, Quaternion.identity);
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (!collision.TryGetComponent(out IPlayerController controller)) return;
 
-        controller.RepositionImmediately(_teleportTarget.position, true);
-        controller.TogglePlayer(false);
+            Instantiate(_teleportParticlePrefab, collision.transform.position, Quaternion.identity);
 
-        AudioSource.PlayClipAtPoint(_teleportInClip, _teleportTarget.position);
+            controller.RepositionImmediately(_teleportTarget.position, true);
+            controller.TogglePlayer(false);
 
-        StartCoroutine(ActivatePlayer(controller));
-    }
+            AudioSource.PlayClipAtPoint(_teleportInClip, _teleportTarget.position);
 
-    private IEnumerator ActivatePlayer(IPlayerController controller)
-    {
-        yield return new WaitForSeconds(_teleportDelay);
-        controller.TogglePlayer(true);
-        Instantiate(_teleportParticlePrefab, _teleportTarget.position, Quaternion.identity);
-        AudioSource.PlayClipAtPoint(_teleportOutClip, _teleportTarget.position);
-    }
+            StartCoroutine(ActivatePlayer(controller));
+        }
 
-    private void OnDrawGizmosSelected()
-    {
-        _teleportTarget = transform.GetChild(0);
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(transform.position, _teleportTarget.position);
-        Gizmos.DrawSphere(_teleportTarget.position, 0.2f);
+        private IEnumerator ActivatePlayer(IPlayerController controller)
+        {
+            yield return new WaitForSeconds(_teleportDelay);
+            controller.TogglePlayer(true);
+            Instantiate(_teleportParticlePrefab, _teleportTarget.position, Quaternion.identity);
+            AudioSource.PlayClipAtPoint(_teleportOutClip, _teleportTarget.position);
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            _teleportTarget = transform.GetChild(0);
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, _teleportTarget.position);
+            Gizmos.DrawSphere(_teleportTarget.position, 0.2f);
+        }
     }
 }

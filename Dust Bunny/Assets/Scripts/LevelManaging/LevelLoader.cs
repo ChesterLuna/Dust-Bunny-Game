@@ -16,7 +16,6 @@ public class LevelLoader : MonoBehaviour
     transition.SetTrigger("Start");
 
     yield return new WaitForSeconds(transitionTime);
-    PhysicsSimulator.Instance.ClearPhysicsObjects();
     SceneManager.LoadScene(LevelName);
   } // end IEnumerator LoadLevel
 

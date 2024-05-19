@@ -1,98 +1,73 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
-using UnityEditor;
+using Sirenix.OdinInspector;
+using SpringCleaning.Player;
 using UnityEngine;
 
-public class CameraContolTrigger : MonoBehaviour
+namespace SpringCleaning.Camera
 {
-
-    public CustomInspectorObjects customInspectorObjects;
-    private Collider2D _col;
-    void Awake()
+    [HelpURL("https://www.youtube.com/watch?v=9dzBrLUIF8g")]
+    public class CameraContolTrigger : MonoBehaviour
     {
-        _col = GetComponent<Collider2D>();
-    } // end Awake
+        [SerializeField]
+        private bool _swapCamerasOnExit = false;
+        [ShowIfGroup("_swapCamerasOnExit")]
+        [SerializeField, BoxGroup("_swapCamerasOnExit/Cameras")]
+        public CinemachineVirtualCamera _cameraOnLeft;
+        [SerializeField, BoxGroup("_swapCamerasOnExit/Cameras")]
+        public CinemachineVirtualCamera _cameraOnRight;
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
+        [SerializeField]
+        private bool _panCameraOnContact = false;
+        [ShowIfGroup("_panCameraOnContact")]
+        [SerializeField, BoxGroup("_panCameraOnContact/PanSettings")]
+        private PanDirection _panDirection;
+        [SerializeField, BoxGroup("_panCameraOnContact/PanSettings")]
+        private float _panDistance = 3f;
+        [SerializeField, BoxGroup("_panCameraOnContact/PanSettings")]
+        private float _panTime = 0.35f;
+
+        private Collider2D _col;
+        void Awake()
         {
-            if (customInspectorObjects.PanCameraOnContact)
+            _col = GetComponent<Collider2D>();
+        } // end Awake
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (!other.TryGetComponent(out IPlayerController controller)) return;
+
+            if (_panCameraOnContact)
             {
-                CameraManager.instance.PanCameraOnContact(customInspectorObjects.panDistance, customInspectorObjects.panTime, customInspectorObjects.panDirection, false);
+                CameraManager.Instance.PanCameraInDirection(_panDistance, _panDirection, _panTime);
             }
-        }
-    } // end OnTriggerEnter2D
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
+        } // end OnTriggerEnter2D
+
+        private void OnTriggerExit2D(Collider2D other)
         {
+            if (!other.TryGetComponent(out IPlayerController controller)) return;
+
             Vector2 exitDirection = (other.transform.position - _col.bounds.center).normalized;
-            if (customInspectorObjects.SwapCameras && customInspectorObjects.cameraOnLeft != null && customInspectorObjects.cameraOnRight != null)
+            if (_swapCamerasOnExit && _cameraOnLeft != null && _cameraOnRight != null)
             {
-                CameraManager.instance.SwapCamera(customInspectorObjects.cameraOnLeft, customInspectorObjects.cameraOnRight, exitDirection);
+                CameraManager.Instance.SwapCamera(_cameraOnLeft, _cameraOnRight, exitDirection);
             }
 
-            if (customInspectorObjects.PanCameraOnContact)
+            if (_panCameraOnContact)
             {
-                CameraManager.instance.PanCameraOnContact(customInspectorObjects.panDistance, customInspectorObjects.panTime, customInspectorObjects.panDirection, true);
+                CameraManager.Instance.PanCameraToDefault(_panTime);
             }
-        }
-    } // end OnTriggerExit2D
-} // end class CameraContolTrigger
 
-[System.Serializable]
-public class CustomInspectorObjects
-{
-    public bool SwapCameras = false;
-    public bool PanCameraOnContact = false;
-    [HideInInspector] public CinemachineVirtualCamera cameraOnLeft;
-    [HideInInspector] public CinemachineVirtualCamera cameraOnRight;
-    [HideInInspector] public PanDirection panDirection;
-    [HideInInspector] public float panDistance = 3f;
-    [HideInInspector] public float panTime = 0.35f;
-} // end class CustomInspectorObjects
+        } // end OnTriggerExit2D
+    } // end class CameraContolTrigger
 
-public enum PanDirection
-{
-    Up,
-    Down,
-    Left,
-    Right
-} // end enum PanDirecrtion
-
-#if UNITY_EDITOR
-[CustomEditor(typeof(CameraContolTrigger))]
-public class MyScriptEditor : Editor
-{
-    CameraContolTrigger CameraContolTrigger;
-    private void OnEnable()
+    public enum PanDirection
     {
-        CameraContolTrigger = (CameraContolTrigger)target;
-    } // end OnEnable
-
-    public override void OnInspectorGUI()
-    {
-        DrawDefaultInspector();
-        if (CameraContolTrigger.customInspectorObjects.SwapCameras)
-        {
-            CameraContolTrigger.customInspectorObjects.cameraOnLeft = (CinemachineVirtualCamera)EditorGUILayout.ObjectField("Camera On Left", CameraContolTrigger.customInspectorObjects.cameraOnLeft, typeof(CinemachineVirtualCamera), true);
-            CameraContolTrigger.customInspectorObjects.cameraOnRight = (CinemachineVirtualCamera)EditorGUILayout.ObjectField("Camera On Right", CameraContolTrigger.customInspectorObjects.cameraOnRight, typeof(CinemachineVirtualCamera), true);
-        }
-        if (CameraContolTrigger.customInspectorObjects.PanCameraOnContact)
-        {
-            CameraContolTrigger.customInspectorObjects.panDirection = (PanDirection)EditorGUILayout.EnumPopup("Pan Direction", CameraContolTrigger.customInspectorObjects.panDirection);
-            CameraContolTrigger.customInspectorObjects.panDistance = EditorGUILayout.FloatField("Pan Distance", CameraContolTrigger.customInspectorObjects.panDistance);
-            CameraContolTrigger.customInspectorObjects.panTime = EditorGUILayout.FloatField("Pan Time", CameraContolTrigger.customInspectorObjects.panTime);
-        }
-
-        if (GUI.changed)
-        {
-            EditorUtility.SetDirty(CameraContolTrigger);
-        }
-    } // end OnInspectorGUI
-
-} // end class MyScriptEditor
-#endif
+        Up,
+        Down,
+        Left,
+        Right
+    } // end enum PanDirecrtion
+}

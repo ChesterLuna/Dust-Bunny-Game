@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Bunny.Dialogues;
 
 using TMPro;
@@ -9,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+using SpringCleaning.Player;
 
 public class DialogueManager : MonoBehaviour, IInteractable
 {
@@ -65,7 +65,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         textBubble.SetActive(false);
         GameObject _playerObj = GameObject.FindWithTag("Player");
         if (_playerObj != null) _player = _playerObj.GetComponent<PlayerController>();
-        _isFinishedDialogue = GetComponent<PersistentGUID>().LoadBoolValue("isFinishedDialogue");
+        GetComponent<GuidComponent>().Load("isFinishedDialogue", _isFinishedDialogue);
     } // end Awake
 
     private void Start()
@@ -272,7 +272,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
             textBubble.SetActive(false);
         }
         _isFinishedDialogue = true;
-        GetComponent<PersistentGUID>().SaveBoolValue("isFinishedDialogue", _isFinishedDialogue);
+        GetComponent<GuidComponent>().Save("isFinishedDialogue", _isFinishedDialogue);
         ES3.Save("_lastAnimationState", _player._lastAnimationState); // This is saved but doesnt seem to be loaded anywhere?
 
         IsStartedDialogue = false;

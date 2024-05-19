@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using SpringCleaning.Player;
 public class NextLevelTrigger : MonoBehaviour
 {
     [SerializeField] private string _nextLevelName;

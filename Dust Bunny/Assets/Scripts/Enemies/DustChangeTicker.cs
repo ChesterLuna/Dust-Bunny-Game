@@ -1,8 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using Unity.Collections;
-using Unity.VisualScripting;
+using SpringCleaning.Player;
 using UnityEngine;
 
 public class DustChangeTicker : MonoBehaviour

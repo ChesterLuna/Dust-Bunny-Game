@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SpringCleaning.Player;
 
-
-public class EnemyMovementOLD : MonoBehaviour
+public class EnemyMovement : MonoBehaviour
 {
     [Header("Movement Variables")]
     public bool TurnQueued = false;
@@ -80,18 +80,23 @@ public class EnemyMovementOLD : MonoBehaviour
     void FixedUpdate()
     {
         //Handle toggling particles
-        if(CanSeePlayer(true)){
-            if (_onSightParticles != null && !_onSightParticles.isPlaying){
+        if (CanSeePlayer(true))
+        {
+            if (_onSightParticles != null && !_onSightParticles.isPlaying)
+            {
                 _onSightParticles.Clear();
                 _onSightParticles.Play();
                 sfx.Play();
             }
-        } else {
-            if (_onSightParticles != null && _onSightParticles.isPlaying && hideParticlesWhenOutOfSight){
+        }
+        else
+        {
+            if (_onSightParticles != null && _onSightParticles.isPlaying && hideParticlesWhenOutOfSight)
+            {
                 _onSightParticles.Stop();
                 sfx.Stop();
             }
-        }   
+        }
 
         if (TurnQueued)
         {

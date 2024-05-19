@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-
+using SpringCleaning.Player;
 namespace ES3Types
 {
 	[UnityEngine.Scripting.Preserve]
@@ -9,23 +9,23 @@ namespace ES3Types
 	{
 		public static ES3Type Instance = null;
 
-		public ES3UserType_PlayerController() : base(typeof(PlayerController)){ Instance = this; priority = 1;}
+		public ES3UserType_PlayerController() : base(typeof(PlayerController)) { Instance = this; priority = 1; }
 
 
 		protected override void WriteComponent(object obj, ES3Writer writer)
 		{
 			var instance = (PlayerController)obj;
-			
+
 		}
 
 		protected override void ReadComponent<T>(ES3Reader reader, object obj)
 		{
 			var instance = (PlayerController)obj;
-			foreach(string propertyName in reader.Properties)
+			foreach (string propertyName in reader.Properties)
 			{
-				switch(propertyName)
+				switch (propertyName)
 				{
-					
+
 					default:
 						reader.Skip();
 						break;

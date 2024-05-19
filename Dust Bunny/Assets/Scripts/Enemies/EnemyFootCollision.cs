@@ -8,7 +8,7 @@ public class EnemyFootCollision : MonoBehaviour
     {
         if (!other.gameObject.CompareTag("Player"))
         {
-            var enemy = transform.parent.GetComponent<EnemyMovementOLD>();
+            var enemy = transform.parent.GetComponent<EnemyMovement>();
             if (enemy != null) enemy.TurnQueued = true;
         }
     } // end OnTriggerEnter2D

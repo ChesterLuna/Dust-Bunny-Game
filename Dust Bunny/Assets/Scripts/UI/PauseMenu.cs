@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-
+using SpringCleaning.Player;
 public class PauseMenu : MonoBehaviour
 {
     public bool GameIsPaused = false;

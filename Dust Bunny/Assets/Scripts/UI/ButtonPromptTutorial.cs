@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+using SpringCleaning.Player;
 public class ButtonPromptTutorial : MonoBehaviour
 {
-    public enum Type{MOVEMENT, DASH, JUMP, WALLJUMP, INTERACT}
+    public enum Type { MOVEMENT, DASH, JUMP, WALLJUMP, INTERACT }
 
     public Type type;
     public bool followPlayer;
@@ -29,7 +29,8 @@ public class ButtonPromptTutorial : MonoBehaviour
     {
         FrameInput inputs = UserInput.instance.Gather();
         bool correctInput = false;
-        switch (type){
+        switch (type)
+        {
             case Type.MOVEMENT:
                 correctInput = correctInput || inputs.Move.magnitude > 0;
                 break;
@@ -47,7 +48,8 @@ public class ButtonPromptTutorial : MonoBehaviour
                 break;
         }
 
-        if (correctInput){
+        if (correctInput)
+        {
             OnCorrectInput();
         }
 
@@ -55,20 +57,25 @@ public class ButtonPromptTutorial : MonoBehaviour
         if (followPlayer) transform.position = Vector3.Lerp(transform.position, (Vector3)_player.State.Position + Vector3.up + Vector3.up * 0.05f * _player.CurrentDust, 15f * Time.deltaTime);
     }
 
-    void OnCorrectInput(){
+    void OnCorrectInput()
+    {
         _anim.SetTrigger("fadeOut");
     }
 
-    public void OnAnimationFinish(){
+    public void OnAnimationFinish()
+    {
         Destroy(gameObject);
     }
 
-    public void SetPlayerReference(IPlayerController player){
+    public void SetPlayerReference(IPlayerController player)
+    {
         _player = player;
     }
 
-    private void SetupByType(){
-        switch (type){
+    private void SetupByType()
+    {
+        switch (type)
+        {
             case Type.MOVEMENT:
                 _text.text = "<b>Move</b>\n<i>" + UserInput.instance.GetInputNames().MovementKeys + "</i>";
                 break;

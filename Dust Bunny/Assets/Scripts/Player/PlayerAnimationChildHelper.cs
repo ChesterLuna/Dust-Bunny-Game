@@ -2,17 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerAnimationChildHelper : MonoBehaviour
+namespace SpringCleaning.Player
 {
-    private PlayerAnimator _animator;
-
-    private void Awake()
+    public class PlayerAnimationChildHelper : MonoBehaviour
     {
-        _animator = GetComponentInParent<PlayerAnimator>();
-    }
+        private PlayerAnimator _animator;
 
-    public void TellParentPlayFootstep()
-    {
-        _animator.OnPlayerFootstep();
+        private void Awake()
+        {
+            _animator = GetComponentInParent<PlayerAnimator>();
+        }
+
+        public void TellParentPlayFootstep()
+        {
+            _animator.OnPlayerFootstep();
+        }
     }
 }

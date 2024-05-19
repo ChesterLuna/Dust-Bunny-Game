@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+using SpringCleaning.Physics;
+using SpringCleaning.Player;
 public class SwifferPlatform : PlatformBase
 {
     [Header("Movement Variables")]

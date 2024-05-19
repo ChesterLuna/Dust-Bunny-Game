@@ -1,14 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SpringCleaning.Player;
 
-public class DeathBarrier : MonoBehaviour
+namespace SpringCleaning.Environment
 {
-    private void OnTriggerEnter2D(Collider2D collision)
+    public class DeathBarrier : MonoBehaviour
     {
-        if (!collision.TryGetComponent(out IPlayerController controller)) return;
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (!collision.TryGetComponent(out IPlayerController controller)) return;
 
-        controller.Die();
+            controller.Die();
 
-    } // end OnTriggerEnter2D
-} // end DeathBarrier
+        } // end OnTriggerEnter2D
+    } // end DeathBarrier
+}
