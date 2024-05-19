@@ -9,6 +9,7 @@ public class ButtonPromptTutorial : MonoBehaviour
     public enum Type{MOVEMENT, DASH, JUMP, WALLJUMP, INTERACT}
 
     public Type type;
+    public bool followPlayer;
 
     private TextMeshPro _text;
     private Animator _anim;
@@ -51,7 +52,7 @@ public class ButtonPromptTutorial : MonoBehaviour
         }
 
         // Move toward the player
-        transform.position = Vector3.Lerp(transform.position, (Vector3)_player.State.Position + Vector3.up + Vector3.up * 0.05f * _player.CurrentDust, 15f * Time.deltaTime);
+        if (followPlayer) transform.position = Vector3.Lerp(transform.position, (Vector3)_player.State.Position + Vector3.up + Vector3.up * 0.05f * _player.CurrentDust, 15f * Time.deltaTime);
     }
 
     void OnCorrectInput(){

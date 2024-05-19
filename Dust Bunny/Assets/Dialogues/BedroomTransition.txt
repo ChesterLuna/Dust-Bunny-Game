@@ -4,6 +4,11 @@
 #Spek
 :Wow. I don't know what I was expecting, but this...
 
+!2 Pans out and comes back, next dialogue
+#Spek
+:...
+
+!2 Make sure it is back
 #Spek
 :It's so big.
 

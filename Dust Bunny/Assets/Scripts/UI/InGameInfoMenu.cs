@@ -17,27 +17,6 @@ public class InGameInfoMenu : MonoBehaviour
 
 
     int currentPage = 0;
-    
-    string[] infoTitles = new string[]
-    {
-        "CONTROLS",
-        "DUST AND VACUUMS",
-        "HAZARDS AND OBJECTS"
-        };
-
-    string[] nextButtonText = new string[]
-    {
-        "Next",
-        "Next",
-        "Next"
-    };
-
-    string[] backButtonText = new string[]
-    {
-        "Back",
-        "Back",
-        "Back"
-    };
 
     void Awake()
     {
@@ -56,15 +35,15 @@ public class InGameInfoMenu : MonoBehaviour
 
     public void SetPage()
     {
-        _titleUI.text = infoTitles[currentPage];
+        _titleUI.text = InfoMenu.infoTitles[currentPage];
         _infoUI.text = InfoMenu.infoText[currentPage];
-        _nextbuttonUI.text = nextButtonText[currentPage];
-        _backbuttonUI.text = backButtonText[currentPage];
+        _nextbuttonUI.text = "Next";
+        _backbuttonUI.text = "Back";
     }  // end SetPage
 
     public void Next()
     {
-        if (currentPage < InfoMenu.infoText.Length - 1)
+        if (currentPage < InfoMenu.infoTitles.Length - 1)
         {
             currentPage++;
             SetPage();

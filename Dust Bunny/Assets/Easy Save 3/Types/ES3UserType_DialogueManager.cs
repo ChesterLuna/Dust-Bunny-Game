@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ES3Types
 {
 	[UnityEngine.Scripting.Preserve]
-	[ES3PropertiesAttribute("_isFinishedDialogue")]
+	[ES3PropertiesAttribute()]
 	public class ES3UserType_DialogueManager : ES3ComponentType
 	{
 		public static ES3Type Instance = null;
@@ -16,7 +16,6 @@ namespace ES3Types
 		{
 			var instance = (DialogueManager)obj;
 			
-			writer.WritePrivateField("_isFinishedDialogue", instance);
 		}
 
 		protected override void ReadComponent<T>(ES3Reader reader, object obj)
@@ -27,9 +26,6 @@ namespace ES3Types
 				switch(propertyName)
 				{
 					
-					case "_isFinishedDialogue":
-					instance = (DialogueManager)reader.SetPrivateField("_isFinishedDialogue", reader.Read<System.Boolean>(), instance);
-					break;
 					default:
 						reader.Skip();
 						break;

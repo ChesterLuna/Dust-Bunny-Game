@@ -34,4 +34,19 @@ public class NextLevelTrigger : MonoBehaviour
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
         levelLoader.StartLoadLevel(_nextLevelName, _transition, _transitionTime);
     }
+    public void ChangeSceneString(string nextLevelString)
+    {
+        GameManager.instance.CheckpointLocation = _nextLevelSpawnLocation;
+        ES3AutoSaveMgr.Current.Save();
+        GameObject.FindWithTag("Player").GetComponent<PlayerController>()._lastAnimationState = 0;
+        if (nextLevelString == "Good Ending")
+        {
+            GameManager.instance.StopGameTime();
+            GameManager.instance.CheckpointDustLevel = -1;
+        }
+
+        LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
+        levelLoader.StartLoadLevel(nextLevelString, _transition, _transitionTime);
+    }
+
 } // end class NextLevelTrigger

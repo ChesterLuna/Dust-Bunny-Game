@@ -36,6 +36,9 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] bool interactable = true;
     [SerializeField] float _timeToPlay = 0;
 
+    [SerializeField] float minDust = -1;
+    [SerializeField] float maxDust = 1000;
+
     public bool ShowIndicator { get; private set; } = false;
 
     public Queue<Dialogue> Dialogues = new Queue<Dialogue>();
@@ -62,7 +65,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         textBubble.SetActive(false);
         GameObject _playerObj = GameObject.FindWithTag("Player");
         if (_playerObj != null) _player = _playerObj.GetComponent<PlayerController>();
-        _isFinishedDialogue = ES3.Load(GetComponent<PersistentGUID>().guid, false);
+        _isFinishedDialogue = GetComponent<PersistentGUID>().LoadBoolValue("isFinishedDialogue");
     } // end Awake
 
     private void Start()
@@ -80,17 +83,18 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        if (!interactable) return;
-        InteractDialogue();
+        // if (!interactable) return;
+        // InteractDialogue();
     } // end Interact
 
-    public bool IsFinishedDialogue(){
+    public bool IsFinishedDialogue()
+    {
         return _isFinishedDialogue;
     }
 
     public void FixedUpdate()
     {
-        if (UserInput.instance.Gather(PlayerStates.Dialogue).AnyKey && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f)
+        if (UserInput.instance.Gather(PlayerStates.Dialogue).InteractDown && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f && interactable)
         {
             InteractDialogue();
         }
@@ -119,7 +123,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void StartDialogue()
     {
-        if (_isFinishedDialogue == true) return;
+        if (_isFinishedDialogue == true || !IsEnoughDust()) return;
         IsStartedDialogue = true;
         _isFinishedDialogue = false;
         if (importantDialogue)
@@ -230,7 +234,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         Animator _nextActor = _actors[_iAnim];
 
         // Play animation fx
-        if(_nextActor.gameObject == _player.gameObject)
+        if (_nextActor.gameObject == _player.gameObject)
         {
             _player._lastAnimationState++;
             _nextActor.SetInteger("PlayerAnimationTrigger", _player._lastAnimationState);
@@ -268,13 +272,19 @@ public class DialogueManager : MonoBehaviour, IInteractable
             textBubble.SetActive(false);
         }
         _isFinishedDialogue = true;
-        ES3.Save(GetComponent<PersistentGUID>().guid, _isFinishedDialogue);
-        ES3.Save("_lastAnimationState", _player._lastAnimationState);
+        GetComponent<PersistentGUID>().SaveBoolValue("isFinishedDialogue", _isFinishedDialogue);
+        ES3.Save("_lastAnimationState", _player._lastAnimationState); // This is saved but doesnt seem to be loaded anywhere?
+
         IsStartedDialogue = false;
         ShowIndicator = false;
         DisableAnimators();
         onFinishedDialogue.Invoke();
     } // end EndDialogue
+
+    public bool IsEnoughDust()
+    {
+        return minDust <= _player.CurrentDust && _player.CurrentDust < maxDust;
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
