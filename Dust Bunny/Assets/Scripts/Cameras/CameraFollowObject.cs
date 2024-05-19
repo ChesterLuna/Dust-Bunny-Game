@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -27,7 +28,7 @@ public class CameraFollowObject : MonoBehaviour
 
     public void CallTurn()
     {
-        LeanTween.rotateY(gameObject, DetermineEndRotation(), _flipYRotationTime).setEaseInOutSine();
+        transform.DORotate(new Vector3(0, DetermineEndRotation(), 0), _flipYRotationTime).SetEase(Ease.InOutSine);
     } // end CallTurn
 
     private float DetermineEndRotation()

@@ -31,10 +31,27 @@ MonoBehaviour:
     serializationDepthLimit: 64
     assemblyNames:
     - Assembly-CSharp
-    - Assembly-CSharp-firstpass
     - Cinemachine
     - DOTween.Modules
+    - EasySave3
+    - GUID
+    - GUID.Samples
+    - Kingswords.CustomFields
+    - Lofelt.NiceVibrations
+    - Lofelt.NiceVibrations.Demo
+    - MoreMountains.Feedbacks
+    - MoreMountains.Feedbacks.Authorizations
+    - MoreMountains.Feedbacks.Cinemachine
+    - MoreMountains.Feedbacks.HDRP
+    - MoreMountains.Feedbacks.MMTools
+    - MoreMountains.Feedbacks.NiceVibrations
+    - MoreMountains.Feedbacks.PostProcessing
+    - MoreMountains.Feedbacks.TextMeshPro
+    - MoreMountains.Feedbacks.URP
+    - MoreMountains.Tools
+    - Plugins
     - Unity.InputSystem.RebindingUI
+    - Unity.PlayerPrefsEditor.Samples.SampleScene
     showAdvancedSettings: 0
   addMgrToSceneAutomatically: 0
   autoUpdateReferences: 1
