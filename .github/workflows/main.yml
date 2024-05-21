@@ -1,11 +1,11 @@
 name: Build the project
 on:
   [push]
+  
 jobs:
   build:
     name: Build and upload the project
     runs-on: self-hosted
-    working-directory: "Dust Bunny"
     steps:
       # Checkout
       - uses: actions/checkout@v2
