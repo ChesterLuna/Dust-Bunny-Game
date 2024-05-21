@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: actions/cache@v3
-        working-directory: Dust Bunny
+        working-directory: "Dust Bunny"
         with:
           path: Library
           key: Library-SpringCleaning-TargetPlatform
@@ -21,7 +21,7 @@ jobs:
       # Build
       - name: Build
         uses: game-ci/unity-builder@v4
-        working-directory: Dust Bunny
+        working-directory: "Dust Bunny"
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -32,7 +32,7 @@ jobs:
       # Upload
       - name: Upload build to github
         uses: actions/upload-artifact@v3
-        working-directory: Dust Bunny
+        working-directory: "Dust Bunny"
         with:
           name: WindowsBuild
           path: build
