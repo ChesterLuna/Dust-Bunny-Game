@@ -5,13 +5,13 @@ jobs:
   build:
     name: Build and upload the project
     runs-on: self-hosted
+    working-directory: "Dust Bunny"
     steps:
       # Checkout
       - uses: actions/checkout@v2
 
       - name: Cache Library
         uses: actions/cache@v3
-        working-directory: "Dust Bunny"
         with:
           path: Library
           key: Library-SpringCleaning-TargetPlatform
@@ -22,7 +22,6 @@ jobs:
       # Build
       - name: Build
         uses: game-ci/unity-builder@v4
-        working-directory: "Dust Bunny"
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -33,7 +32,6 @@ jobs:
       # Upload
       - name: Upload build to github
         uses: actions/upload-artifact@v3
-        working-directory: "Dust Bunny"
         with:
           name: WindowsBuild
           path: build
@@ -42,4 +40,4 @@ jobs:
       - name: Fix _work directory ownership
         if: always()
         working-directory: ../../..
-        run: sudo chown -R ubuntu _work
+        run: pwd && sudo chown -R ubuntu _work
