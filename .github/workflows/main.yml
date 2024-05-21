@@ -1,0 +1,46 @@
+name: Build the project
+on:
+  [push]
+  
+jobs:
+  build:
+    name: Build and upload the project
+    runs-on: self-hosted
+    env:
+      working-directory: Dust Bunny
+    steps:
+      # Checkout
+      - uses: actions/checkout@v2
+
+      - name: Cache Library
+        uses: actions/cache@v3
+        with:
+          path: Dust Bunny/Library
+          key: Library-SpringCleaning-TargetPlatform
+          restore-keys: |
+            Library-SpringCleaning-
+            Library-
+
+      # Build
+      - name: Build
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: StandaloneWindows64
+          projectPath: Dust Bunny
+
+      # Upload
+      - name: Upload build to github
+        uses: actions/upload-artifact@v3
+        with:
+          name: WindowsBuild
+          path: build
+
+      # Correct ownership of _work directory
+      - name: Fix _work directory ownership
+        if: always()
+        working-directory: ../../..
+        run: pwd && sudo chown -R ubuntu _work
