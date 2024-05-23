@@ -13,7 +13,7 @@ public class InGameInfoMenu : MonoBehaviour
     TextMeshProUGUI _infoUI;
     TextMeshProUGUI _backbuttonUI;
     TextMeshProUGUI _nextbuttonUI;
-    PauseMenu _pauseMenu;
+    PauseMenuOLD _pauseMenu;
 
 
     int currentPage = 0;
@@ -24,7 +24,7 @@ public class InGameInfoMenu : MonoBehaviour
         _infoUI = GameObject.Find("Info Menu/InfoText").GetComponent<TextMeshProUGUI>();
         _backbuttonUI = GameObject.Find("Info Menu/Back Button/Text (TMP)").GetComponent<TextMeshProUGUI>();
         _nextbuttonUI = GameObject.Find("Info Menu/Next Button/Text (TMP)").GetComponent<TextMeshProUGUI>();
-        _pauseMenu = GameObject.Find("MENU").GetComponent<PauseMenu>();
+        _pauseMenu = GameObject.Find("MENU").GetComponent<PauseMenuOLD>();
     } // end Awake
 
     void OnEnable()
@@ -50,7 +50,7 @@ public class InGameInfoMenu : MonoBehaviour
         }
         else
         {
-            _pauseMenu.SetMenu(PauseMenu.PauseMenuPage.Pause);
+            _pauseMenu.SetMenu(PauseMenuOLD.PauseMenuPage.Pause);
         }
     } // end Next
 
@@ -63,7 +63,7 @@ public class InGameInfoMenu : MonoBehaviour
         }
         else
         {
-            _pauseMenu.SetMenu(PauseMenu.PauseMenuPage.Pause);
+            _pauseMenu.SetMenu(PauseMenuOLD.PauseMenuPage.Pause);
         }
     } // end Back
 } // end PauseMenu

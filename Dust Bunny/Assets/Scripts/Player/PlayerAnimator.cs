@@ -146,14 +146,14 @@ namespace SpringCleaning.Player
 
             //Get the dash target from mouse position or keyboard input, based on UseMouseForDash
             Vector3 dashTargetWorldPosition;
-            if (UserInput.instance.UseMouseForDash)
+            if (UserInput.Instance.UseMouseForDash)
             {
                 dashTargetWorldPosition = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 dashTargetWorldPosition.z = 0;
             }
             else
             {
-                Vector2 moveInput = dashTargetWorldPosition = UserInput.instance.Gather().Move;
+                Vector2 moveInput = dashTargetWorldPosition = UserInput.Instance.Gather().Move;
                 float dashLengthMod = 1 + (.8f * _player.Stats.DashDuration * _player.Stats.DashVelocity * transform.localScale.x);
                 if (moveInput.sqrMagnitude > 0.001f)
                 {
@@ -187,7 +187,7 @@ namespace SpringCleaning.Player
             _arrowPivot.transform.localScale = new Vector3(length, _arrowPivot.transform.localScale.y, _arrowPivot.transform.localScale.z);
 
             // handle opacity
-            if (UserInput.instance.Gather(_player.PlayerState).DashHeld)
+            if (UserInput.Instance.Gather(_player.PlayerState).DashHeld)
             {
                 _arrowVisibility = Mathf.Lerp(_arrowVisibility, 0.8f, Time.deltaTime * 3);
             }

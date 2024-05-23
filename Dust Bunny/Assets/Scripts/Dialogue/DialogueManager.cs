@@ -94,7 +94,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     public void FixedUpdate()
     {
-        if (UserInput.instance.Gather(PlayerStates.Dialogue).InteractDown && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f && interactable)
+        if (UserInput.Instance.Gather(PlayerStates.Dialogue).InteractDown && IsStartedDialogue && _timeSinceDialogueStarted > 0.5f && interactable)
         {
             InteractDialogue();
         }

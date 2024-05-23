@@ -27,7 +27,7 @@ public class ButtonPromptTutorial : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        FrameInput inputs = UserInput.instance.Gather();
+        FrameInput inputs = UserInput.Instance.Gather();
         bool correctInput = false;
         switch (type)
         {
@@ -77,19 +77,19 @@ public class ButtonPromptTutorial : MonoBehaviour
         switch (type)
         {
             case Type.MOVEMENT:
-                _text.text = "<b>Move</b>\n<i>" + UserInput.instance.GetInputNames().MovementKeys + "</i>";
+                _text.text = "<b>Move</b>\n<i>" + UserInput.Instance.GetInputNames().MovementKeys + "</i>";
                 break;
             case Type.DASH:
-                _text.text = "<b>Dash</b>\n<i>" + UserInput.instance.GetInputNames().DashKey + "</i>";
+                _text.text = "<b>Dash</b>\n<i>" + UserInput.Instance.GetInputNames().DashKey + "</i>";
                 break;
             case Type.JUMP:
-                _text.text = "<b>Jump</b>\n<i>" + UserInput.instance.GetInputNames().JumpKey + "</i>";
+                _text.text = "<b>Jump</b>\n<i>" + UserInput.Instance.GetInputNames().JumpKey + "</i>";
                 break;
             case Type.WALLJUMP:
-                _text.text = "<b>Walljump</b>\n<i>" + UserInput.instance.GetInputNames().JumpKey + "</i>";
+                _text.text = "<b>Walljump</b>\n<i>" + UserInput.Instance.GetInputNames().JumpKey + "</i>";
                 break;
             case Type.INTERACT:
-                _text.text = "<b>Interact</b>\n<i>" + UserInput.instance.GetInputNames().InteractKey + "</i>";
+                _text.text = "<b>Interact</b>\n<i>" + UserInput.Instance.GetInputNames().InteractKey + "</i>";
                 //dumb fix for the arrow being layered above the dialogue
                 _bgSprite.sortingOrder = 20;
                 _text.sortingOrder = 21;

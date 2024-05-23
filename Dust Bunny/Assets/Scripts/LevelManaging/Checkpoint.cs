@@ -42,8 +42,8 @@ public class Checkpoint : MonoBehaviour
 
         ResetOtherCheckpoints();
         SetState(CheckpointState.active);
-        GameManager.instance.CheckpointLocation = _spawnLocation;
-        GameManager.instance.CheckpointDustLevel = controller.CurrentDust;
+        GameManager.Instance.CheckpointLocation = _spawnLocation;
+        GameManager.Instance.CheckpointDustLevel = controller.CurrentDust;
         ES3AutoSaveMgr.Current.Save();
         _sfx.Play();
     } // end OnTriggerEnter2D

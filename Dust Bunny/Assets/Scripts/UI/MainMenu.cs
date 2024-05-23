@@ -10,7 +10,7 @@ public class MainMenu : MonoBehaviour
     {
         UISFXManager.PlaySFX(UISFXManager.SFX.POSITIVE);
         UnityEngine.SceneManagement.SceneManager.LoadScene(firstLevel);
-        GameManager.instance.StartGameTime();
+        GameManager.Instance.StartGameTime();
     }
 
     public void CustomTransition(string sceneName)

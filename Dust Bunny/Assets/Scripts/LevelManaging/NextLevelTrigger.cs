@@ -15,20 +15,20 @@ public class NextLevelTrigger : MonoBehaviour
     {
         if (other.TryGetComponent(out IPlayerController controller))
         {
-            GameManager.instance.CheckpointDustLevel = controller.CurrentDust;
+            GameManager.Instance.CheckpointDustLevel = controller.CurrentDust;
             if (_onTouch) ChangeScene();
         }
     } // end OnTriggerEnter2D
 
     public void ChangeScene()
     {
-        GameManager.instance.CheckpointLocation = _nextLevelSpawnLocation;
+        GameManager.Instance.CheckpointLocation = _nextLevelSpawnLocation;
         ES3AutoSaveMgr.Current.Save();
         GameObject.FindWithTag("Player").GetComponent<PlayerController>()._lastAnimationState = 0;
         if (_nextLevelName == "Good Ending")
         {
-            GameManager.instance.StopGameTime();
-            GameManager.instance.CheckpointDustLevel = -1;
+            GameManager.Instance.StopGameTime();
+            GameManager.Instance.CheckpointDustLevel = -1;
         }
 
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
@@ -36,13 +36,13 @@ public class NextLevelTrigger : MonoBehaviour
     }
     public void ChangeSceneString(string nextLevelString)
     {
-        GameManager.instance.CheckpointLocation = _nextLevelSpawnLocation;
+        GameManager.Instance.CheckpointLocation = _nextLevelSpawnLocation;
         ES3AutoSaveMgr.Current.Save();
         GameObject.FindWithTag("Player").GetComponent<PlayerController>()._lastAnimationState = 0;
         if (nextLevelString == "Good Ending")
         {
-            GameManager.instance.StopGameTime();
-            GameManager.instance.CheckpointDustLevel = -1;
+            GameManager.Instance.StopGameTime();
+            GameManager.Instance.CheckpointDustLevel = -1;
         }
 
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();

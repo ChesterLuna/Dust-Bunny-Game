@@ -2,14 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
-using Unity.VisualScripting;
 using System;
 
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static GameManager Instance;
 
     [SerializeField] public Vector3? CheckpointLocation;
     public float CheckpointDustLevel = -1;
@@ -18,14 +16,14 @@ public class GameManager : MonoBehaviour
     // called zero
     private void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
             ShowTimer = PlayerPrefs.GetInt("ShowTimer", 0) == 1;
-            DontDestroyOnLoad(instance);
         }
         else
         {
+            Debug.LogWarning("There are multiple GameManager instances in the scene. Deleting the newest one.");
             Destroy(gameObject);
         }
     } // end Awake

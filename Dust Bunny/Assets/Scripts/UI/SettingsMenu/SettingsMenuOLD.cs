@@ -4,13 +4,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingsMenu : MonoBehaviour
+public class SettingsMenuOLD : MonoBehaviour
 {
     [SerializeField] Toggle _displayTimerToggle;
     void OnEnable()
     {
-        _displayTimerToggle.isOn = GameManager.instance.ShowTimer;
-        _displayTimerToggle.onValueChanged.AddListener((value) => GameManager.instance.SetShowTimer(value));
+        _displayTimerToggle.isOn = GameManager.Instance.ShowTimer;
+        _displayTimerToggle.onValueChanged.AddListener((value) => GameManager.Instance.SetShowTimer(value));
     } // end OnEnable
 
     void OnDisable()

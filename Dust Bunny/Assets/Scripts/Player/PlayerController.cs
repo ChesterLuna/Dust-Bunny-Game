@@ -93,7 +93,7 @@ namespace SpringCleaning.Player
         private void Awake()
         {
             if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
-            if (GameManager.instance.CheckpointDustLevel != -1) _currentDust = GameManager.instance.CheckpointDustLevel;
+            if (GameManager.Instance.CheckpointDustLevel != -1) _currentDust = GameManager.Instance.CheckpointDustLevel;
             if (SceneManager.GetActiveScene().name == "Burrow-NEW") // Hardcoded to have a nice pan in at the start. Otherwise it is not wanted.
             {
                 SetupCharacter(tween: true);
@@ -107,9 +107,9 @@ namespace SpringCleaning.Player
 
         private void Start()
         {
-            if (GameManager.instance.CheckpointLocation.HasValue)
+            if (GameManager.Instance.CheckpointLocation.HasValue)
             {
-                RepositionImmediately(GameManager.instance.CheckpointLocation.Value, true);
+                RepositionImmediately(GameManager.Instance.CheckpointLocation.Value, true);
             }
             _fallSpeedYDampingChangeThreshold = CameraManager.Instance._fallSpeedYDampingChangeThreshold;
         } // end Start
@@ -231,7 +231,7 @@ namespace SpringCleaning.Player
             // Early return if time is frozen (we don't want to buffer inputs)
             if (Time.timeScale == 0) return;
 
-            _frameInput = UserInput.instance.Gather(PlayerState);
+            _frameInput = UserInput.Instance.Gather(PlayerState);
 
 
             if (_frameInput.JumpDown)
@@ -705,7 +705,7 @@ namespace SpringCleaning.Player
             {
                 // Handle the dash
                 Vector2 dir;
-                if (UserInput.instance.UseMouseForDash)
+                if (UserInput.Instance.UseMouseForDash)
                 {
                     Vector2 playerPos = UnityEngine.Camera.main.WorldToScreenPoint(transform.position);
                     dir = (_frameInput.DashDirection - playerPos).normalized;
@@ -1105,7 +1105,7 @@ namespace SpringCleaning.Player
             TogglePlayer(false, true, PlayerStates.Dead);
             LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
             levelLoader.StartLoadLevel(SceneManager.GetActiveScene().name, _deathTransition, _deathTransitionTime);
-            GameManager.instance.PauseGameTime();
+            GameManager.Instance.PauseGameTime();
         } // end Die
 
         #region External Triggers

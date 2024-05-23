@@ -6,38 +6,39 @@ namespace SpringCleaning.Player
 {
     public class UserInput : MonoBehaviour
     {
-        public static UserInput instance;
+        public static UserInput Instance;
         public bool UseMouseForDash { get; private set; }
-        // private PlayerInputActions _actions;
         private InputActionAsset _actions;
 
         private InputAction _move, _jump, _dash, _dashPosition, _interact, _menu, _anyKey;
+
         private void Awake()
         {
-            if (instance == null)
+            if (Instance == null)
             {
-                instance = this;
+                Instance = this;
+                _actions = GetComponent<PlayerInput>().actions;
+
+                SetUpInputActions();
             }
             else
             {
+                Debug.LogWarning("There are multiple UserInput instances in the scene. Deleting the newest one.");
                 Destroy(gameObject);
             }
-            _actions = GetComponent<PlayerInput>().actions;
-
-            SetUpInputActions();
         } // end Awake
 
         void FixedUpdate()
         {
             // Refresh the input system
             InputSystem.Update();
-        }
+        } // end FixedUpdate
 
         void Update()
         {
             // Refresh the input system manually, only if TimeScale = 0
             if (Time.timeScale == 0) InputSystem.Update();
-        }
+        } // end Update
 
         public void SetMouseForDash(bool value)
         {
@@ -56,7 +57,6 @@ namespace SpringCleaning.Player
             _menu = _actions["ToggleMenu"];
             _anyKey = _actions["AnyKey"];
         } // end SetUpInputActions
-
 
         private void OnEnable() => _actions.Enable();
 
@@ -144,5 +144,5 @@ namespace SpringCleaning.Player
         public string JumpKey;
         public string DashKey;
         public string InteractKey;
-    }
+    } // end struct InputNames
 }

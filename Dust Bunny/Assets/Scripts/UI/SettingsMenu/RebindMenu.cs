@@ -8,10 +8,10 @@ public class RebindMenu : MonoBehaviour
     public Toggle DashMouseToggle;
     private void OnEnable()
     {
-        DashMouseToggle.isOn = UserInput.instance.UseMouseForDash;
+        DashMouseToggle.isOn = UserInput.Instance.UseMouseForDash;
         DashMouseToggle.onValueChanged.AddListener((value) =>
         {
-            UserInput.instance.SetMouseForDash(value);
+            UserInput.Instance.SetMouseForDash(value);
         });
     } // end OnEnable
 

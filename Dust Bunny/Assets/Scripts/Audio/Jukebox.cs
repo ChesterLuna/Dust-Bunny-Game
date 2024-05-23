@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -41,7 +39,6 @@ public class Jukebox : MonoBehaviour
     private bool fadingOut = false;
 
     // Misc
-    private bool initalized = false;
     private SongInfo currentSong;
 
     // References
@@ -57,7 +54,41 @@ public class Jukebox : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Initalize();
+        if (instance == null)
+        {
+            instance = this;
+            introSource = GetComponents<AudioSource>()[0];
+            loopSource = GetComponents<AudioSource>()[1];
+
+            //Assemble the disctionary from the inspector songs
+            songClips = new Dictionary<Song, SongInfo>();
+            for (int i = 0; i < exposedSongClips.Length; i++)
+            {
+                songClips.Add(exposedSongClips[i].song, exposedSongClips[i]);
+            }
+
+            SongInfo noneSong = new SongInfo
+            {
+                song = Song.NONE,
+                introClip = null,
+                loopClip = null,
+                volume = 0
+            };
+            songClips.Add(Song.NONE, noneSong);
+
+            //Play the initial song
+            bgmSwapBuffer = initialSong;
+            SwapClip();
+
+            //Also load the audio settings from disk
+            instance._mixer.SetFloat("bgmVolume", RatioToDB(PlayerPrefs.GetFloat("bgmVolume", 0.7f)));
+            instance._mixer.SetFloat("sfxVolume", RatioToDB(PlayerPrefs.GetFloat("sfxVolume", 0.7f)));
+        }
+        else
+        {
+            Debug.LogWarning("There are multiple Jukebox instances in the scene. Deleting the newest one.");
+            Destroy(gameObject);
+        }
     }
 
     // Update is called once per frame
@@ -74,38 +105,6 @@ public class Jukebox : MonoBehaviour
         fadingOut = true;
 
         Debug.Log("Queued to play: " + bgmSwapBuffer);
-    }
-
-    public Jukebox Initalize()
-    {
-        if (!initalized)
-        {
-            DontDestroyOnLoad(gameObject);
-            instance = this;
-            introSource = GetComponents<AudioSource>()[0];
-            loopSource = GetComponents<AudioSource>()[1];
-
-            //Assemble the disctionary from the inspector songs
-            songClips = new Dictionary<Song, SongInfo>();
-            for (int i = 0; i < exposedSongClips.Length; i++)
-            {
-                songClips.Add(exposedSongClips[i].song, exposedSongClips[i]);
-            }
-            SongInfo noneSong;
-            noneSong.song = Song.NONE; //lol
-            noneSong.introClip = null;
-            noneSong.loopClip = null;
-            noneSong.volume = 0;
-            songClips.Add(Song.NONE, noneSong);
-
-            //Play the initial song
-            bgmSwapBuffer = initialSong;
-            SwapClip();
-
-            initalized = true;
-        }
-
-        return this;
     }
 
     private void HandleFade()
@@ -145,7 +144,7 @@ public class Jukebox : MonoBehaviour
             loopSource.Stop();
             loopSource.clip = newLoopClip;
 
-            loopSource.PlayScheduled(AudioSettings.dspTime + newIntroClip.length);
+            loopSource.PlayScheduled(UnityEngine.AudioSettings.dspTime + newIntroClip.length);
             introSource.Play();
         }
         else
@@ -160,16 +159,6 @@ public class Jukebox : MonoBehaviour
 
     public static void PlaySong(Song song)
     {
-        // If there is no jukebox, make a new one
-        if (instance == null)
-        {
-            Instantiate(Resources.Load(JUKEBOX_PATH)).GetComponent<Jukebox>().Initalize();
-
-            //Also load the audio settings from disk
-            instance._mixer.SetFloat("bgmVolume", RatioToDB(PlayerPrefs.GetFloat("bgmVolume", 0.7f)));
-            instance._mixer.SetFloat("sfxVolume", RatioToDB(PlayerPrefs.GetFloat("sfxVolume", 0.7f)));
-        }
-
         // If this song is also the currently playing song, do nothing
         if (song == instance.currentSong.song)
         {

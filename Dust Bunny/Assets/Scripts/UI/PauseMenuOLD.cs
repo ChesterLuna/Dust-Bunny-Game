@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using SpringCleaning.Player;
-public class PauseMenu : MonoBehaviour
+public class PauseMenuOLD : MonoBehaviour
 {
     public bool GameIsPaused = false;
 
@@ -32,7 +32,7 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (UserInput.instance.Gather(PlayerStates.Paused).MenuDown && _timeSinceLastResume > 0.3f)
+        if (UserInput.Instance.Gather(PlayerStates.Paused).MenuDown && _timeSinceLastResume > 0.3f)
         {
             if (GameIsPaused)
             {
