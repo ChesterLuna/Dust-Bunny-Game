@@ -140,7 +140,7 @@ public class PlayerAnimator : MonoBehaviour
         if(_sprite.flipX){
             flipX = -1;
         }
-        _dashAfterImageParticles.gameObject.transform.localScale = new Vector3(flipX, 1, 1) * _player.Stats.CharacterSize.GenerateCharacterSize().Height;
+        _dashAfterImageParticles.gameObject.transform.localScale = new Vector3(flipX, 1, 1) * _player.Stats.CharacterSize.GenerateCharacterSize().Height * 0.75f;
 
         HandleDashArrow();
 
