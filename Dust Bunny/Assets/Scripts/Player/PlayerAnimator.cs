@@ -25,6 +25,7 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField] private ParticleSystem _gainDustParticles;
     [SerializeField] private ParticleSystem _dashParticles;
     [SerializeField] private ParticleSystem _dashRingParticles;
+    [SerializeField] private ParticleSystem _dashAfterImageParticles;
     [SerializeField] private ParticleSystem _idleParticles;
     [SerializeField] private Transform _dashRingTransform;
 
@@ -133,6 +134,13 @@ public class PlayerAnimator : MonoBehaviour
         {
             _playDustGainedParticlesTimer -= Time.deltaTime;
         }
+
+        // Handle dash afterimage scaling
+        float flipX = 1;
+        if(_sprite.flipX){
+            flipX = -1;
+        }
+        _dashAfterImageParticles.gameObject.transform.localScale = new Vector3(flipX, 1, 1) * _player.Stats.CharacterSize.GenerateCharacterSize().Height;
 
         HandleDashArrow();
 
@@ -331,6 +339,7 @@ public class PlayerAnimator : MonoBehaviour
             _dashRingTransform.up = dir;
             _dashRingParticles.Play();
             _sfx.PlaySFX(PlayerSFXController.SFX.Dash);
+            _dashAfterImageParticles.Play();
         }
         else
         {
