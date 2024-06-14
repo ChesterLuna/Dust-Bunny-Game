@@ -17,6 +17,8 @@ public class GameplayOverlay : MonoBehaviour
 
     void OnEnable()
     {
+        if(GameManager.instance == null) return;
+        
         _timerTextUI.SetActive(GameManager.instance.ShowTimer);
         if (GameManager.instance.ShowTimer)
         {
