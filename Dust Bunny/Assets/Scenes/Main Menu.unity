@@ -281,14 +281,18 @@ PrefabInstance:
     - target: {fileID: 2413336891047102762, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 6aa2a27c7fabc0e44a709464a485f119, type: 3}
+      objectReference: {fileID: 21300000, guid: 612ad49cf993e7d4897798e74c769807, type: 3}
     - target: {fileID: 2595255099592698430, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_Name
       value: Settings Button
       objectReference: {fileID: 0}
     - target: {fileID: 7275736799083554237, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
+      propertyPath: m_AspectMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7275736799083554237, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_AspectRatio
-      value: 3.25
+      value: 5.84
       objectReference: {fileID: 0}
     - target: {fileID: 8411375570944015355, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_Pivot.x
@@ -300,15 +304,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8411375570944015355, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8411375570944015355, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8411375570944015355, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8411375570944015355, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_AnchorMin.y
@@ -316,11 +320,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8411375570944015355, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 394.2228
       objectReference: {fileID: 0}
     - target: {fileID: 8411375570944015355, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -964.1475
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8411375570944015355, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -352,11 +356,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8411375570944015355, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -5
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 8411375570944015355, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -334
+      value: 62.52411
       objectReference: {fileID: 0}
     - target: {fileID: 8411375570944015355, guid: 1e12d57cfafa1464a9e6a468f008250d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
