@@ -189,6 +189,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
             EndDialogue();
             return;
         }
+        textBubble.GetComponent<TextCrawler>().StartFadeIn();
 
         Dialogue nextDialogue = Dialogues.Dequeue();
 
@@ -269,7 +270,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
         playOnTouch = false;
         if (IsBubble)
         {
-            textBubble.SetActive(false);
+            textBubble.GetComponent<TextCrawler>().StartFadeOut();
+            // textBubble.SetActive(false);
         }
         _isFinishedDialogue = true;
         GetComponent<PersistentGUID>().SaveBoolValue("isFinishedDialogue", _isFinishedDialogue);
