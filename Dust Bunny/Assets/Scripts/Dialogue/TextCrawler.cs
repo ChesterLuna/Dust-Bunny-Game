@@ -239,4 +239,14 @@ public class TextCrawler : MonoBehaviour
         textController.text = newText;
         currentText = newText;
     }
+
+    public void StartFadeIn()
+    {
+        GetComponent<Animator>().SetTrigger("fadeIn");
+    }
+
+    public void StartFadeOut()
+    {
+        GetComponent<Animator>().SetTrigger("fadeOut");
+    }
 }
