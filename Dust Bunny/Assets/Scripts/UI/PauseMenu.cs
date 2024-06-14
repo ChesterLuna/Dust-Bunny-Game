@@ -23,6 +23,7 @@ public class PauseMenu : MonoBehaviour
 
 
     private float _timeSinceLastResume = 0.0f;
+    private bool _wasDirectToSettings = false;
 
     void Start()
     {
@@ -32,7 +33,7 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (UserInput.instance.Gather(PlayerStates.Paused).MenuDown && _timeSinceLastResume > 0.3f)
+        if (UserInput.instance != null && UserInput.instance.Gather(PlayerStates.Paused).MenuDown && _timeSinceLastResume > 0.3f)
         {
             if (GameIsPaused)
             {
@@ -189,7 +190,23 @@ public class PauseMenu : MonoBehaviour
         GameIsPaused = true;
         SetMenu(PauseMenuPage.Pause);
         UISFXManager.PlaySFX(UISFXManager.SFX.POSITIVE);
+        _wasDirectToSettings = false;
     } // end Pause
+
+    public void DirectToSettings()
+    {
+        SetMenu(PauseMenuPage.Settings);
+        _wasDirectToSettings = true;
+    }
+
+    public void SettingsMenuBack(){
+        Debug.Log(_wasDirectToSettings);
+        if(_wasDirectToSettings){
+            Resume();
+        } else {
+            SetPauseMenuInt(0);
+        }
+    }
 
     public void Resume()
     {
