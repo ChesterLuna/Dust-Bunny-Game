@@ -70,23 +70,34 @@ public class ButtonPromptTutorial : MonoBehaviour
     private void SetupByType(){
         switch (type){
             case Type.MOVEMENT:
-                _text.text = "<b>Move</b>\n<i>" + UserInput.instance.GetInputNames().MovementKeys + "</i>";
+                _text.text = "<b>Move</b>\n<i>" + PostProcessInputName(UserInput.instance.GetInputNames().MovementKeys) + "</i>";
                 break;
             case Type.DASH:
-                _text.text = "<b>Dash</b>\n<i>" + UserInput.instance.GetInputNames().DashKey + "</i>";
+                _text.text = "<b>Dash</b>\n<i>" + PostProcessInputName(UserInput.instance.GetInputNames().DashKey) + "</i>";
                 break;
             case Type.JUMP:
-                _text.text = "<b>Jump</b>\n<i>" + UserInput.instance.GetInputNames().JumpKey + "</i>";
+                _text.text = "<b>Jump</b>\n<i>" + PostProcessInputName(UserInput.instance.GetInputNames().JumpKey) + "</i>";
                 break;
             case Type.WALLJUMP:
-                _text.text = "<b>Walljump</b>\n<i>" + UserInput.instance.GetInputNames().JumpKey + "</i>";
+                _text.text = "<b>Walljump</b>\n<i>" + PostProcessInputName(UserInput.instance.GetInputNames().JumpKey) + "</i>";
                 break;
             case Type.INTERACT:
-                _text.text = "<b>Interact</b>\n<i>" + UserInput.instance.GetInputNames().InteractKey + "</i>";
+                _text.text = "<b>Interact</b>\n<i>" + PostProcessInputName(UserInput.instance.GetInputNames().InteractKey) + "</i>";
                 //dumb fix for the arrow being layered above the dialogue
                 _bgSprite.sortingOrder = 20;
                 _text.sortingOrder = 21;
                 break;
+        }
+    }
+
+    private string PostProcessInputName(string name){
+        switch(name){
+            case "LMB":
+                return "Left Click";
+            case "RMB":
+                return "Right Click";
+            default:
+                return name;
         }
     }
 }
