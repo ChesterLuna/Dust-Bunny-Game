@@ -31,6 +31,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     [SerializeField] TextMeshPro charNameText;
     [SerializeField] TextCrawler dialogueText;
+    [SerializeField] TextBubbleLine line;
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTouch = false;
     [SerializeField] bool interactable = true;
@@ -62,6 +63,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     private void Awake()
     {
         textBubble = textBubble != null ? textBubble : transform.Find("Text Bubble").gameObject;
+        line = textBubble.transform.GetComponentInChildren<TextBubbleLine>();
         textBubble.SetActive(false);
         GameObject _playerObj = GameObject.FindWithTag("Player");
         if (_playerObj != null) _player = _playerObj.GetComponent<PlayerController>();
@@ -209,7 +211,18 @@ public class DialogueManager : MonoBehaviour, IInteractable
         charNameText.text = nextDialogue.getName();
         dialogueText.SetText(nextDialogue.getText());
         dialogueText.Advance();
+        line.SetTarget(FindObjectBySpeakerName(nextDialogue.getName()));
     } // end DisplayNextSentence
+
+    private GameObject FindObjectBySpeakerName(string name){
+        switch (name){
+            case "Spek":
+                return GameObject.Find("Player").transform.Find("Visual").gameObject;
+            default:
+                GameObject found = GameObject.Find(name);
+                return found;
+        }
+    }
 
 
     public void PlaySound(string _soundToPlay)
