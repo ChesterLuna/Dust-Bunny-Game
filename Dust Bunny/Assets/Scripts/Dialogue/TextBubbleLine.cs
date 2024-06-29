@@ -26,9 +26,14 @@ public class TextBubbleLine : MonoBehaviour
     public void SetTarget(GameObject target){
         currentTarget = target;
         if(target == null){
-            target = gameObject;
+            currentTarget = gameObject;
+        } else {
+            Transform manualTargetTransform = target.transform.Find("SpeechBubbleTarget");
+            if(manualTargetTransform != null){
+                currentTarget = manualTargetTransform.gameObject;
+                Debug.Log("Using manual target for " + target.name);
+            }
         }
-        Debug.Log("Set target to " + target.name);
     }
 
     //This draws a triangle
@@ -42,10 +47,14 @@ public class TextBubbleLine : MonoBehaviour
         Vector3 targetPos = transform.position;
         if(target != null){
             targetPos = target.transform.position;
+            BoxCollider2D box = target.GetComponent<BoxCollider2D>();
+            if(box != null && target.name == "SpeechBubbleTarget"){
+                targetPos = box.ClosestPoint(transform.position);
+            }
         }
-        VerteicesArray[0] = new Vector3(1, 0, 0);
+        VerteicesArray[0] = new Vector3(1, 1, 0);
         VerteicesArray[1] = targetPos - transform.position;
-        VerteicesArray[2] = new Vector3(-1, 0, 0);
+        VerteicesArray[2] = new Vector3(-1, -1, 0);
 
         //define the order in which the vertices in the VerteicesArray shoudl be used to draw the triangle
         trianglesArray[0] = 2;
