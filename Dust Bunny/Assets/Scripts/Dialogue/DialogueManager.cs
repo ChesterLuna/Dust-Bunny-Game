@@ -219,7 +219,18 @@ public class DialogueManager : MonoBehaviour, IInteractable
             case "Spek":
                 return GameObject.Find("Player").transform.Find("Visual").gameObject;
             default:
-                GameObject found = GameObject.Find(name);
+                // Loop through all the gameobjects ion the scene, looking for the closest one with the right name
+                // Note that this is really super dumb
+                GameObject found = textBubble;
+                GameObject player = GameObject.Find("Player");
+                float minDistance = Mathf.Infinity;
+                foreach (var gameObj in FindObjectsOfType(typeof(GameObject)) as GameObject[]){
+                    float distance = Vector3.Distance(gameObj.transform.position, player.transform.position);
+                    if(gameObj.name == name && distance < minDistance){
+                        found = gameObj;
+                        minDistance = distance;
+                    }
+                }
                 return found;
         }
     }

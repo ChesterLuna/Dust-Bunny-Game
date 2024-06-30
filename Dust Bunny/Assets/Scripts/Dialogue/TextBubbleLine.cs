@@ -57,13 +57,13 @@ public class TextBubbleLine : MonoBehaviour
 
         // find the position of the two other points
         VerteicesArray[0] = new Vector3(
-            Mathf.Sin(Vector3.Angle(targetPos, transform.position) + (Mathf.PI/2)), 
-            Mathf.Cos(Vector3.Angle(targetPos, transform.position) + (Mathf.PI/2)),
+            Mathf.Sin(Vector3.Angle(targetPos, transform.position) + (Mathf.PI/4)), 
+            Mathf.Cos(Vector3.Angle(targetPos, transform.position) + (Mathf.PI/4)),
         0);
         VerteicesArray[1] = targetPos - transform.position;
         VerteicesArray[2] = new Vector3(
-            Mathf.Sin(Vector3.Angle(targetPos, transform.position) - (Mathf.PI/2)), 
-            Mathf.Cos(Vector3.Angle(targetPos, transform.position) - (Mathf.PI/2)),
+            Mathf.Sin(Vector3.Angle(targetPos, transform.position) - (Mathf.PI/4)), 
+            Mathf.Cos(Vector3.Angle(targetPos, transform.position) - (Mathf.PI/4)),
         0);
 
         //define the order in which the vertices in the VerteicesArray shoudl be used to draw the triangle
