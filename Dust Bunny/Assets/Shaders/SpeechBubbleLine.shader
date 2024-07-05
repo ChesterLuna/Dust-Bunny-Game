@@ -9,7 +9,7 @@ Shader "Custom/SpeechBubbleLine"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Transparent" }
         LOD 200
         Cull Off
 

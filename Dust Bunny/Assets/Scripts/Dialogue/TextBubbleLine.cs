@@ -9,6 +9,9 @@ public class TextBubbleLine : MonoBehaviour
     MeshFilter[] meshes;
 
     private GameObject currentTarget;
+    private Vector3 currentTargetPos;
+    public float speed = 5;
+    private bool isRunning = false;
 
     // Use this for initialization
     void Start()
@@ -19,11 +22,21 @@ public class TextBubbleLine : MonoBehaviour
             Mesh m = new Mesh();
             meshFilter.mesh = m;
         }
+
+        currentTarget = gameObject;
+        currentTargetPos = transform.position;
         
     }
 
     void Update(){
-        DrawLineToPoint(currentTarget);
+        if(isRunning){
+            DrawLineToPoint(currentTarget);
+            Debug.Log(currentTargetPos);
+        }
+    }
+
+    public void SetRunning(bool isRunning){
+        this.isRunning = isRunning;
     }
 
     public void SetTarget(GameObject target){
@@ -34,7 +47,6 @@ public class TextBubbleLine : MonoBehaviour
             Transform manualTargetTransform = target.transform.Find("SpeechBubbleTarget");
             if(manualTargetTransform != null){
                 currentTarget = manualTargetTransform.gameObject;
-                Debug.Log("Using manual target for " + target.name);
             }
         }
     }
@@ -42,6 +54,18 @@ public class TextBubbleLine : MonoBehaviour
     //This draws a triangle
     void DrawLineToPoint(GameObject target)
     {
+        // find the position of the target
+        Vector3 targetPos = transform.position;
+        if(target != null){
+            targetPos = target.transform.position;
+            BoxCollider2D box = target.GetComponent<BoxCollider2D>();
+            if(box != null && target.name == "SpeechBubbleTarget"){
+                targetPos = box.ClosestPoint(transform.position);
+            }
+        }
+        currentTargetPos = Vector3.Lerp(currentTargetPos, targetPos, Mathf.Min(0.1f * speed, 1));
+        targetPos = currentTargetPos;
+
         foreach(MeshFilter mf in meshes){
             Mesh m = mf.mesh;
             //We need two arrays one to hold the vertices and one to hold the triangles
@@ -49,17 +73,6 @@ public class TextBubbleLine : MonoBehaviour
             int[] trianglesArray = new int[3];
 
             //lets add 3 vertices in the 3d space
-
-            // find the position of the target
-            Vector3 targetPos = transform.position;
-            if(target != null){
-                targetPos = target.transform.position;
-                BoxCollider2D box = target.GetComponent<BoxCollider2D>();
-                if(box != null && target.name == "SpeechBubbleTarget"){
-                    targetPos = box.ClosestPoint(transform.position);
-                }
-            }
-
             // find the position of the two other points
             VerteicesArray[0] = new Vector3(
                 Mathf.Sin(Mathf.Deg2Rad * Vector3.Angle(targetPos, transform.position) + (Mathf.PI/4)), 

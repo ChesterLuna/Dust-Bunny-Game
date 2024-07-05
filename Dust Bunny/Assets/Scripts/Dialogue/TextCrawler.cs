@@ -249,4 +249,11 @@ public class TextCrawler : MonoBehaviour
     {
         GetComponent<Animator>().SetTrigger("fadeOut");
     }
+
+    public void SetChildLinesEnabled(){
+        TextBubbleLine[] lines = GetComponentsInChildren<TextBubbleLine>();
+        foreach(TextBubbleLine l in lines){
+            l.SetRunning(true);
+        }
+    }
 }
