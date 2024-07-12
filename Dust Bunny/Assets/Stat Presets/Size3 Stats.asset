@@ -30,6 +30,8 @@ MonoBehaviour:
   ActionIndicatorXOffset: 0
   ActionIndicatorYOffset: 1.14
   ActionIndicatoryScale: 0.84
+  FreezeOnDamageDuration: 0.023
+  IFrameDuration: 0.5
   BaseSpeed: 12.5
   Acceleration: 100
   Friction: 90
