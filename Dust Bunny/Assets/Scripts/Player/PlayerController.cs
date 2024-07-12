@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private CapsuleCollider2D _airborneCollider;
     private ConstantForce2D _constantForce;
     private Rigidbody2D _rb;
+    [SerializeField] SpriteRenderer _sprite;
 
     #endregion
 
@@ -1035,6 +1036,10 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         return 0;
     } // end DustLevelIndex
 
+    public bool IsDustInvulnerable(){
+        return _dustLossInvulnerable;
+    }
+
     public void ChangeDust(float scalar, bool hostile)
     {
         if (scalar < 0)
@@ -1231,6 +1236,7 @@ public interface IPlayerController
     public void RepositionImmediately(Vector2 position, bool resetVelocity = false);
     public void TogglePlayer(bool on, bool dead = false, PlayerStates playerState = PlayerStates.Playing);
     public void ResetAirJumps();
+    public bool IsDustInvulnerable();
     public void ResetDashes();
 
     // Dust

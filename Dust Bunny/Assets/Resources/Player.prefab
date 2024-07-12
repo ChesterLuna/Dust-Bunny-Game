@@ -46354,6 +46354,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c89b8855ab650ac489f1f1b5f2a94751, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _sprite: {fileID: 0}
   _actionIndicator: {fileID: 5683918295185222244}
   _hitboxCenter: {fileID: 6745053530516278737}
   _cameraFollowObject: {fileID: 0}

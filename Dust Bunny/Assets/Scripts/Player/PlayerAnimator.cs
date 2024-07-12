@@ -12,6 +12,8 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField]
     private Animator _anim;
 
+    private int _elapsedFrames = 0;
+
     [SerializeField] private GameObject _effectsParent;
     [SerializeField] private SpriteRenderer _sprite;
 
@@ -112,6 +114,14 @@ public class PlayerAnimator : MonoBehaviour
         HandleWallSlideEffects();
 
         HandleAnimations();
+
+        // Invincibility flashing
+         _elapsedFrames += 1;
+        if(_player.IsDustInvulnerable() && _elapsedFrames % 2 == 0){
+            _sprite.enabled = false;
+        } else {
+            _sprite.enabled = true;
+        }
 
         //Handle idle particle color
         ParticleSystem.MainModule _idleParticlesMain = _idleParticles.main;
