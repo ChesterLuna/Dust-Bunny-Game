@@ -31,7 +31,6 @@ public class TextBubbleLine : MonoBehaviour
     void Update(){
         if(isRunning){
             DrawLineToPoint(currentTarget);
-            Debug.Log(currentTargetPos);
         }
     }
 

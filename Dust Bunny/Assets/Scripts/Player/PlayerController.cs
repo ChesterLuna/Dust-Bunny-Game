@@ -1040,6 +1040,10 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         return _dustLossInvulnerable;
     }
 
+    public Vector2 GetVelocity(){
+        return _rb.velocity;
+    }
+
     public void ChangeDust(float scalar, bool hostile)
     {
         if (scalar < 0)
@@ -1238,6 +1242,7 @@ public interface IPlayerController
     public void ResetAirJumps();
     public bool IsDustInvulnerable();
     public void ResetDashes();
+    public Vector2 GetVelocity();
 
     // Dust
     public void ChangeDust(float scalar, bool hostile);

@@ -16,6 +16,7 @@ public class PlayerAnimator : MonoBehaviour
 
     [SerializeField] private GameObject _effectsParent;
     [SerializeField] private SpriteRenderer _sprite;
+    private SquashAndStretch _playerSquash;
 
 
     [Header("Particles")][SerializeField] private ParticleSystem _jumpParticles;
@@ -69,6 +70,8 @@ public class PlayerAnimator : MonoBehaviour
         _arrowLocationsParent = _arrowPivot.transform.Find("Circle locations").gameObject;
         _arrowVisuals = _arrowParent.GetComponentsInChildren<SpriteRenderer>();
 
+        _playerSquash = _sprite.GetComponent<SquashAndStretch>();
+
         // Fix for dying during slow mo effect
         Time.timeScale = 1.0f;
     } // end Awake
@@ -115,6 +118,8 @@ public class PlayerAnimator : MonoBehaviour
 
         HandleAnimations();
 
+        HandleSquashAndStretch();
+
         // Invincibility flashing
          _elapsedFrames += 1;
         if(_player.IsDustInvulnerable() && _elapsedFrames % 2 == 0){
@@ -156,6 +161,11 @@ public class PlayerAnimator : MonoBehaviour
 
 
     } // end Update
+
+    private void HandleSquashAndStretch(){
+        //float yScale = 1.0f + Mathf.Abs(_player.GetVelocity().y) / 20;
+        //_sprite.transform.localScale = new Vector3(1, yScale, 1);
+    }
 
     private void HandleDashArrow()
     {
@@ -303,6 +313,7 @@ public class PlayerAnimator : MonoBehaviour
         {
             _jumping = true;
             _sfx.PlaySFX(PlayerSFXController.SFX.Jump);
+            _playerSquash.StartEffect("OnJumped");
 
             // Only play particles when grounded (avoid coyote)
             if (type is JumpType.Jump)
@@ -333,6 +344,7 @@ public class PlayerAnimator : MonoBehaviour
             _landParticles.transform.localScale = Vector3.one * Mathf.InverseLerp(0, 40, impact);
             // SetColor(_landParticles);
             _landParticles.Play();
+            _playerSquash.StartEffect("OnLanded");
         }
         else
         {
@@ -350,6 +362,11 @@ public class PlayerAnimator : MonoBehaviour
             _dashRingParticles.Play();
             _sfx.PlaySFX(PlayerSFXController.SFX.Dash);
             _dashAfterImageParticles.Play();
+
+            SquashAndStretch.SquashAndStretchParameters param = _playerSquash.GetParameter("OnDash");
+            param.scaleMask = new Vector3(Mathf.Abs(dir.x)*1.5f - 0.5f, Mathf.Abs(dir.y)*1.5f - 0.5f, 1);
+            _playerSquash.SetParameter(param);
+            _playerSquash.StartEffect("OnDash");
         }
         else
         {
