@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
 
@@ -396,9 +397,17 @@ public class PlayerAnimator : MonoBehaviour
         if (hostile)
         {
             _sfx.PlaySFX(PlayerSFXController.SFX.Took_Damage);
+            StartCoroutine(DamageRumble());
+
         }
         _useDustParticles.Play();
     } // end OnUsedDust
+
+    IEnumerator DamageRumble(){
+        Gamepad.current.SetMotorSpeeds(0.25f, 0.75f);
+        yield return new WaitForSeconds(0.1f);
+        Gamepad.current.SetMotorSpeeds(0.0f, 0.0f);
+    }
 
     private void OnGainedDust(float gainedAmount)
     {
