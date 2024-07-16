@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -141,6 +142,8 @@ public class PauseMenu : MonoBehaviour
                 _gameplayOverlayUI.SetActive(true);
                 _audioSettingsUI.SetActive(false);
                 _graphicsSettingsUI.SetActive(false);
+
+                EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
                 break;
             case PauseMenuPage.Audio:
                 _pauseMenuUI.SetActive(false);
