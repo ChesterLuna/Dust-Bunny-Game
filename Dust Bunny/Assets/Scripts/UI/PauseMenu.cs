@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -20,6 +21,13 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] GameObject _gameplayOverlayUI;
     [SerializeField] GameObject _audioSettingsUI;
     [SerializeField] GameObject _graphicsSettingsUI;
+
+    [SerializeField] Button _initialButton;
+    [SerializeField] Button _initialKeyboardButton;
+    [SerializeField] Button _initialAudioButton;
+    [SerializeField] Button _initialSettingsButton;
+    [SerializeField] Button _initialGraphicsButton;
+    [SerializeField] Button _initialInfoButton;
 
 
     private float _timeSinceLastResume = 0.0f;
@@ -81,6 +89,8 @@ public class PauseMenu : MonoBehaviour
                 _gameplayOverlayUI.SetActive(false);
                 _audioSettingsUI.SetActive(false);
                 _graphicsSettingsUI.SetActive(false);
+
+                _initialButton.Select();
                 break;
             case PauseMenuPage.Info:
                 _pauseMenuUI.SetActive(false);
@@ -92,6 +102,8 @@ public class PauseMenu : MonoBehaviour
                 _gameplayOverlayUI.SetActive(false);
                 _audioSettingsUI.SetActive(false);
                 _graphicsSettingsUI.SetActive(false);
+
+                _initialInfoButton.Select();
                 break;
             case PauseMenuPage.Rebind:
                 _pauseMenuUI.SetActive(false);
@@ -103,6 +115,8 @@ public class PauseMenu : MonoBehaviour
                 _gameplayOverlayUI.SetActive(false);
                 _audioSettingsUI.SetActive(false);
                 _graphicsSettingsUI.SetActive(false);
+
+                _initialKeyboardButton.Select();
                 break;
             case PauseMenuPage.Settings:
                 _pauseMenuUI.SetActive(false);
@@ -114,6 +128,8 @@ public class PauseMenu : MonoBehaviour
                 _gameplayOverlayUI.SetActive(false);
                 _audioSettingsUI.SetActive(false);
                 _graphicsSettingsUI.SetActive(false);
+
+                _initialSettingsButton.Select();
                 break;
             case PauseMenuPage.Gameplay:
                 _pauseMenuUI.SetActive(false);
@@ -136,6 +152,8 @@ public class PauseMenu : MonoBehaviour
                 _gameplayOverlayUI.SetActive(false);
                 _audioSettingsUI.SetActive(true);
                 _graphicsSettingsUI.SetActive(false);
+
+                _initialAudioButton.Select();
                 break;
             case PauseMenuPage.Graphics:
                 _pauseMenuUI.SetActive(false);
@@ -147,6 +165,8 @@ public class PauseMenu : MonoBehaviour
                 _gameplayOverlayUI.SetActive(false);
                 _audioSettingsUI.SetActive(false);
                 _graphicsSettingsUI.SetActive(true);
+
+                _initialGraphicsButton.Select();
                 break;
             case PauseMenuPage.TrueNone:
                 _pauseMenuUI.SetActive(false);
