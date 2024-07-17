@@ -1628,10 +1628,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 9102999996203449441}
+    m_SelectOnDown: {fileID: 1100257883396308809}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -7742,10 +7742,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 4445054284942625997}
+    m_SelectOnDown: {fileID: 9102999996203449441}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -8353,6 +8353,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dropdown
       objectReference: {fileID: 0}
+    - target: {fileID: 5019268383085294226, guid: 6267d3689c4816b4d99bf74bbdf3f646, type: 3}
+      propertyPath: m_Navigation.m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5019268383085294226, guid: 6267d3689c4816b4d99bf74bbdf3f646, type: 3}
+      propertyPath: m_Navigation.m_SelectOnUp
+      value: 
+      objectReference: {fileID: 1100257883396308809}
+    - target: {fileID: 5019268383085294226, guid: 6267d3689c4816b4d99bf74bbdf3f646, type: 3}
+      propertyPath: m_Navigation.m_SelectOnDown
+      value: 
+      objectReference: {fileID: 4445054284942625997}
     - target: {fileID: 5019268383085294226, guid: 6267d3689c4816b4d99bf74bbdf3f646, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -9086,6 +9098,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7050621590786413959, guid: bad99a6f066b4f74882b17cf5860224e, type: 3}
+      propertyPath: m_Navigation.m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7050621590786413959, guid: bad99a6f066b4f74882b17cf5860224e, type: 3}
+      propertyPath: m_Navigation.m_SelectOnUp
+      value: 
+      objectReference: {fileID: 2423109463519856006}
+    - target: {fileID: 7050621590786413959, guid: bad99a6f066b4f74882b17cf5860224e, type: 3}
+      propertyPath: m_Navigation.m_SelectOnDown
+      value: 
+      objectReference: {fileID: 4971098746424644054}
     - target: {fileID: 7050621590786413959, guid: bad99a6f066b4f74882b17cf5860224e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 2
@@ -10998,6 +11022,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: -7.499939
       objectReference: {fileID: 0}
+    - target: {fileID: 5019268383085294226, guid: 6267d3689c4816b4d99bf74bbdf3f646, type: 3}
+      propertyPath: m_Navigation.m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5019268383085294226, guid: 6267d3689c4816b4d99bf74bbdf3f646, type: 3}
+      propertyPath: m_Navigation.m_SelectOnUp
+      value: 
+      objectReference: {fileID: 4971098746424644054}
+    - target: {fileID: 5019268383085294226, guid: 6267d3689c4816b4d99bf74bbdf3f646, type: 3}
+      propertyPath: m_Navigation.m_SelectOnDown
+      value: 
+      objectReference: {fileID: 5265375188086867712}
     - target: {fileID: 5019268383085294226, guid: 6267d3689c4816b4d99bf74bbdf3f646, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -13222,6 +13258,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dropdown
       objectReference: {fileID: 0}
+    - target: {fileID: 5019268383085294226, guid: 6267d3689c4816b4d99bf74bbdf3f646, type: 3}
+      propertyPath: m_Navigation.m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5019268383085294226, guid: 6267d3689c4816b4d99bf74bbdf3f646, type: 3}
+      propertyPath: m_Navigation.m_SelectOnUp
+      value: 
+      objectReference: {fileID: 5265375188086867712}
+    - target: {fileID: 5019268383085294226, guid: 6267d3689c4816b4d99bf74bbdf3f646, type: 3}
+      propertyPath: m_Navigation.m_SelectOnDown
+      value: 
+      objectReference: {fileID: 2423109463519856006}
     - target: {fileID: 5019268383085294226, guid: 6267d3689c4816b4d99bf74bbdf3f646, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
