@@ -26317,7 +26317,7 @@ MonoBehaviour:
     scaleMask: {x: 1, y: 1, z: 1}
     currentTime: 0
   - name: OnLanded
-    duration: 0.3
+    duration: 0.25
     xcurve:
       serializedVersion: 2
       m_Curve:
@@ -26408,7 +26408,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    scaleMask: {x: 1, y: 1, z: 1}
+    scaleMask: {x: 0.9, y: 0.9, z: 1}
     currentTime: 0
   - name: OnDash
     duration: 0.3
