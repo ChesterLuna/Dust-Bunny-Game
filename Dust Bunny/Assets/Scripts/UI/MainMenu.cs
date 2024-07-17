@@ -10,6 +10,7 @@ public class MainMenu : MonoBehaviour
     {
         UISFXManager.PlaySFX(UISFXManager.SFX.POSITIVE);
         UnityEngine.SceneManagement.SceneManager.LoadScene(firstLevel);
+        GameManager.instance.ResetGameTime();
         GameManager.instance.StartGameTime();
     }
 
