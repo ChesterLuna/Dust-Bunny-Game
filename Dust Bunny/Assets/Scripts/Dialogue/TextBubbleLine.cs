@@ -23,8 +23,11 @@ public class TextBubbleLine : MonoBehaviour
             meshFilter.mesh = m;
         }
 
-        currentTarget = gameObject;
-        currentTargetPos = transform.position;
+        if(currentTarget == null){
+            currentTarget = gameObject;
+        }
+
+        currentTargetPos = currentTarget.transform.position;
         
     }
 
