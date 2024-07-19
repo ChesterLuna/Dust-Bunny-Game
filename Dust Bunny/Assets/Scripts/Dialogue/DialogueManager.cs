@@ -35,6 +35,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTouch = false;
     [SerializeField] bool interactable = true;
+    [SerializeField] GameObject customLineDefaultObject = null;
     [SerializeField] float _timeToPlay = 0;
 
     [SerializeField] float minDust = -1;
@@ -222,6 +223,9 @@ public class DialogueManager : MonoBehaviour, IInteractable
                 // Loop through all the gameobjects ion the scene, looking for the closest one with the right name
                 // Note that this is really super dumb
                 GameObject found = textBubble;
+                if(customLineDefaultObject != null){
+                    found = customLineDefaultObject;
+                }
                 GameObject player = GameObject.Find("Player");
                 float minDistance = Mathf.Infinity;
                 foreach (var gameObj in FindObjectsOfType(typeof(GameObject)) as GameObject[]){

@@ -33,8 +33,13 @@ public class TextBubbleLine : MonoBehaviour
 
     void Update(){
         if(isRunning){
+            UpdateTargetPos(currentTarget);
             DrawLineToPoint(currentTarget);
         }
+    }
+
+    public void OnEnable(){
+        
     }
 
     public void SetRunning(bool isRunning){
@@ -51,11 +56,12 @@ public class TextBubbleLine : MonoBehaviour
                 currentTarget = manualTargetTransform.gameObject;
             }
         }
+
+        // Extra frame update
+        UpdateTargetPos(currentTarget);
     }
 
-    //This draws a triangle
-    void DrawLineToPoint(GameObject target)
-    {
+    private void UpdateTargetPos(GameObject target){
         // find the position of the target
         Vector3 targetPos = transform.position;
         if(target != null){
@@ -65,8 +71,13 @@ public class TextBubbleLine : MonoBehaviour
                 targetPos = box.ClosestPoint(transform.position);
             }
         }
-        currentTargetPos = Vector3.Lerp(currentTargetPos, targetPos, Mathf.Min(0.1f * speed, 1));
-        targetPos = currentTargetPos;
+        currentTargetPos = Vector3.Lerp(currentTargetPos, targetPos, Mathf.Min(speed * Time.deltaTime, 1));
+    }
+
+    //This draws a triangle
+    void DrawLineToPoint(GameObject target)
+    {
+        Vector3 targetPos = currentTargetPos;
 
         foreach(MeshFilter mf in meshes){
             Mesh m = mf.mesh;
