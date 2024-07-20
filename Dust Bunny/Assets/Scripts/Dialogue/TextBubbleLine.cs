@@ -7,16 +7,19 @@ using UnityEngine;
 public class TextBubbleLine : MonoBehaviour
 {
     MeshFilter[] meshes;
+    MeshRenderer[] renderers;
 
     private GameObject currentTarget;
     private Vector3 currentTargetPos;
     public float speed = 5;
     private bool isRunning = false;
+    private float timeUntilVisible = 0;
 
     // Use this for initialization
     void Start()
     {
         meshes = GetComponentsInChildren<MeshFilter>();
+        renderers = GetComponentsInChildren<MeshRenderer>();
 
         foreach(MeshFilter meshFilter in meshes){
             Mesh m = new Mesh();
@@ -35,11 +38,26 @@ public class TextBubbleLine : MonoBehaviour
         if(isRunning){
             UpdateTargetPos(currentTarget);
             DrawLineToPoint(currentTarget);
+
+            timeUntilVisible -= Time.deltaTime;
+            if(timeUntilVisible < 0){
+                timeUntilVisible = 0;
+
+            }
+            foreach(MeshRenderer meshRenderer in renderers){
+                meshRenderer.enabled = timeUntilVisible == 0;        
+            }
         }
     }
 
     public void OnEnable(){
-        
+        timeUntilVisible = 0.1f;
+    }
+
+    public void PostCinematic(){
+        timeUntilVisible = 0.1f;
+        currentTargetPos = currentTarget.transform.position;
+        Debug.Log("Post Cinematic Buffer");
     }
 
     public void SetRunning(bool isRunning){
@@ -56,6 +74,8 @@ public class TextBubbleLine : MonoBehaviour
                 currentTarget = manualTargetTransform.gameObject;
             }
         }
+
+        Debug.Log(target.name);
 
         // Extra frame update
         UpdateTargetPos(currentTarget);

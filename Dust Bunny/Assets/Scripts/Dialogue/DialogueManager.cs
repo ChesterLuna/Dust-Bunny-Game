@@ -57,6 +57,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] TimelineAsset[] _cinematics;
     int _iCine = 0;
 
+    private Dialogue currentDialogue;
+
     private float _timeSinceDialogueStarted = 0.0f;
 
     PlayerController _player;
@@ -185,8 +187,19 @@ public class DialogueManager : MonoBehaviour, IInteractable
         }
     }
 
+    public void DisplayNextSentanceAfterAnimation(){
+        line.PostCinematic();
+        DisplayNextSentence();
+    }
+
     public void DisplayNextSentence()
     {
+        // Check if the last dialoguue was an animation or cinematic
+        if (currentDialogue != null && (/*currentDialogue.isPlayAnimation() ||*/ currentDialogue.isPlayCinematic())){
+            line.PostCinematic();
+        }
+
+
         if (Dialogues.Count == 0 || _isFinishedDialogue)
         {
             EndDialogue();
@@ -195,6 +208,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         textBubble.GetComponent<TextCrawler>().StartFadeIn();
 
         Dialogue nextDialogue = Dialogues.Dequeue();
+        currentDialogue = nextDialogue;
 
         if (nextDialogue.getSound() != null)
             PlaySound(nextDialogue.getSound());
@@ -205,9 +219,9 @@ public class DialogueManager : MonoBehaviour, IInteractable
                 PlayNextAnimation();
             }
         }
-        if (nextDialogue.isPlayCinematic())
+        if (nextDialogue.isPlayCinematic()){
             PlayNextCinematic();
-
+        }
 
         charNameText.text = nextDialogue.getName();
         dialogueText.SetText(nextDialogue.getText());
