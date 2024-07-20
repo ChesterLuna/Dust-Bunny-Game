@@ -14,7 +14,7 @@ public class TextBubbleLine : MonoBehaviour
     public float speed = 5;
     private bool isRunning = false;
     private float timeUntilVisible = 0;
-
+    private int lineHiddenTurns = 0;
     // Use this for initialization
     void Start()
     {
@@ -45,7 +45,7 @@ public class TextBubbleLine : MonoBehaviour
 
             }
             foreach(MeshRenderer meshRenderer in renderers){
-                meshRenderer.enabled = timeUntilVisible == 0;        
+                meshRenderer.enabled = (timeUntilVisible == 0) && (lineHiddenTurns <= 0);    
             }
         }
     }
@@ -58,6 +58,14 @@ public class TextBubbleLine : MonoBehaviour
         timeUntilVisible = 0.1f;
         currentTargetPos = currentTarget.transform.position;
         Debug.Log("Post Cinematic Buffer");
+    }
+
+    public void HideLine(int hiddenTurns){
+        lineHiddenTurns = hiddenTurns;
+    }
+
+    public void TickHideTurns(){
+        lineHiddenTurns--;
     }
 
     public void SetRunning(bool isRunning){

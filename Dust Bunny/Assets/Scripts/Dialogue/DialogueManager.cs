@@ -187,6 +187,18 @@ public class DialogueManager : MonoBehaviour, IInteractable
         }
     }
 
+    public void HideLine(){
+        line.HideLine(1000);
+    }
+
+    public void ShowLine(){
+        line.HideLine(0);
+    }
+
+    public void HideLineForTurns(int turnCount){
+        line.HideLine(turnCount);
+    }
+
     public void DisplayNextSentanceAfterAnimation(){
         line.PostCinematic();
         DisplayNextSentence();
@@ -227,6 +239,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         dialogueText.SetText(nextDialogue.getText());
         dialogueText.Advance();
         line.SetTarget(FindObjectBySpeakerName(nextDialogue.getName()));
+        line.TickHideTurns();
     } // end DisplayNextSentence
 
     private GameObject FindObjectBySpeakerName(string name){
