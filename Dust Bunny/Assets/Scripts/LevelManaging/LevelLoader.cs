@@ -17,7 +17,9 @@ public class LevelLoader : MonoBehaviour
     transition.SetTrigger("Start");
 
     // dumb fix to make sure controllers dont keep rumbling after a scene switch
-    Gamepad.current.SetMotorSpeeds(0.0f, 0.0f);
+    if (Gamepad.all.Count > 0){
+      Gamepad.current.SetMotorSpeeds(0.0f, 0.0f);
+    }
 
     yield return new WaitForSeconds(transitionTime);
     PhysicsSimulator.Instance.ClearPhysicsObjects();

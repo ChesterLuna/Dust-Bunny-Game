@@ -404,9 +404,11 @@ public class PlayerAnimator : MonoBehaviour
     } // end OnUsedDust
 
     IEnumerator DamageRumble(){
-        Gamepad.current.SetMotorSpeeds(0.25f, 0.75f);
-        yield return new WaitForSeconds(0.1f);
-        Gamepad.current.SetMotorSpeeds(0.0f, 0.0f);
+        if (Gamepad.all.Count > 0){
+            Gamepad.current.SetMotorSpeeds(0.25f, 0.75f);
+            yield return new WaitForSeconds(0.1f);
+            Gamepad.current.SetMotorSpeeds(0.0f, 0.0f);
+        }
     }
 
     private void OnGainedDust(float gainedAmount)
