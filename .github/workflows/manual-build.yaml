@@ -1,6 +1,6 @@
 name: Manually Build the project
 on:
-  [workflow_dispatch]
+  [push]
   
 jobs:
   build:
