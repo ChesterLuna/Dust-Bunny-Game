@@ -35,6 +35,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTouch = false;
     [SerializeField] bool interactable = true;
+    [SerializeField] bool lineStartHidden = false;
     [SerializeField] GameObject customLineDefaultObject = null;
     [SerializeField] float _timeToPlay = 0;
 
@@ -71,6 +72,10 @@ public class DialogueManager : MonoBehaviour, IInteractable
         GameObject _playerObj = GameObject.FindWithTag("Player");
         if (_playerObj != null) _player = _playerObj.GetComponent<PlayerController>();
         _isFinishedDialogue = GetComponent<PersistentGUID>().LoadBoolValue("isFinishedDialogue");
+
+        if(lineStartHidden){
+            line.HideLine(1000);
+        }
     } // end Awake
 
     private void Start()
