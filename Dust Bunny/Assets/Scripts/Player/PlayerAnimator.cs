@@ -168,6 +168,23 @@ public class PlayerAnimator : MonoBehaviour
         //_sprite.transform.localScale = new Vector3(1, yScale, 1);
     }
 
+    private Vector2 GetDashArrowTargetByMoveInput(Vector2 moveInput){
+        Vector2 dashTargetWorldPosition;
+        float dashLengthMod = 1 + (.8f * _player.Stats.DashDuration * _player.Stats.DashVelocity * transform.localScale.x);
+        if (moveInput.sqrMagnitude > 0.01f)
+        {
+            dashTargetWorldPosition = _arrowPivot.transform.position + (Vector3)(moveInput * dashLengthMod);
+        }
+        else
+        {
+            float mod = 1;
+            if (_sprite.flipX) mod = -1;
+            dashTargetWorldPosition = _arrowPivot.transform.position + new Vector3(mod * dashLengthMod, 0, 0);
+        }
+
+        return dashTargetWorldPosition;
+    }
+
     private void HandleDashArrow()
     {
         float cameraZoom = Camera.main.orthographicSize;
@@ -176,23 +193,19 @@ public class PlayerAnimator : MonoBehaviour
         Vector3 dashTargetWorldPosition;
         if (UserInput.instance.UseMouseForDash)
         {
-            dashTargetWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            dashTargetWorldPosition.z = 0;
+            FrameInput _frameInput = UserInput.instance.Gather();
+            if(_frameInput.DashDirectionGamepad.magnitude < 0.01f){
+                dashTargetWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                dashTargetWorldPosition.z = 0;
+            } else {
+                Vector2 moveInput = _frameInput.DashDirectionGamepad;
+                dashTargetWorldPosition = GetDashArrowTargetByMoveInput(moveInput);
+            }
         }
         else
         {
             Vector2 moveInput = dashTargetWorldPosition = UserInput.instance.Gather().Move;
-            float dashLengthMod = 1 + (.8f * _player.Stats.DashDuration * _player.Stats.DashVelocity * transform.localScale.x);
-            if (moveInput.sqrMagnitude > 0.001f)
-            {
-                dashTargetWorldPosition = _arrowPivot.transform.position + (Vector3)(moveInput * dashLengthMod);
-            }
-            else
-            {
-                float mod = 1;
-                if (_sprite.flipX) mod = -1;
-                dashTargetWorldPosition = _arrowPivot.transform.position + new Vector3(mod * dashLengthMod, 0, 0);
-            }
+            dashTargetWorldPosition = GetDashArrowTargetByMoveInput(moveInput);
         }
 
         // deep math i do not understand
