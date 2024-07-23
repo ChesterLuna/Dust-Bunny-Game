@@ -250,7 +250,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
     private GameObject FindObjectBySpeakerName(string name){
         switch (name){
             case "Spek":
-                return GameObject.Find("Player").transform.Find("Visual").gameObject;
+                return GameObject.Find("Player").transform.Find("Visual").transform.Find("Effects").transform.Find("Sprite").gameObject;
             default:
                 // Loop through all the gameobjects ion the scene, looking for the closest one with the right name
                 // Note that this is really super dumb
