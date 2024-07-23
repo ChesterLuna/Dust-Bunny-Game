@@ -50,6 +50,8 @@ public class PlayerAnimator : MonoBehaviour
     private SpriteRenderer[] _arrowVisuals;
     private float _arrowVisibility = 0.0f;
 
+    [SerializeField] private bool doInvincibilityFlashing = true;
+
 
     // Animation Variables
     private bool _dashing;
@@ -123,7 +125,7 @@ public class PlayerAnimator : MonoBehaviour
 
         // Invincibility flashing
          _elapsedFrames += 1;
-        if(_player.IsDustInvulnerable() && _elapsedFrames % 2 == 0){
+        if(_player.IsDustInvulnerable() && _elapsedFrames % 2 == 0 && doInvincibilityFlashing){
             _sprite.enabled = false;
         } else {
             _sprite.enabled = true;

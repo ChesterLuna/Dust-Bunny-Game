@@ -10462,6 +10462,7 @@ MonoBehaviour:
   _particleCanDashColor: {r: 0.7075472, g: 0.7075472, b: 0.7075472, a: 1}
   _particleCannotDashColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.16862746}
   _sfx: {fileID: 3948539853620850990}
+  doInvincibilityFlashing: 0
   _wallSlideParticles: {fileID: 2953667081221456782}
   _wallSlideParticleOffset: 0.3
   _distancePerClimbSound: 1
