@@ -12,9 +12,16 @@ public class LevelLoader : MonoBehaviour
     StartCoroutine(LoadLevel(LevelName, transition, transitionTime));
   } // end StartLoadLevel
 
+  public void StartLoadLevelByString(string LevelName, string transition, float transitionTime = 1f)
+  {
+    StartCoroutine(LoadLevelByString(LevelName, transition, transitionTime));
+  } // end StartLoadLevel
+
   IEnumerator LoadLevel(string LevelName, Animator transition, float transitionTime)
   {
-    transition.SetTrigger("Start");
+    if(transition != null){
+      transition.SetTrigger("Start");
+    }
 
     // dumb fix to make sure controllers dont keep rumbling after a scene switch
     if (Gamepad.all.Count > 0){
@@ -25,5 +32,17 @@ public class LevelLoader : MonoBehaviour
     PhysicsSimulator.Instance.ClearPhysicsObjects();
     SceneManager.LoadScene(LevelName);
   } // end IEnumerator LoadLevel
+
+  IEnumerator LoadLevelByString(string LevelName, string transition, float transitionTime){
+    Animator anim = null;
+    Transform transitionObj = transform.Find("TransitionAnimations").transform.Find(transition);
+    if(transition == null){
+      Debug.Log("Transition not found: " + transition);
+    } else {
+      anim = transitionObj.gameObject.GetComponent<Animator>();
+    }
+
+    yield return LoadLevel(LevelName, anim, transitionTime);
+  }
 
 } // end class LevelLoader

@@ -252,6 +252,12 @@ public class PauseMenu : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     } // end QuitGame
 
+    public void RestartLevel(){
+        LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
+        levelLoader.StartLoadLevelByString(SceneManager.GetActiveScene().name, "CrossFade", 1.0f);
+        Resume();
+    }
+
     public void PlayUIPositive()
     {
         if (!GameIsPaused) return;
