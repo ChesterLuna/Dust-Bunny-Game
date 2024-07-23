@@ -169,6 +169,17 @@
                 },
                 {
                     "name": "",
+                    "id": "070a91a9-d912-47bc-8862-26793990d48d",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "43e99718-1812-4ef2-9347-7b867710d166",
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
@@ -185,17 +196,6 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Jump",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "070a91a9-d912-47bc-8862-26793990d48d",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard",
                     "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false

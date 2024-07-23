@@ -117,10 +117,10 @@ public class UserInput : MonoBehaviour
 
     public InputNames GetInputNames(){
         return new InputNames{
-            MovementKeys = _move.GetBindingDisplayString(0),
-            JumpKey = _jump.GetBindingDisplayString(0),
-            DashKey = _dash.GetBindingDisplayString(0),
-            InteractKey = _interact.GetBindingDisplayString(0),
+            MovementKeys = _move.GetBindingDisplayString(),
+            JumpKey = _jump.GetBindingDisplayString(),
+            DashKey = _dash.GetBindingDisplayString(),
+            InteractKey = _interact.GetBindingDisplayString(),
         };
     }
 

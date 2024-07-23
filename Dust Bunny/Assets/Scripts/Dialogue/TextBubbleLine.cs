@@ -83,8 +83,6 @@ public class TextBubbleLine : MonoBehaviour
             }
         }
 
-        Debug.Log(target.name);
-
         // Extra frame update
         UpdateTargetPos(currentTarget);
     }

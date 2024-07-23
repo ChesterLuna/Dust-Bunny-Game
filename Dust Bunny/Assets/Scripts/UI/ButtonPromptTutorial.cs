@@ -53,6 +53,9 @@ public class ButtonPromptTutorial : MonoBehaviour
 
         // Move toward the player
         if (followPlayer) transform.position = Vector3.Lerp(transform.position, (Vector3)_player.State.Position + Vector3.up + Vector3.up * 0.05f * _player.CurrentDust, 15f * Time.deltaTime);
+
+        //Fix warnings about missing font on linux
+        //_text.text = _text.text.Replace('\u25A1'.ToString(), "");
     }
 
     void OnCorrectInput(){
@@ -91,13 +94,21 @@ public class ButtonPromptTutorial : MonoBehaviour
     }
 
     private string PostProcessInputName(string name){
+        string ret = "";
         switch(name){
             case "LMB":
-                return "Left Click";
+                ret =  "Left Click";
+                break;
             case "RMB":
-                return "Right Click";
+                ret =  "Right Click";
+                break;
             default:
-                return name;
+                ret =  name;
+                break;
         }
+        Debug.Log(ret);
+        return ret;
+        //return System.Text.RegularExpressions.Regex.Unescape(ret);
+
     }
 }
