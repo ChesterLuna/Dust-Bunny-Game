@@ -29,6 +29,8 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] Button _initialSettingsButton;
     [SerializeField] Button _initialGraphicsButton;
     [SerializeField] Button _initialInfoButton;
+    [SerializeField] Button _initialQuitToMenuButton;
+    [SerializeField] Button _initialQuitGameButton;
 
 
     private float _timeSinceLastResume = 0.0f;
@@ -192,6 +194,8 @@ public class PauseMenu : MonoBehaviour
                 _gameplayOverlayUI.SetActive(false);
                 _audioSettingsUI.SetActive(false);
                 _graphicsSettingsUI.SetActive(false);
+
+                _initialQuitGameButton.Select();
                 break;
             case PauseMenuPage.PromptQuitMenu:
                 _pauseMenuUI.SetActive(false);
@@ -203,6 +207,8 @@ public class PauseMenu : MonoBehaviour
                 _gameplayOverlayUI.SetActive(false);
                 _audioSettingsUI.SetActive(false);
                 _graphicsSettingsUI.SetActive(false);
+
+                _initialQuitToMenuButton.Select();
                 break;
         }
     } // end SetMenu
@@ -252,6 +258,10 @@ public class PauseMenu : MonoBehaviour
     } // end QuitGame
 
     public void RestartLevel(){
+        if(SceneManager.GetActiveScene().name == "Main Menu"){
+            return;
+        }
+
         LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
         levelLoader.StartLoadLevelByString(SceneManager.GetActiveScene().name, "CrossFade", 1.0f);
         Resume();
