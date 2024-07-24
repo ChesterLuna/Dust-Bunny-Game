@@ -13,6 +13,7 @@ public class SelectedCursor : MonoBehaviour
     [SerializeField] private Vector2 offset;
 
     private Canvas canvas;
+    private Image image;
 
     private GameObject currentTarget;
     private GameObject lastSelectedObject;
@@ -24,6 +25,7 @@ public class SelectedCursor : MonoBehaviour
         instance = this;
 
         canvas = GetComponent<Canvas>();
+        image = GetComponentInChildren<Image>();
     }
 
     // Update is called once per frame
@@ -54,13 +56,13 @@ public class SelectedCursor : MonoBehaviour
     }
 
     void ShowCursor(bool show){
-        canvas.enabled = show;
+        image.enabled = show;
     }
 
     void UpdatePosition(){
         Vector3 totalOffset = new Vector3(
-            offset.x + currentTarget.GetComponent<RectTransform>().rect.width/2, 
-            offset.y + currentTarget.GetComponent<RectTransform>().rect.height/2,
+            (offset.x + currentTarget.GetComponent<RectTransform>().rect.width/2) * transform.localScale.x, 
+            (offset.y + currentTarget.GetComponent<RectTransform>().rect.height/2) * transform.localScale.y,
             0
         );
 
