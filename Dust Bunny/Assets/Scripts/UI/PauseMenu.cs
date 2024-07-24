@@ -223,7 +223,6 @@ public class PauseMenu : MonoBehaviour
     }
 
     public void SettingsMenuBack(){
-        Debug.Log(_wasDirectToSettings);
         if(_wasDirectToSettings){
             Resume();
         } else {

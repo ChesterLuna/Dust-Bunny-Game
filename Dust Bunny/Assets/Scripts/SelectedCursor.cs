@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class SelectedCursor : MonoBehaviour
 {
+    public static SelectedCursor instance;
+
     [SerializeField] private GameObject cursor;
     [SerializeField] private float speed;
     [SerializeField] private Vector2 offset;
@@ -12,10 +15,13 @@ public class SelectedCursor : MonoBehaviour
     private Canvas canvas;
 
     private GameObject currentTarget;
+    private GameObject lastSelectedObject;
+    private GameObject lastHoveredObject;
     // Start is called before the first frame update
     void Start()
     {
         DontDestroyOnLoad(gameObject);
+        instance = this;
 
         canvas = GetComponent<Canvas>();
     }
@@ -23,8 +29,17 @@ public class SelectedCursor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        currentTarget = EventSystem.current.currentSelectedGameObject;
+        GameObject controllerSelected = EventSystem.current.currentSelectedGameObject;
+        if(controllerSelected != lastSelectedObject){
+            SetTarget(controllerSelected);
+        }
+        lastSelectedObject = controllerSelected;
 
+        GameObject hoverSelected = PointerOverUIObject();
+        if(hoverSelected != null && hoverSelected != lastHoveredObject){
+            SetTarget(hoverSelected);
+        }
+        lastHoveredObject = hoverSelected;
 
         if (CheckIfValid()){
             ShowCursor(true);
@@ -50,5 +65,24 @@ public class SelectedCursor : MonoBehaviour
         );
 
         cursor.transform.position = Vector3.Lerp(cursor.transform.position, currentTarget.transform.position + totalOffset, speed * Time.unscaledDeltaTime);
+    }
+
+    public void SetTarget(GameObject newtarget){
+        currentTarget = newtarget;
+    }
+
+    public GameObject PointerOverUIObject(){
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+
+        GameObject realTarget = null;
+        for(int i = 0; i < results.Count; i++){
+            if(results[i].gameObject.GetComponent<Selectable>() != null){
+                return results[i].gameObject;
+            }
+        }
+        return null;
     }
 }
