@@ -62,7 +62,7 @@ public class SelectedCursor : MonoBehaviour
     void UpdatePosition(){
         Vector3 totalOffset = new Vector3(
             (offset.x + currentTarget.GetComponent<RectTransform>().rect.width/2) * transform.localScale.x, 
-            (offset.y + currentTarget.GetComponent<RectTransform>().rect.height/2) * transform.localScale.y,
+            (offset.y - currentTarget.GetComponent<RectTransform>().rect.height/2) * transform.localScale.y,
             0
         );
 
