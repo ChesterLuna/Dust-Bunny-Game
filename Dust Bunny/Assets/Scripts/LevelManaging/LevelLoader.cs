@@ -35,8 +35,9 @@ public class LevelLoader : MonoBehaviour
 
   IEnumerator LoadLevelByString(string LevelName, string transition, float transitionTime){
     Animator anim = null;
-    Transform transitionObj = transform.Find("TransitionAnimations").transform.Find(transition);
-    if(transition == null){
+    Transform transitionAnimationsContainer = transform.Find("TransitionAnimations");
+    Transform transitionObj = transitionAnimationsContainer.transform.Find(transition);
+    if(transitionObj == null){
       Debug.Log("Transition not found: " + transition);
     } else {
       anim = transitionObj.gameObject.GetComponent<Animator>();
