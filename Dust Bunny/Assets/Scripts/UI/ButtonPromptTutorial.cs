@@ -34,7 +34,7 @@ public class ButtonPromptTutorial : MonoBehaviour
                 correctInput = correctInput || inputs.Move.magnitude > 0;
                 break;
             case Type.DASH:
-                correctInput = correctInput || inputs.DashDown;
+                correctInput = correctInput || (inputs.DashDown || inputs.DashDirectionGamepad.magnitude > 0.9f);
                 break;
             case Type.JUMP:
                 correctInput = correctInput || inputs.JumpDown;
