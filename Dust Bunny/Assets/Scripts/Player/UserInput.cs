@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 
 public class UserInput : MonoBehaviour
@@ -53,12 +54,16 @@ public class UserInput : MonoBehaviour
             case true:
                 Debug.Log("Using Controller Inputs");
                 _usingController = true;
+                Cursor.visible = false;
+                EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
                 break;
                 
             //Keyboard
             default:
                 Debug.Log("Using Keyboard Inputs");
                 _usingController = false;
+                Cursor.visible = true;
+                EventSystem.current.SetSelectedGameObject(null);
                 break;
         }
     }
