@@ -12,8 +12,11 @@ public class SelectedCursor : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private Vector2 offset;
 
+
     private Canvas canvas;
     private Image image;
+
+    private bool manualHide = false;
 
     private GameObject currentTarget;
     private GameObject lastSelectedObject;
@@ -25,7 +28,7 @@ public class SelectedCursor : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
+
         DontDestroyOnLoad(gameObject);
         instance = this;
 
@@ -56,8 +59,12 @@ public class SelectedCursor : MonoBehaviour
         }
     }
 
+    public void SetManualHide(bool newHide){
+        manualHide = newHide;
+    }
+
     bool CheckIfValid(){
-        return currentTarget != null;
+        return currentTarget != null && !manualHide;
     }
 
     void ShowCursor(bool show){

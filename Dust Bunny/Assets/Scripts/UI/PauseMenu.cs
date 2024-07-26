@@ -245,8 +245,10 @@ public class PauseMenu : MonoBehaviour
     } // end SetMenu
 
     IEnumerator ResetButton(){
+        SelectedCursor.instance.SetManualHide(true);
         yield return new WaitForSeconds(0.2f);
         EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
+        SelectedCursor.instance.SetManualHide(false);
     }
 
     void Pause()
