@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public event Action<bool, bool> ToggledPlayer;
 
     public bool Active { get; private set; } = true;
+    public bool UseRightStickDash = true;
+    private bool _usedDashThisFlick = false;
     public Vector2 Up { get; private set; }
     public Vector2 Forward { get; private set; }
     public Vector2 Right { get; private set; }
@@ -238,7 +240,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             _timeJumpWasPressed = _time;
         }
 
-        if (_frameInput.DashDown)
+        if (_frameInput.DashDown || RightStickDashRequest())
         {
             _dashToConsume = true;
         }
@@ -248,6 +250,21 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             _interactToConsume = true;
         }
     } // end GatherInput
+
+    private bool RightStickDashRequest(){
+        if(!UseRightStickDash) return false;
+
+        if(_frameInput.DashDirectionGamepad.magnitude < 0.1f){
+            _usedDashThisFlick = false;
+        }
+
+        if(!_usedDashThisFlick && _frameInput.DashDirectionGamepad.magnitude > 0.9f){
+            _usedDashThisFlick = true;
+            return true;
+        }
+
+        return false;
+    }
 
     #endregion
 

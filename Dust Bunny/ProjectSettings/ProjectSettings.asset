@@ -14,7 +14,7 @@ PlayerSettings:
   accelerometerFrequency: 60
   companyName: House Hippos
   productName: Spring Cleaning
-  defaultCursor: {fileID: 0}
+  defaultCursor: {fileID: 2800000, guid: f08f2781d439d0480893f5c0eb15cb2c, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 1, g: 1, b: 1, a: 1}
   m_ShowUnitySplashScreen: 1
