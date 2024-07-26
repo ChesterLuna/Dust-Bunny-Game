@@ -10,6 +10,8 @@ public class UserInput : MonoBehaviour
     // private PlayerInputActions _actions;
     private InputActionAsset _actions;
 
+    private bool _usingController = false;
+
     private InputAction _move, _jump, _dash, _dashPosition, _interact, _menu, _anyKey, _dashPositionGamepad;
     private void Awake()
     {
@@ -43,6 +45,23 @@ public class UserInput : MonoBehaviour
         UseMouseForDash = value;
         PlayerPrefs.SetInt("UseMouseForDash", value ? 1 : 0);
     } // end SetMouseForDash
+
+    public void SwapInputDevice(PlayerInput input){
+       switch (input.currentControlScheme.Equals("Gamepad"))
+        {
+            //Controller
+            case true:
+                Debug.Log("Using Controller Inputs");
+                _usingController = true;
+                break;
+                
+            //Keyboard
+            default:
+                Debug.Log("Using Keyboard Inputs");
+                _usingController = false;
+                break;
+        }
+    }
 
     private void SetUpInputActions()
     {
@@ -78,7 +97,8 @@ public class UserInput : MonoBehaviour
                 DashDirectionGamepad = Vector2.zero,
                 InteractDown = false,
                 MenuDown = _menu.WasPressedThisFrame(),
-                AnyKey = _anyKey.WasPressedThisFrame()
+                AnyKey = _anyKey.WasPressedThisFrame(),
+                UsingController = _usingController
             };
         }
         else if (playerState == PlayerStates.Dialogue)
@@ -94,7 +114,8 @@ public class UserInput : MonoBehaviour
                 DashDirectionGamepad = Vector2.zero,
                 InteractDown = _interact.WasPressedThisFrame(),
                 MenuDown = _menu.WasPressedThisFrame(),
-                AnyKey = _anyKey.WasPressedThisFrame() && !_interact.WasPerformedThisFrame()
+                AnyKey = _anyKey.WasPressedThisFrame() && !_interact.WasPerformedThisFrame(),
+                UsingController = _usingController
             };
         }
         else
@@ -110,7 +131,8 @@ public class UserInput : MonoBehaviour
                 DashDirectionGamepad = _dashPositionGamepad.ReadValue<Vector2>(),
                 InteractDown = _interact.WasPressedThisFrame(),
                 MenuDown = _menu.WasPressedThisFrame(),
-                AnyKey = _anyKey.WasPressedThisFrame()
+                AnyKey = _anyKey.WasPressedThisFrame(),
+                UsingController = _usingController
             };
         }
     } // end Gather
@@ -138,6 +160,7 @@ public struct FrameInput
     public bool InteractDown;
     public bool MenuDown;
     public bool AnyKey;
+    public bool UsingController;
 } // end struct FrameInput
 
 public struct InputNames

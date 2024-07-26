@@ -723,20 +723,29 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         {
             // Handle the dash
             Vector2 dir;
-            if (UserInput.instance.UseMouseForDash)
-            {
-                //Handle keyboard dash vs controller dash
-                if(_frameInput.DashDirectionGamepad.magnitude < 0.01f){
+            //Keyboard
+            if(!_frameInput.UsingController){
+                if (UserInput.instance.UseMouseForDash)
+                {
+                    //Handle keyboard dash vs controller dash
                     Vector2 playerPos = Camera.main.WorldToScreenPoint(transform.position);
                     dir = (_frameInput.DashDirection - playerPos).normalized;
-                } else {
+                } else
+                {
+                    dir = new Vector2(_frameInput.Move.x, _frameInput.Move.y).normalized;
+                }
+            } 
+            //Controller
+            else {
+                //Controller dead zone
+                if(_frameInput.DashDirectionGamepad.magnitude > 0.01f){
                     dir = _frameInput.DashDirectionGamepad.normalized;
+                } else {
+                    dir = new Vector2(_frameInput.Move.x, _frameInput.Move.y).normalized;
                 }
             }
-            else
-            {
-                dir = new Vector2(_frameInput.Move.x, _frameInput.Move.y).normalized;
-            }
+            
+            
             if (dir == Vector2.zero)
             {
                 dir = Forward;

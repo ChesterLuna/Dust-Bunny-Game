@@ -56,7 +56,19 @@ MonoBehaviour:
       m_Calls: []
   m_ControlsChangedEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2699024691222051960}
+        m_TargetAssemblyTypeName: UserInput, Assembly-CSharp
+        m_MethodName: SwapInputDevice
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls: []
@@ -82,6 +94,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 50dcaeda-8597-4ac6-a957-48249aad1160
     m_ActionName: InGame/DashPosition[/Mouse/position]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: af9af2d0-4cf2-441e-a146-5333da4a4adf
+    m_ActionName: InGame/AnyKey[/Keyboard/anyKey,/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 7f76ff1e-b5c8-4c53-9e83-3c130b804305
+    m_ActionName: InGame/DashPositionGamepad[/Gamepad/rightStick]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: InGame
@@ -99,4 +119,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e2f4e347b70ab744a76525cac347990, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UseMouseForDash: 0

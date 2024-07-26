@@ -193,21 +193,22 @@ public class PlayerAnimator : MonoBehaviour
 
         //Get the dash target from mouse position or keyboard input, based on UseMouseForDash
         Vector3 dashTargetWorldPosition;
-        if (UserInput.instance.UseMouseForDash)
-        {
-            FrameInput _frameInput = UserInput.instance.Gather();
-            if(_frameInput.DashDirectionGamepad.magnitude < 0.01f){
+        FrameInput _frameInput = UserInput.instance.Gather();
+        Vector2 gamepadMoveInput = _frameInput.DashDirectionGamepad;
+        Vector2 keyboardMoveInput = _frameInput.Move;
+
+        if(_frameInput.UsingController){
+            dashTargetWorldPosition = GetDashArrowTargetByMoveInput(keyboardMoveInput);
+        } else {
+            if (!UserInput.instance.UseMouseForDash)
+            {
+                dashTargetWorldPosition = GetDashArrowTargetByMoveInput(keyboardMoveInput);
+            }
+            else
+            {            
                 dashTargetWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 dashTargetWorldPosition.z = 0;
-            } else {
-                Vector2 moveInput = _frameInput.DashDirectionGamepad;
-                dashTargetWorldPosition = GetDashArrowTargetByMoveInput(moveInput);
             }
-        }
-        else
-        {
-            Vector2 moveInput = dashTargetWorldPosition = UserInput.instance.Gather().Move;
-            dashTargetWorldPosition = GetDashArrowTargetByMoveInput(moveInput);
         }
 
         // deep math i do not understand
