@@ -31,9 +31,12 @@ public class DialogueManager : MonoBehaviour, IInteractable
 
     [SerializeField] TextMeshPro charNameText;
     [SerializeField] TextCrawler dialogueText;
+    [SerializeField] TextBubbleLine line;
     [SerializeField] bool importantDialogue = false;
     [SerializeField] bool playOnTouch = false;
     [SerializeField] bool interactable = true;
+    [SerializeField] bool lineStartHidden = false;
+    [SerializeField] GameObject customLineDefaultObject = null;
     [SerializeField] float _timeToPlay = 0;
 
     [SerializeField] float minDust = -1;
@@ -55,6 +58,8 @@ public class DialogueManager : MonoBehaviour, IInteractable
     [SerializeField] TimelineAsset[] _cinematics;
     int _iCine = 0;
 
+    private Dialogue currentDialogue;
+
     private float _timeSinceDialogueStarted = 0.0f;
 
     PlayerController _player;
@@ -62,10 +67,15 @@ public class DialogueManager : MonoBehaviour, IInteractable
     private void Awake()
     {
         textBubble = textBubble != null ? textBubble : transform.Find("Text Bubble").gameObject;
+        line = textBubble.transform.GetComponentInChildren<TextBubbleLine>();
         textBubble.SetActive(false);
         GameObject _playerObj = GameObject.FindWithTag("Player");
         if (_playerObj != null) _player = _playerObj.GetComponent<PlayerController>();
         _isFinishedDialogue = GetComponent<PersistentGUID>().LoadBoolValue("isFinishedDialogue");
+
+        if(lineStartHidden){
+            line.HideLine(1000);
+        }
     } // end Awake
 
     private void Start()
@@ -182,8 +192,31 @@ public class DialogueManager : MonoBehaviour, IInteractable
         }
     }
 
+    public void HideLine(){
+        line.HideLine(1000);
+    }
+
+    public void ShowLine(){
+        line.HideLine(0);
+    }
+
+    public void HideLineForTurns(int turnCount){
+        line.HideLine(turnCount);
+    }
+
+    public void DisplayNextSentanceAfterAnimation(){
+        line.PostCinematic();
+        DisplayNextSentence();
+    }
+
     public void DisplayNextSentence()
     {
+        // Check if the last dialoguue was an animation or cinematic
+        if (currentDialogue != null && (/*currentDialogue.isPlayAnimation() ||*/ currentDialogue.isPlayCinematic())){
+            line.PostCinematic();
+        }
+
+
         if (Dialogues.Count == 0 || _isFinishedDialogue)
         {
             EndDialogue();
@@ -192,6 +225,7 @@ public class DialogueManager : MonoBehaviour, IInteractable
         textBubble.GetComponent<TextCrawler>().StartFadeIn();
 
         Dialogue nextDialogue = Dialogues.Dequeue();
+        currentDialogue = nextDialogue;
 
         if (nextDialogue.getSound() != null)
             PlaySound(nextDialogue.getSound());
@@ -202,14 +236,40 @@ public class DialogueManager : MonoBehaviour, IInteractable
                 PlayNextAnimation();
             }
         }
-        if (nextDialogue.isPlayCinematic())
+        if (nextDialogue.isPlayCinematic()){
             PlayNextCinematic();
-
+        }
 
         charNameText.text = nextDialogue.getName();
         dialogueText.SetText(nextDialogue.getText());
         dialogueText.Advance();
+        line.SetTarget(FindObjectBySpeakerName(nextDialogue.getName()));
+        line.TickHideTurns();
     } // end DisplayNextSentence
+
+    private GameObject FindObjectBySpeakerName(string name){
+        switch (name){
+            case "Spek":
+                return GameObject.Find("Player").transform.Find("Visual").transform.Find("Effects").transform.Find("Sprite").gameObject;
+            default:
+                // Loop through all the gameobjects ion the scene, looking for the closest one with the right name
+                // Note that this is really super dumb
+                GameObject found = textBubble;
+                if(customLineDefaultObject != null){
+                    found = customLineDefaultObject;
+                }
+                GameObject player = GameObject.Find("Player");
+                float minDistance = Mathf.Infinity;
+                foreach (var gameObj in FindObjectsOfType(typeof(GameObject)) as GameObject[]){
+                    float distance = Vector3.Distance(gameObj.transform.position, player.transform.position);
+                    if(gameObj.name == name && distance < minDistance){
+                        found = gameObj;
+                        minDistance = distance;
+                    }
+                }
+                return found;
+        }
+    }
 
 
     public void PlaySound(string _soundToPlay)

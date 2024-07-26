@@ -34,7 +34,7 @@ public class ButtonPromptTutorial : MonoBehaviour
                 correctInput = correctInput || inputs.Move.magnitude > 0;
                 break;
             case Type.DASH:
-                correctInput = correctInput || inputs.DashDown;
+                correctInput = correctInput || (inputs.DashDown || inputs.DashDirectionGamepad.magnitude > 0.9f);
                 break;
             case Type.JUMP:
                 correctInput = correctInput || inputs.JumpDown;
@@ -53,6 +53,9 @@ public class ButtonPromptTutorial : MonoBehaviour
 
         // Move toward the player
         if (followPlayer) transform.position = Vector3.Lerp(transform.position, (Vector3)_player.State.Position + Vector3.up + Vector3.up * 0.05f * _player.CurrentDust, 15f * Time.deltaTime);
+
+        //Fix warnings about missing font on linux
+        //_text.text = _text.text.Replace('\u25A1'.ToString(), "");
     }
 
     void OnCorrectInput(){
@@ -70,23 +73,42 @@ public class ButtonPromptTutorial : MonoBehaviour
     private void SetupByType(){
         switch (type){
             case Type.MOVEMENT:
-                _text.text = "<b>Move</b>\n<i>" + UserInput.instance.GetInputNames().MovementKeys + "</i>";
+                _text.text = "<b>Move</b>\n<i>" + PostProcessInputName(UserInput.instance.GetInputNames().MovementKeys) + "</i>";
                 break;
             case Type.DASH:
-                _text.text = "<b>Dash</b>\n<i>" + UserInput.instance.GetInputNames().DashKey + "</i>";
+                _text.text = "<b>Dash</b>\n<i>" + PostProcessInputName(UserInput.instance.GetInputNames().DashKey) + "</i>";
                 break;
             case Type.JUMP:
-                _text.text = "<b>Jump</b>\n<i>" + UserInput.instance.GetInputNames().JumpKey + "</i>";
+                _text.text = "<b>Jump</b>\n<i>" + PostProcessInputName(UserInput.instance.GetInputNames().JumpKey) + "</i>";
                 break;
             case Type.WALLJUMP:
-                _text.text = "<b>Walljump</b>\n<i>" + UserInput.instance.GetInputNames().JumpKey + "</i>";
+                _text.text = "<b>Walljump</b>\n<i>" + PostProcessInputName(UserInput.instance.GetInputNames().JumpKey) + "</i>";
                 break;
             case Type.INTERACT:
-                _text.text = "<b>Interact</b>\n<i>" + UserInput.instance.GetInputNames().InteractKey + "</i>";
+                _text.text = "<b>Interact</b>\n<i>" + PostProcessInputName(UserInput.instance.GetInputNames().InteractKey) + "</i>";
                 //dumb fix for the arrow being layered above the dialogue
                 _bgSprite.sortingOrder = 20;
                 _text.sortingOrder = 21;
                 break;
         }
+    }
+
+    private string PostProcessInputName(string name){
+        string ret = "";
+        switch(name){
+            case "LMB":
+                ret =  "Left Click";
+                break;
+            case "RMB":
+                ret =  "Right Click";
+                break;
+            default:
+                ret =  name;
+                break;
+        }
+        Debug.Log(ret);
+        return ret;
+        //return System.Text.RegularExpressions.Regex.Unescape(ret);
+
     }
 }

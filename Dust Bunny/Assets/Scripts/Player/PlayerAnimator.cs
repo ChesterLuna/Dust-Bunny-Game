@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
 
@@ -12,8 +13,11 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField]
     private Animator _anim;
 
+    private int _elapsedFrames = 0;
+
     [SerializeField] private GameObject _effectsParent;
     [SerializeField] private SpriteRenderer _sprite;
+    private SquashAndStretch _playerSquash;
 
 
     [Header("Particles")][SerializeField] private ParticleSystem _jumpParticles;
@@ -46,6 +50,8 @@ public class PlayerAnimator : MonoBehaviour
     private SpriteRenderer[] _arrowVisuals;
     private float _arrowVisibility = 0.0f;
 
+    [SerializeField] private bool doInvincibilityFlashing = true;
+
 
     // Animation Variables
     private bool _dashing;
@@ -66,6 +72,8 @@ public class PlayerAnimator : MonoBehaviour
         _arrowCirclesParent = _arrowParent.transform.Find("Circles").gameObject;
         _arrowLocationsParent = _arrowPivot.transform.Find("Circle locations").gameObject;
         _arrowVisuals = _arrowParent.GetComponentsInChildren<SpriteRenderer>();
+
+        _playerSquash = _sprite.GetComponent<SquashAndStretch>();
 
         // Fix for dying during slow mo effect
         Time.timeScale = 1.0f;
@@ -113,6 +121,16 @@ public class PlayerAnimator : MonoBehaviour
 
         HandleAnimations();
 
+        HandleSquashAndStretch();
+
+        // Invincibility flashing
+         _elapsedFrames += 1;
+        if(_player.IsDustInvulnerable() && _elapsedFrames % 2 == 0 && doInvincibilityFlashing){
+            _sprite.enabled = false;
+        } else {
+            _sprite.enabled = true;
+        }
+
         //Handle idle particle color
         ParticleSystem.MainModule _idleParticlesMain = _idleParticles.main;
         if (_player.CanDash())
@@ -147,30 +165,49 @@ public class PlayerAnimator : MonoBehaviour
 
     } // end Update
 
+    private void HandleSquashAndStretch(){
+        //float yScale = 1.0f + Mathf.Abs(_player.GetVelocity().y) / 20;
+        //_sprite.transform.localScale = new Vector3(1, yScale, 1);
+    }
+
+    private Vector2 GetDashArrowTargetByMoveInput(Vector2 moveInput){
+        Vector2 dashTargetWorldPosition;
+        float dashLengthMod = 1 + (.8f * _player.Stats.DashDuration * _player.Stats.DashVelocity * transform.localScale.x);
+        if (moveInput.sqrMagnitude > 0.01f)
+        {
+            dashTargetWorldPosition = _arrowPivot.transform.position + (Vector3)(moveInput * dashLengthMod);
+        }
+        else
+        {
+            float mod = 1;
+            if (_sprite.flipX) mod = -1;
+            dashTargetWorldPosition = _arrowPivot.transform.position + new Vector3(mod * dashLengthMod, 0, 0);
+        }
+
+        return dashTargetWorldPosition;
+    }
+
     private void HandleDashArrow()
     {
         float cameraZoom = Camera.main.orthographicSize;
 
         //Get the dash target from mouse position or keyboard input, based on UseMouseForDash
         Vector3 dashTargetWorldPosition;
-        if (UserInput.instance.UseMouseForDash)
-        {
-            dashTargetWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            dashTargetWorldPosition.z = 0;
-        }
-        else
-        {
-            Vector2 moveInput = dashTargetWorldPosition = UserInput.instance.Gather().Move;
-            float dashLengthMod = 1 + (.8f * _player.Stats.DashDuration * _player.Stats.DashVelocity * transform.localScale.x);
-            if (moveInput.sqrMagnitude > 0.001f)
+        FrameInput _frameInput = UserInput.instance.Gather();
+        Vector2 gamepadMoveInput = _frameInput.DashDirectionGamepad;
+        Vector2 keyboardMoveInput = _frameInput.Move;
+
+        if(_frameInput.UsingController){
+            dashTargetWorldPosition = GetDashArrowTargetByMoveInput(keyboardMoveInput);
+        } else {
+            if (!UserInput.instance.UseMouseForDash)
             {
-                dashTargetWorldPosition = _arrowPivot.transform.position + (Vector3)(moveInput * dashLengthMod);
+                dashTargetWorldPosition = GetDashArrowTargetByMoveInput(keyboardMoveInput);
             }
             else
-            {
-                float mod = 1;
-                if (_sprite.flipX) mod = -1;
-                dashTargetWorldPosition = _arrowPivot.transform.position + new Vector3(mod * dashLengthMod, 0, 0);
+            {            
+                dashTargetWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                dashTargetWorldPosition.z = 0;
             }
         }
 
@@ -293,6 +330,7 @@ public class PlayerAnimator : MonoBehaviour
         {
             _jumping = true;
             _sfx.PlaySFX(PlayerSFXController.SFX.Jump);
+            _playerSquash.StartEffect("OnJumped");
 
             // Only play particles when grounded (avoid coyote)
             if (type is JumpType.Jump)
@@ -323,6 +361,7 @@ public class PlayerAnimator : MonoBehaviour
             _landParticles.transform.localScale = Vector3.one * Mathf.InverseLerp(0, 40, impact);
             // SetColor(_landParticles);
             _landParticles.Play();
+            _playerSquash.StartEffect("OnLanded");
         }
         else
         {
@@ -340,6 +379,11 @@ public class PlayerAnimator : MonoBehaviour
             _dashRingParticles.Play();
             _sfx.PlaySFX(PlayerSFXController.SFX.Dash);
             _dashAfterImageParticles.Play();
+
+            SquashAndStretch.SquashAndStretchParameters param = _playerSquash.GetParameter("OnDash");
+            param.scaleMask = new Vector3(Mathf.Abs(dir.x)*1.5f - 0.5f, Mathf.Abs(dir.y)*1.5f - 0.5f, 1);
+            _playerSquash.SetParameter(param);
+            _playerSquash.StartEffect("OnDash");
         }
         else
         {
@@ -369,9 +413,19 @@ public class PlayerAnimator : MonoBehaviour
         if (hostile)
         {
             _sfx.PlaySFX(PlayerSFXController.SFX.Took_Damage);
+            StartCoroutine(DamageRumble());
+
         }
         _useDustParticles.Play();
     } // end OnUsedDust
+
+    IEnumerator DamageRumble(){
+        if (Gamepad.all.Count > 0){
+            Gamepad.current.SetMotorSpeeds(0.25f, 0.75f);
+            yield return new WaitForSeconds(0.1f);
+            Gamepad.current.SetMotorSpeeds(0.0f, 0.0f);
+        }
+    }
 
     private void OnGainedDust(float gainedAmount)
     {

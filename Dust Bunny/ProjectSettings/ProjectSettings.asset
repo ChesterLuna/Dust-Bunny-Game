@@ -14,7 +14,7 @@ PlayerSettings:
   accelerometerFrequency: 60
   companyName: House Hippos
   productName: Spring Cleaning
-  defaultCursor: {fileID: 0}
+  defaultCursor: {fileID: 2800000, guid: 880103403bfc6d650a177a9d02d9d5c0, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 1, g: 1, b: 1, a: 1}
   m_ShowUnitySplashScreen: 1
@@ -141,7 +141,8 @@ PlayerSettings:
   vulkanEnableCommandBufferRecycling: 1
   loadStoreDebugModeEnabled: 0
   bundleVersion: 1.0
-  preloadedAssets: []
+  preloadedAssets:
+  - {fileID: 11400000, guid: 49b1ebe4680027569b0804c9acd0af5c, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -837,24 +838,24 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: UNITY_VISUAL_SCRIPTING;DOTWEEN
-    EmbeddedLinux: UNITY_VISUAL_SCRIPTING;DOTWEEN
+    Android: UNITY_VISUAL_SCRIPTING;DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
+    EmbeddedLinux: UNITY_VISUAL_SCRIPTING;DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
     GameCoreScarlett: DOTWEEN
-    GameCoreXboxOne: DOTWEEN
+    GameCoreXboxOne: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
     LinuxHeadlessSimulation: UNITY_VISUAL_SCRIPTING;DOTWEEN
-    Nintendo Switch: UNITY_VISUAL_SCRIPTING;DOTWEEN
-    PS4: UNITY_VISUAL_SCRIPTING;DOTWEEN
-    PS5: DOTWEEN
-    QNX: UNITY_VISUAL_SCRIPTING;DOTWEEN
+    Nintendo Switch: UNITY_VISUAL_SCRIPTING;DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
+    PS4: UNITY_VISUAL_SCRIPTING;DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
+    PS5: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
+    QNX: UNITY_VISUAL_SCRIPTING;DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
     Server: UNITY_VISUAL_SCRIPTING
-    Stadia: DOTWEEN
-    Standalone: UNITY_VISUAL_SCRIPTING;DOTWEEN
-    VisionOS: UNITY_VISUAL_SCRIPTING;DOTWEEN
-    WebGL: UNITY_VISUAL_SCRIPTING;DOTWEEN
+    Stadia: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
+    Standalone: UNITY_VISUAL_SCRIPTING;DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
+    VisionOS: UNITY_VISUAL_SCRIPTING;DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
+    WebGL: UNITY_VISUAL_SCRIPTING;DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
     Windows Store Apps: UNITY_VISUAL_SCRIPTING;DOTWEEN
-    XboxOne: UNITY_VISUAL_SCRIPTING;DOTWEEN
+    XboxOne: UNITY_VISUAL_SCRIPTING;DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
     iPhone: UNITY_VISUAL_SCRIPTING;DOTWEEN
-    tvOS: UNITY_VISUAL_SCRIPTING;DOTWEEN
+    tvOS: UNITY_VISUAL_SCRIPTING;DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

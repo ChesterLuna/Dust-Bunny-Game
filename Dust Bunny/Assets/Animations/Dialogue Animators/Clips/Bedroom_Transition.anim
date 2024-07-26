@@ -176,7 +176,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 25.95
-    functionName: DisplayNextSentence
+    functionName: DisplayNextSentanceAfterAnimation
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     private CapsuleCollider2D _airborneCollider;
     private ConstantForce2D _constantForce;
     private Rigidbody2D _rb;
+    [SerializeField] SpriteRenderer _sprite;
 
     #endregion
 
@@ -42,6 +43,8 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     public event Action<bool, bool> ToggledPlayer;
 
     public bool Active { get; private set; } = true;
+    public bool UseRightStickDash = true;
+    private bool _usedDashThisFlick = false;
     public Vector2 Up { get; private set; }
     public Vector2 Forward { get; private set; }
     public Vector2 Right { get; private set; }
@@ -237,7 +240,7 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             _timeJumpWasPressed = _time;
         }
 
-        if (_frameInput.DashDown)
+        if (_frameInput.DashDown || RightStickDashRequest())
         {
             _dashToConsume = true;
         }
@@ -247,6 +250,21 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
             _interactToConsume = true;
         }
     } // end GatherInput
+
+    private bool RightStickDashRequest(){
+        if(!UseRightStickDash) return false;
+
+        if(_frameInput.DashDirectionGamepad.magnitude < 0.1f){
+            _usedDashThisFlick = false;
+        }
+
+        if(!_usedDashThisFlick && _frameInput.DashDirectionGamepad.magnitude > 0.9f){
+            _usedDashThisFlick = true;
+            return true;
+        }
+
+        return false;
+    }
 
     #endregion
 
@@ -705,15 +723,29 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         {
             // Handle the dash
             Vector2 dir;
-            if (UserInput.instance.UseMouseForDash)
-            {
-                Vector2 playerPos = Camera.main.WorldToScreenPoint(transform.position);
-                dir = (_frameInput.DashDirection - playerPos).normalized;
+            //Keyboard
+            if(!_frameInput.UsingController){
+                if (UserInput.instance.UseMouseForDash)
+                {
+                    //Handle keyboard dash vs controller dash
+                    Vector2 playerPos = Camera.main.WorldToScreenPoint(transform.position);
+                    dir = (_frameInput.DashDirection - playerPos).normalized;
+                } else
+                {
+                    dir = new Vector2(_frameInput.Move.x, _frameInput.Move.y).normalized;
+                }
+            } 
+            //Controller
+            else {
+                //Controller dead zone
+                if(_frameInput.DashDirectionGamepad.magnitude > 0.01f){
+                    dir = _frameInput.DashDirectionGamepad.normalized;
+                } else {
+                    dir = new Vector2(_frameInput.Move.x, _frameInput.Move.y).normalized;
+                }
             }
-            else
-            {
-                dir = new Vector2(_frameInput.Move.x, _frameInput.Move.y).normalized;
-            }
+            
+            
             if (dir == Vector2.zero)
             {
                 dir = Forward;
@@ -1035,6 +1067,14 @@ public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
         return 0;
     } // end DustLevelIndex
 
+    public bool IsDustInvulnerable(){
+        return _dustLossInvulnerable;
+    }
+
+    public Vector2 GetVelocity(){
+        return _rb.velocity;
+    }
+
     public void ChangeDust(float scalar, bool hostile)
     {
         if (scalar < 0)
@@ -1231,7 +1271,9 @@ public interface IPlayerController
     public void RepositionImmediately(Vector2 position, bool resetVelocity = false);
     public void TogglePlayer(bool on, bool dead = false, PlayerStates playerState = PlayerStates.Playing);
     public void ResetAirJumps();
+    public bool IsDustInvulnerable();
     public void ResetDashes();
+    public Vector2 GetVelocity();
 
     // Dust
     public void ChangeDust(float scalar, bool hostile);

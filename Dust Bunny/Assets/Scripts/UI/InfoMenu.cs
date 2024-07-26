@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class InfoMenu : MonoBehaviour
 {
     public static bool GameIsPaused = false;
+    public GameObject initialButton;
 
     [SerializeField] TextMeshProUGUI _titleUI;
     [SerializeField] TextMeshProUGUI _infoUI;
@@ -49,7 +52,15 @@ public class InfoMenu : MonoBehaviour
     void Start()
     {
         SetPage();
+        StartCoroutine(SetNextButtonEnabled());
     } // end Start
+
+    IEnumerator SetNextButtonEnabled(){
+        yield return new WaitForSeconds(0.5f);
+        EventSystem.current.firstSelectedGameObject = initialButton;
+        Selectable s = initialButton.GetComponent<Selectable>();
+        s.Select();
+    }
 
     public void SetPage()
     {
@@ -68,7 +79,8 @@ public class InfoMenu : MonoBehaviour
         }
         else
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
+            LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
+            levelLoader.StartLoadLevelByString("Main Menu", "CrossFade", 1.0f);
         }
         UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end Next
@@ -82,7 +94,8 @@ public class InfoMenu : MonoBehaviour
         }
         else
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
+            LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
+            levelLoader.StartLoadLevelByString("Main Menu", "CrossFade", 1.0f);
         }
         UISFXManager.PlaySFX(UISFXManager.SFX.NAVIGATE);
     } // end Back

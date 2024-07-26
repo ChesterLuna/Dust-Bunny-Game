@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 
 public class UserInput : MonoBehaviour
@@ -10,7 +11,9 @@ public class UserInput : MonoBehaviour
     // private PlayerInputActions _actions;
     private InputActionAsset _actions;
 
-    private InputAction _move, _jump, _dash, _dashPosition, _interact, _menu, _anyKey;
+    private bool _usingController = false;
+
+    private InputAction _move, _jump, _dash, _dashPosition, _interact, _menu, _anyKey, _dashPositionGamepad;
     private void Awake()
     {
         if (instance == null)
@@ -44,6 +47,27 @@ public class UserInput : MonoBehaviour
         PlayerPrefs.SetInt("UseMouseForDash", value ? 1 : 0);
     } // end SetMouseForDash
 
+    public void SwapInputDevice(PlayerInput input){
+       switch (input.currentControlScheme.Equals("Gamepad"))
+        {
+            //Controller
+            case true:
+                Debug.Log("Using Controller Inputs");
+                _usingController = true;
+                Cursor.visible = false;
+                EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
+                break;
+                
+            //Keyboard
+            default:
+                Debug.Log("Using Keyboard Inputs");
+                _usingController = false;
+                Cursor.visible = true;
+                EventSystem.current.SetSelectedGameObject(null);
+                break;
+        }
+    }
+
     private void SetUpInputActions()
     {
         UseMouseForDash = PlayerPrefs.GetInt("UseMouseForDash", 1) == 1;
@@ -54,6 +78,7 @@ public class UserInput : MonoBehaviour
         _interact = _actions["Interact"];
         _menu = _actions["ToggleMenu"];
         _anyKey = _actions["AnyKey"];
+        _dashPositionGamepad = _actions["DashPositionGamepad"];
     } // end SetUpInputActions
 
 
@@ -74,9 +99,11 @@ public class UserInput : MonoBehaviour
                 DashDown = false,
                 Move = Vector2.zero,
                 DashDirection = Vector2.zero,
+                DashDirectionGamepad = Vector2.zero,
                 InteractDown = false,
                 MenuDown = _menu.WasPressedThisFrame(),
-                AnyKey = _anyKey.WasPressedThisFrame()
+                AnyKey = _anyKey.WasPressedThisFrame(),
+                UsingController = _usingController
             };
         }
         else if (playerState == PlayerStates.Dialogue)
@@ -89,9 +116,11 @@ public class UserInput : MonoBehaviour
                 DashDown = false,
                 Move = Vector2.zero,
                 DashDirection = Vector2.zero,
+                DashDirectionGamepad = Vector2.zero,
                 InteractDown = _interact.WasPressedThisFrame(),
                 MenuDown = _menu.WasPressedThisFrame(),
-                AnyKey = _anyKey.WasPressedThisFrame() && !_interact.WasPerformedThisFrame()
+                AnyKey = _anyKey.WasPressedThisFrame() && !_interact.WasPerformedThisFrame(),
+                UsingController = _usingController
             };
         }
         else
@@ -104,19 +133,21 @@ public class UserInput : MonoBehaviour
                 DashDown = _dash.WasReleasedThisFrame(),
                 Move = _move.ReadValue<Vector2>(),
                 DashDirection = _dashPosition.ReadValue<Vector2>(),
+                DashDirectionGamepad = _dashPositionGamepad.ReadValue<Vector2>(),
                 InteractDown = _interact.WasPressedThisFrame(),
                 MenuDown = _menu.WasPressedThisFrame(),
-                AnyKey = _anyKey.WasPressedThisFrame()
+                AnyKey = _anyKey.WasPressedThisFrame(),
+                UsingController = _usingController
             };
         }
     } // end Gather
 
     public InputNames GetInputNames(){
         return new InputNames{
-            MovementKeys = _move.GetBindingDisplayString(0),
-            JumpKey = _jump.GetBindingDisplayString(0),
-            DashKey = _dash.GetBindingDisplayString(0),
-            InteractKey = _interact.GetBindingDisplayString(0),
+            MovementKeys = _move.GetBindingDisplayString(),
+            JumpKey = _jump.GetBindingDisplayString(),
+            DashKey = _dash.GetBindingDisplayString(),
+            InteractKey = _interact.GetBindingDisplayString(),
         };
     }
 
@@ -130,9 +161,11 @@ public struct FrameInput
     public bool DashDown;
     public bool DashHeld;
     public Vector2 DashDirection;
+    public Vector2 DashDirectionGamepad;
     public bool InteractDown;
     public bool MenuDown;
     public bool AnyKey;
+    public bool UsingController;
 } // end struct FrameInput
 
 public struct InputNames
