@@ -19,6 +19,8 @@ public class LevelLoader : MonoBehaviour
 
   IEnumerator LoadLevel(string LevelName, Animator transition, float transitionTime)
   {
+    //Wait for a bit to make sure inputs get cleared
+    yield return new WaitForSeconds(0.2f);
     if(transition != null){
       transition.SetTrigger("Start");
     }
